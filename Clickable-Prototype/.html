@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full antialiased" style="color-scheme: light;">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VLearn</title>
+<meta name="description" content="Nền tảng học thích ứng giúp sinh viên nhận ra đúng phần kiến thức còn yếu và luyện tập có định hướng.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"Be Vietnam Pro"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+      },
+      colors: {
+        indigo: {
+          50: '#eef4f8', 100: '#dceaf3', 200: '#bdd5e6', 300: '#90b8d5',
+          400: '#5c96bf', 500: '#24679f', 600: '#124f8c', 650: '#10487f',
+          700: '#0f4377', 800: '#0d3965', 900: '#0b3157', 950: '#071f38',
+        },
+        slate: {
+          650: '#3d4a5e', 850: '#172033',
+        },
+      },
+      borderRadius: { lg: '0.625rem', xl: '0.875rem', '2xl': '1.125rem', '3xl': '1.375rem' },
+    },
+  },
+};
+</script>
+<style>
+  :root{
+    --vlearn-navy:#124f8c; --vlearn-navy-dark:#0b355f; --vlearn-blue:#24679f;
+    --vlearn-red:#d6222f; --vlearn-red-dark:#b81824; --vlearn-ice:#eef4f8; --vlearn-ink:#102a43;
+  }
+  body{ font-family:"Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif; }
+  ::selection{ background:rgba(36,103,159,.2); color:#0b355f; }
+  .dark ::selection{ background:rgba(56,189,248,.2); color:#e0f2fe; }
+
+  /* lined "note paper" sheet used behind every slide */
+  .note-paper{
+    background-image:linear-gradient(transparent 31px, rgba(148,163,184,.26) 32px);
+    background-size:100% 32px;
+  }
+  .document-protection-watermark__label{
+    position:absolute; transform:rotate(-24deg); white-space:nowrap;
+    font-size:.85rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    user-select:none;
+  }
+  .pdf-viewer-secure, .pdf-viewer-secure canvas, .pdf-viewer-secure img{ -webkit-user-drag:none; }
+  .pdf-viewer-secure{ -webkit-touch-callout:none; }
+  .no-bar{ scrollbar-width:none; -ms-overflow-style:none; }
+  .no-bar::-webkit-scrollbar{ display:none; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+
+<body class="min-h-full flex flex-col bg-slate-50 font-sans text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+
+<div class="fixed inset-0 flex flex-col overflow-hidden bg-slate-50 font-sans text-slate-800 dark:bg-slate-950 dark:text-slate-100">
+
+  <!-- ══════════════ HEADER ══════════════ -->
+  <header class="z-10 flex shrink-0 items-center justify-between border-b border-[#134D8B]/15 bg-white px-6 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+    <div class="flex items-center gap-3">
+      <button title="Quay lại" class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-500 transition-colors hover:bg-[#134D8B]/5 hover:text-[#134D8B] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+        <span data-icon="chevron-left" class="block h-4 w-4"></span>
+      </button>
+
+      <div class="hidden items-center gap-2 border-r border-slate-200 pr-3 sm:flex dark:border-slate-800">
+        <svg viewBox="0 0 48 48" width="38" height="38" aria-label="VinUni AI Thực Chiến" class="shrink-0 drop-shadow-sm">
+          <path d="M6 8h9l9 21 9-21h9L28 42h-8L6 8z" fill="#124f8c"/>
+          <path d="M18.5 8h11L24 21.5 18.5 8z" fill="#d6222f"/>
+        </svg>
+        <span class="text-xl font-black tracking-[-0.035em] text-[color:var(--vlearn-navy-dark)] dark:text-white">
+          <span class="text-[#d6222f] dark:text-red-300">V</span>Learn
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="rounded-lg border border-[#134D8B]/15 bg-[#134D8B]/5 p-1.5 text-[#134D8B] dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-300">
+          <span data-icon="book-open" class="block h-4 w-4"></span>
+        </div>
+        <div class="min-w-0">
+          <h1 class="truncate text-[15px] font-bold text-slate-850 dark:text-slate-100">day05-ai-product-thinking-requirements.pdf</h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">COMP2010 · Lecture_material_ms204v3b_r9mo78</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5">
+      <button id="langToggle" type="button" aria-label="Switch to English" title="Switch to English"
+        class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-[color:var(--vlearn-navy)]/15 bg-white/80 px-1.5 text-[11px] font-bold text-[color:var(--vlearn-navy)] transition-colors hover:bg-[color:var(--vlearn-ice)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--vlearn-navy)]/30 dark:border-slate-700 dark:bg-slate-900/80 dark:text-sky-200 dark:hover:bg-slate-800">VI</button>
+      <button id="themeToggle" type="button" aria-label="Chuyển giao diện tối" title="Chuyển giao diện tối"
+        class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-[color:var(--vlearn-navy)]/15 bg-white/80 px-1.5 text-[11px] font-bold text-[color:var(--vlearn-navy)] transition-colors hover:bg-[color:var(--vlearn-ice)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--vlearn-navy)]/30 dark:border-slate-700 dark:bg-slate-900/80 dark:text-sky-200 dark:hover:bg-slate-800">
+        <span data-icon="moon" class="block h-4 w-4"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex min-h-0 flex-1 overflow-hidden">
+
+    <!-- ══════════════ LEFT: COURSE MATERIALS ══════════════ -->
+    <aside id="leftPanel" aria-label="Danh sách học liệu"
+      class="fixed bottom-0 left-0 top-[73px] z-40 flex w-80 translate-x-0 flex-col border-r border-slate-200 bg-white shadow-2xl transition-transform duration-200 dark:border-slate-800 dark:bg-slate-950">
+      <div class="relative flex h-full min-h-0 flex-col">
+        <section class="flex h-full w-full shrink-0 flex-col overflow-y-auto bg-gradient-to-b from-white to-[#134D8B]/5 p-4 dark:from-slate-950 dark:to-slate-900/90">
+          <div class="mb-4 flex items-center justify-between border-b border-[#134D8B]/10 pb-3 dark:border-slate-800">
+            <div class="flex items-center gap-2.5">
+              <div class="rounded-xl border border-[#134D8B]/15 bg-[#134D8B]/5 p-2 text-[#134D8B] shadow-sm dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-300">
+                <span data-icon="book-open" class="block h-4 w-4"></span>
+              </div>
+              <div>
+                <h2 class="text-[15px] font-black tracking-tight text-slate-900 dark:text-slate-100">Học liệu môn học</h2>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Chương, slide và tài liệu đã upload</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="chapterList" class="space-y-4"><!-- chapters injected --></div>
+        </section>
+
+        <button id="leftToggle" type="button" title="Thu gọn danh sách học liệu" aria-expanded="true"
+          class="absolute -right-10 top-1/2 z-50 flex h-16 w-10 -translate-y-1/2 items-center justify-center rounded-r-2xl border border-l-0 border-slate-200 bg-white text-slate-400 shadow-md transition-all duration-300 hover:-right-12 hover:w-12 hover:bg-slate-50 hover:text-slate-650 hover:shadow-lg active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#134D8B]/30 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-500 dark:hover:bg-slate-900">
+          <span class="relative flex h-6 w-6 items-center justify-center">
+            <span data-icon="chevron-left" class="absolute block h-5 w-5 rotate-0 scale-100 opacity-100 transition-all duration-300 [.collapsed_&]:rotate-180"></span>
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ══════════════ CENTER: READER ══════════════ -->
+    <main id="reader" class="relative ml-80 flex flex-1 select-text flex-col overflow-auto bg-slate-100 transition-[margin] duration-200 dark:bg-slate-950">
+
+      <!-- floating annotation toolbar -->
+      <div class="pointer-events-none sticky top-0 z-40 flex justify-center px-4 py-2">
+        <div class="pointer-events-auto mx-auto flex w-full max-w-4xl flex-col items-center gap-1.5">
+          <div class="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 px-3 py-1.5 shadow-sm backdrop-blur-md transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-800/95">
+
+            <!-- tools -->
+            <div class="no-bar flex items-center gap-1 overflow-x-auto" id="toolGroup">
+              <button type="button" data-tool="read" aria-pressed="true" title="Đọc và chọn chữ"
+                class="tool flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-xs font-bold transition-all duration-150 hover:scale-[1.03] active:translate-y-[0.5px] active:scale-[0.96]">
+                <span data-icon="mouse-pointer-2" class="block h-3.5 w-3.5"></span>Đọc
+              </button>
+              <button type="button" data-tool="pen" aria-pressed="false" title="Viết tay trực tiếp lên PDF"
+                class="tool flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-xs font-bold transition-all duration-150 hover:scale-[1.03] active:translate-y-[0.5px] active:scale-[0.96]">
+                <span data-icon="pencil-line" class="block h-3.5 w-3.5"></span>Bút
+              </button>
+              <button type="button" data-tool="highlight" aria-pressed="false" title="Chọn chữ để tô sáng"
+                class="tool flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-xs font-bold transition-all duration-150 hover:scale-[1.03] active:translate-y-[0.5px] active:scale-[0.96]">
+                <span data-icon="highlighter" class="block h-3.5 w-3.5"></span>Highlight
+              </button>
+              <button type="button" title="Công cụ bổ sung"
+                class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-all duration-150 hover:scale-[1.05] hover:bg-slate-50 hover:text-slate-800 active:scale-[0.95] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">
+                <span data-icon="ellipsis" class="block h-4 w-4"></span>
+              </button>
+            </div>
+
+            <div class="h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700" aria-hidden="true"></div>
+
+            <!-- page + zoom -->
+            <div class="flex items-center gap-2">
+              <span id="pageBadge" class="shrink-0 whitespace-nowrap rounded-full bg-[#134D8B]/5 px-2 py-0.5 text-[11px] font-bold text-[#134D8B] dark:bg-sky-400/10 dark:text-sky-300">Trang 1 · 1 note</span>
+              <div class="flex shrink-0 items-center gap-0.5 rounded-lg border border-slate-200 bg-white p-0.5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                   title="Ctrl + cuộn chuột để zoom. Giữ chuột phải và kéo để di chuyển.">
+                <button type="button" data-zoom="-1" title="Thu nhỏ canvas" class="flex h-7 w-7 items-center justify-center rounded-md text-slate-500 transition-all hover:bg-slate-50 hover:text-slate-800 active:scale-90 disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">
+                  <span data-icon="minus" class="block h-3 w-3"></span>
+                </button>
+                <button type="button" id="zoomLabel" title="Đặt lại zoom 100%" class="min-w-[42px] px-1 text-center text-[11px] font-bold text-slate-600 transition-colors hover:text-[#134D8B] dark:text-slate-300 dark:hover:text-sky-300">100%</button>
+                <button type="button" data-zoom="1" title="Phóng to canvas" class="flex h-7 w-7 items-center justify-center rounded-md text-slate-500 transition-all hover:bg-slate-50 hover:text-slate-800 active:scale-90 disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">
+                  <span data-icon="plus" class="block h-3 w-3"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700" aria-hidden="true"></div>
+
+            <!-- note sheet actions -->
+            <div class="flex shrink-0 items-center gap-1">
+              <button type="button" title="Thêm trang note dòng kẻ cho slide hiện tại" class="ghost-btn"><span data-icon="plus" class="block h-3.5 w-3.5"></span></button>
+              <button type="button" disabled title="Xóa trang note dòng kẻ cuối cùng của slide hiện tại" class="ghost-btn"><span data-icon="minus" class="block h-3.5 w-3.5"></span></button>
+              <button type="button" title="In hoặc lưu PDF note của trang hiện tại" class="ghost-btn"><span data-icon="download" class="block h-3.5 w-3.5"></span></button>
+              <button type="button" title="In hoặc lưu PDF slide kèm note của trang hiện tại" class="ghost-btn"><span data-icon="file-down" class="block h-3.5 w-3.5"></span></button>
+              <button type="button" disabled title="Hoàn tác nét cuối trên trang hiện tại" class="ghost-btn"><span data-icon="undo-2" class="block h-3.5 w-3.5"></span></button>
+              <button type="button" disabled title="Xóa annotation trên trang hiện tại" class="ghost-btn ghost-btn--danger"><span data-icon="trash-2" class="block h-3.5 w-3.5"></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- pages -->
+      <div class="pdf-viewer-secure relative w-full flex-1 px-6 pb-8" title="Giữ chuột phải và kéo để di chuyển canvas">
+        <div id="pagesScale" class="origin-top transition-transform duration-500 ease-out">
+          <div id="pages" class="mx-auto flex w-full max-w-5xl flex-col items-center gap-7 pb-24"><!-- pages injected --></div>
+        </div>
+      </div>
+
+      <!-- bottom pager -->
+      <div class="sticky bottom-0 z-30 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
+        <div class="flex items-center justify-center gap-4">
+          <button type="button" id="prevPage" disabled class="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition-colors hover:bg-slate-100/50 hover:text-slate-900 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">
+            <span data-icon="chevron-left" class="block h-4 w-4"></span>
+          </button>
+          <span class="font-mono text-xs text-slate-500 dark:text-slate-400">Trang <span id="pagerCurrent" class="font-semibold text-slate-800 dark:text-slate-100">1</span> / 44</span>
+          <button type="button" id="nextPage" class="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition-colors hover:bg-slate-100/50 hover:text-slate-900 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">
+            <span data-icon="chevron-right" class="block h-4 w-4"></span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ══════════════ RIGHT: TUTOR ══════════════ -->
+    <aside id="rightPanel" aria-label="VLearn Tutor"
+      class="fixed bottom-0 right-0 top-[73px] z-40 flex w-96 translate-x-full flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-200 dark:border-slate-800 dark:bg-slate-950">
+      <div class="absolute -ml-px bottom-0 left-0 top-0 z-50 w-1.5 cursor-col-resize transition-colors hover:bg-slate-300 dark:hover:bg-slate-700"></div>
+
+      <div class="relative flex h-full min-h-0 flex-col">
+        <div class="flex h-full min-h-0 flex-col overflow-hidden border-l border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+
+          <div class="flex items-center justify-between border-b border-slate-200/80 bg-white px-4 py-4 dark:border-slate-800 dark:bg-slate-950">
+            <div class="flex items-center gap-2">
+              <div class="rounded-lg border border-indigo-100 bg-indigo-50 p-1.5 text-indigo-650 dark:border-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-300">
+                <span data-icon="bot" class="block h-4 w-4"></span>
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-100">VLearn Tutor</h2>
+                <p class="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400">
+                  <span class="h-1.5 w-1.5 animate-ping rounded-full bg-emerald-500"></span> Trợ lý học theo ngữ cảnh
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" aria-label="Mở lịch sử trò chuyện" title="Lịch sử trò chuyện" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-700 dark:hover:text-indigo-300">
+                <span data-icon="history" class="block h-3.5 w-3.5"></span>
+              </button>
+              <button type="button" aria-label="Bắt đầu cuộc trò chuyện mới" title="Cuộc trò chuyện mới" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-700 dark:hover:text-indigo-300">
+                <span data-icon="plus" class="block h-3.5 w-3.5"></span>
+              </button>
+              <div class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">Trang slide: <span class="tutor-page">1</span></div>
+            </div>
+          </div>
+
+          <div class="min-h-0 flex-1 space-y-4 overflow-y-auto bg-slate-50/30 p-4 dark:bg-slate-900/40">
+            <div class="flex w-full flex-col items-start gap-1.5">
+              <span class="font-mono text-[9px] text-slate-400 dark:text-slate-500">Ngữ cảnh: Slide trang <span class="tutor-page">1</span></span>
+              <div class="rounded-2xl rounded-tl-sm border border-slate-200/80 bg-white px-3 py-2.5 text-[13px] leading-relaxed text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
+                <p>Xin chào! Mình là VLearn Tutor. Bạn có thể bôi đen một đoạn trên slide để hỏi hoặc gửi câu hỏi tự do nhé!</p>
+              </div>
+            </div>
+
+            <div class="ml-auto flex max-w-[85%] flex-col items-end gap-1.5">
+              <div class="rounded-2xl rounded-tr-sm bg-indigo-600 px-3 py-2.5 text-xs leading-relaxed text-white shadow-sm">agent</div>
+            </div>
+
+            <div class="flex w-full flex-col items-start gap-1.5">
+              <span class="font-mono text-[9px] text-slate-400 dark:text-slate-500">Ngữ cảnh: Slide trang <span class="tutor-page">1</span></span>
+              <div class="flex w-full flex-col gap-3 overflow-hidden rounded-2xl rounded-tl-sm border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                <div class="text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">
+                  <p class="mb-2">Trong ngữ cảnh bài học, "agent" (tác nhân AI) là thành phần thực hiện các nhiệm vụ tự động nhằm giải quyết các vấn đề cụ thể, như:</p>
+                  <ul class="mb-2 list-disc space-y-1 pl-5 marker:text-slate-400">
+                    <li class="pl-0.5"><strong class="font-bold text-slate-950 dark:text-slate-50">Các use case phổ biến:</strong> Hỗ trợ khách hàng (AI support agent), tra cứu chính sách nội bộ, phân loại yêu cầu (ticket routing), hoặc trợ lý bán hàng [trang 10].</li>
+                    <li class="pl-0.5"><strong class="font-bold text-slate-950 dark:text-slate-50">Yêu cầu thiết kế:</strong> Một agent hiệu quả cần có các tiêu chí chấp nhận (acceptance criteria) rõ ràng: trigger, hành vi mong đợi kèm trích dẫn nguồn, ngưỡng thời gian phản hồi, và cơ chế fallback [trang 23].</li>
+                    <li class="pl-0.5"><strong class="font-bold text-slate-950 dark:text-slate-50">Đo lường:</strong> Yêu cầu cho agent cần cụ thể và đo lường được. Thay vì "agent thông minh", hãy quy định thời gian phản hồi (dưới 5 giây) và kịch bản xử lý lỗi (chuyển sang người thật khi confidence thấp) [trang 21].</li>
+                  </ul>
+                </div>
+
+                <div class="mt-1">
+                  <button type="button" id="srcToggle" class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 transition-colors hover:bg-slate-50 dark:hover:bg-slate-900">
+                    <span class="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 dark:text-slate-300">
+                      <span data-icon="external-link" class="block h-3 w-3"></span>5 nguồn tham khảo
+                    </span>
+                    <span data-icon="chevron-up" class="block h-3 w-3 text-slate-400 transition-transform dark:text-slate-500"></span>
+                  </button>
+                  <div id="srcList" class="mt-1.5 flex flex-col gap-1.5"><!-- sources injected --></div>
+                </div>
+
+                <div class="rounded-xl bg-slate-50 px-2.5 py-2 dark:bg-slate-900">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-slate-300">Phản hồi này có hữu ích không?</span>
+                    <div class="flex items-center gap-1">
+                      <button type="button" aria-label="Phản hồi hữu ích" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400 dark:hover:text-emerald-300">
+                        <span data-icon="thumbs-up" class="block h-3.5 w-3.5"></span>
+                      </button>
+                      <button type="button" aria-label="Phản hồi chưa hữu ích" class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:text-rose-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400 dark:hover:text-rose-300">
+                        <span data-icon="thumbs-down" class="block h-3.5 w-3.5"></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-1 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 dark:border-slate-800">
+                  <div class="flex min-w-0 items-center gap-1.5">
+                    <div class="h-1.5 w-16 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                      <div class="h-full rounded-full bg-emerald-500" style="width:85%"></div>
+                    </div>
+                    <span class="text-[9px] font-bold text-emerald-600 dark:text-emerald-300">85% · Rất tin cậy</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Đã trả lời
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form class="flex shrink-0 flex-col gap-2 border-t border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950" onsubmit="return false">
+            <div class="flex w-full gap-2">
+              <input id="askInput" type="text" placeholder="Nhập câu hỏi hoặc bôi đen tài liệu..."
+                class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 outline-none placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500">
+              <button type="submit" id="askSend" disabled class="rounded-xl bg-indigo-600 p-2 text-white transition-colors hover:bg-indigo-500 disabled:opacity-40">
+                <span data-icon="send" class="block h-4 w-4"></span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <button id="rightToggle" type="button" title="Hiện VLearn Tutor" aria-expanded="false"
+          class="absolute -left-10 top-1/2 z-50 flex h-16 w-10 -translate-y-1/2 items-center justify-center rounded-l-2xl border border-r-0 border-[#134D8B]/15 bg-[#134D8B]/5 text-[#134D8B] shadow-md transition-all duration-300 hover:-left-12 hover:w-12 hover:bg-[#134D8B]/10 hover:text-[#0f3f73] hover:shadow-lg active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#134D8B]/30 dark:border-sky-900/50 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900">
+          <span class="relative flex h-6 w-6 items-center justify-center">
+            <span data-icon="bot" class="block h-5 w-5"></span>
+          </span>
+        </button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+/* ─────────── icons (lucide paths, injected into [data-icon]) ─────────── */
+const ICONS = {
+  'chevron-left':'<path d="m15 18-6-6 6-6"/>',
+  'chevron-right':'<path d="m9 18 6-6-6-6"/>',
+  'chevron-down':'<path d="m6 9 6 6 6-6"/>',
+  'chevron-up':'<path d="m18 15-6-6-6 6"/>',
+  'book-open':'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+  'moon':'<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>',
+  'sun':'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  'circle-play':'<path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"/><circle cx="12" cy="12" r="10"/>',
+  'circle-check':'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  'mouse-pointer-2':'<path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/>',
+  'pencil-line':'<path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>',
+  'highlighter':'<path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>',
+  'ellipsis':'<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+  'minus':'<path d="M5 12h14"/>',
+  'plus':'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  'download':'<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
+  'file-down':'<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/>',
+  'undo-2':'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>',
+  'trash-2':'<path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  'bot':'<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+  'history':'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+  'external-link':'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  'thumbs-up':'<path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/><path d="M7 10v12"/>',
+  'thumbs-down':'<path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/><path d="M17 14V2"/>',
+  'send':'<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>',
+};
+function paintIcons(root=document){
+  root.querySelectorAll('[data-icon]').forEach(el=>{
+    if (el.dataset.painted) return;
+    const p = ICONS[el.dataset.icon]; if (!p) return;
+    el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-full w-full" aria-hidden="true">${p}</svg>`;
+    el.dataset.painted = '1';
+  });
+}
+
+/* ─────────── tool button + ghost button styling (shared class strings) ─────────── */
+const TOOL_ON  = 'border-[#134D8B]/30 bg-[#134D8B]/5 text-[#134D8B] shadow-sm dark:border-sky-400/40 dark:bg-sky-400/10 dark:text-sky-300';
+const TOOL_OFF = 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-white';
+const GHOST = 'flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-all duration-150 hover:scale-[1.05] hover:border-slate-300 hover:text-slate-800 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-white';
+const GHOST_DANGER = 'hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-900 dark:hover:bg-red-950/40 dark:hover:text-red-400';
+
+document.querySelectorAll('.ghost-btn').forEach(b=>{
+  b.className = GHOST + (b.classList.contains('ghost-btn--danger') ? ' ' + GHOST_DANGER : '');
+});
+
+const tools = [...document.querySelectorAll('.tool')];
+function syncTools(){
+  tools.forEach(t=>{
+    const on = t.getAttribute('aria-pressed') === 'true';
+    t.className = 'tool flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-xs font-bold transition-all duration-150 hover:scale-[1.03] active:translate-y-[0.5px] active:scale-[0.96] ' + (on ? TOOL_ON : TOOL_OFF);
+  });
+}
+tools.forEach(t=>t.addEventListener('click',()=>{
+  tools.forEach(o=>o.setAttribute('aria-pressed', String(o===t)));
+  syncTools();
+}));
+syncTools();
+
+/* ─────────── sidebar: chapters ─────────── */
+const CHAPTERS = [
+  { name:'Day01', docs:2 }, { name:'Day02', docs:1 }, { name:'Day03', docs:2 }, { name:'Day04', docs:3 },
+  { name:'Day05', docs:3, active:true, files:[
+      { title:'day05-ai-product-thinking-requirements.pdf', pages:44, current:true },
+      { title:'day05-lecture-slides-batch03.pdf', pages:39 },
+      { title:'day05-slide-batch03-C401.pdf', pages:62 },
+  ]},
+  { name:'Day06', docs:1 },
+];
+
+const chapterList = document.getElementById('chapterList');
+chapterList.innerHTML = CHAPTERS.map(ch=>{
+  const shell = ch.active
+    ? 'border-[color:var(--vlearn-navy)]/40 bg-[color:var(--vlearn-ice)] shadow-sm dark:border-sky-700 dark:bg-sky-950/40'
+    : 'border-slate-200 bg-slate-50/70 dark:border-slate-700 dark:bg-slate-900/70';
+
+  const files = (ch.files||[]).map(f=>{
+    const on = f.current;
+    return `
+    <button type="button" ${on?'aria-current="true"':''} class="w-full rounded-lg border p-3 text-left transition-colors ${
+      on ? 'border-[color:var(--vlearn-navy)]/30 border-l-4 border-l-[color:var(--vlearn-navy)] bg-white shadow-sm dark:border-sky-700 dark:border-l-sky-400 dark:bg-sky-950/70'
+         : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600 dark:hover:bg-slate-800'}">
+      <div class="flex items-start gap-2">
+        <span data-icon="circle-play" class="mt-0.5 block h-4 w-4 shrink-0 ${on?'text-[color:var(--vlearn-navy)] dark:text-sky-300':'text-[#134D8B] dark:text-sky-400'}"></span>
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-[13px] ${on?'font-bold text-[color:var(--vlearn-navy-dark)] dark:text-sky-100':'font-semibold text-slate-800 dark:text-slate-200'}">${f.title}</p>
+          <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">${f.pages} trang</p>
+        </div>
+        ${on?'<span data-icon="circle-check" class="block h-3.5 w-3.5 text-[color:var(--vlearn-navy)] dark:text-sky-300"></span>':''}
+      </div>
+    </button>`;
+  }).join('');
+
+  return `
+  <section class="rounded-xl border ${shell}">
+    <button type="button" class="chapter-head flex w-full items-center justify-between gap-2 px-3 py-3 text-left">
+      <div class="flex min-w-0 items-start gap-2">
+        <span data-icon="circle-play" class="mt-0.5 block h-4 w-4 shrink-0 text-[#134D8B] dark:text-sky-400"></span>
+        <div class="min-w-0">
+          <h3 class="truncate text-[13px] font-bold text-slate-800 dark:text-slate-100">${ch.name}</h3>
+          <p class="mt-0.5 text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">${ch.docs} tài liệu · published</p>
+        </div>
+      </div>
+      <div class="flex shrink-0 items-center gap-2">
+        ${ch.active?'<span class="rounded-full bg-[#134D8B]/10 px-2 py-0.5 text-[10px] font-bold uppercase text-[#134D8B] dark:bg-sky-950/50 dark:text-sky-300">Studying</span>':''}
+        <span data-icon="chevron-down" class="chev block h-4 w-4 text-slate-400 transition-transform dark:text-slate-500 ${ch.active?'rotate-180':''}"></span>
+      </div>
+    </button>
+    ${ch.files ? `<div class="chapter-body space-y-2 border-t border-slate-200 p-2 dark:border-slate-700">${files}</div>` : ''}
+  </section>`;
+}).join('');
+
+chapterList.querySelectorAll('.chapter-head').forEach(head=>{
+  head.addEventListener('click',()=>{
+    const body = head.parentElement.querySelector('.chapter-body');
+    const chev = head.querySelector('.chev');
+    if (!body) return;
+    const hidden = body.classList.toggle('hidden');
+    chev.classList.toggle('rotate-180', !hidden);
+  });
+});
+
+/* ─────────── sidebar sources (tutor panel) ─────────── */
+const SOURCES = [
+  { n:1, page:23, quote:'“Acceptance Criteria Cho AI Phải Trông Như Thế Nào?”', accent:'indigo' },
+  { n:2, page:5,  quote:'“# Deliverable Cuối Ngày”', accent:'violet' },
+  { n:3, page:10, quote:'“# Use Cases Quen Thuộc Để Nghĩ Product Value”', accent:'sky' },
+  { n:4, page:21, quote:'“Từ Vague Đến Specific”', accent:'indigo' },
+  { n:5, page:30, quote:'“Ví Dụ User Stories Cho Các Use Case Quen Thuộc”', accent:'violet' },
+];
+const ACCENT = {
+  indigo:['border-indigo-400','bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-200'],
+  violet:['border-violet-400','bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-200'],
+  sky:['border-sky-400','bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-200'],
+};
+document.getElementById('srcList').innerHTML = SOURCES.map(s=>{
+  const [b,p] = ACCENT[s.accent];
+  return `
+  <div class="cursor-pointer rounded-xl border-l-[3px] ${b} bg-white px-3 py-2.5 shadow-sm ring-1 ring-slate-100 transition-all hover:shadow-md hover:ring-indigo-200 active:scale-[0.985] dark:bg-slate-900 dark:ring-slate-800">
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex min-w-0 items-center gap-2">
+        <span class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-black ${p}">${s.n}</span>
+      </div>
+      <span class="flex shrink-0 items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+        <span data-icon="book-open" class="block h-2.5 w-2.5"></span>Tr.${s.page}
+      </span>
+    </div>
+    <p class="mt-2 line-clamp-2 text-[10px] leading-relaxed text-slate-500 dark:text-slate-300">${s.quote}</p>
+  </div>`;
+}).join('');
+
+document.getElementById('srcToggle').addEventListener('click',e=>{
+  const list = document.getElementById('srcList');
+  const chev = e.currentTarget.querySelector('[data-icon="chevron-up"]');
+  const hidden = list.classList.toggle('hidden');
+  chev.classList.toggle('rotate-180', hidden);
+});
+
+/* ─────────── pages ─────────── */
+const TOTAL = 44;
+const WATERMARK = '26ai.longbm@vinuni.edu.vn';
+const SLIDE_W = 444, SLIDE_H = 249.75, NOTE_W = 260;
+
+/* slide 1 — title slide over the campus photo (recreated as art direction, not a photo) */
+const slide1 = `
+<div class="relative h-full w-full overflow-hidden rounded-xl bg-gradient-to-b from-[#2a6ba8] via-[#1b5590] to-[#0d3f74]">
+  <svg viewBox="0 0 444 250" class="absolute inset-0 h-full w-full opacity-40" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="#0b355f" opacity=".55">
+      <rect x="0" y="150" width="40" height="100"/><rect x="44" y="132" width="30" height="118"/>
+      <rect x="78" y="160" width="26" height="90"/><rect x="340" y="140" width="34" height="110"/>
+      <rect x="378" y="158" width="30" height="92"/><rect x="412" y="130" width="32" height="120"/>
+      <path d="M196 96h52v154h-52z"/><path d="M222 46l16 50h-32z"/>
+    </g>
+    <path d="M150 250 L222 168 L294 250z" fill="#0b355f" opacity=".35"/>
+    <rect x="0" y="228" width="444" height="22" fill="#0a2d52" opacity=".45"/>
+  </svg>
+
+  <div class="relative flex h-full flex-col items-center justify-center px-6 text-center text-white">
+    <div class="absolute left-0 right-0 top-7 flex items-center justify-center gap-2">
+      <svg viewBox="0 0 48 48" class="h-7 w-7"><path d="M6 8h9l9 21 9-21h9L28 42h-8L6 8z" fill="#fff"/></svg>
+      <span class="text-[15px] font-extrabold tracking-[0.02em]">VINUNIVERSITY</span>
+    </div>
+
+    <h2 class="text-[18px] font-extrabold leading-tight drop-shadow">AI Product Thinking &amp; Requirements</h2>
+    <p class="relative mt-3 text-[10px] italic text-white/90">
+      AICB-P1 · Ngày 5 · Build agent xong, nhưng sản phẩm cho ai?
+      <span class="absolute -bottom-1 left-1/2 h-[2px] w-32 -translate-x-1/2 bg-[#d6222f]"></span>
+    </p>
+
+    <div class="mt-10">
+      <p class="text-[11px] font-bold">Tên Giảng Viên</p>
+      <p class="mt-1 text-[9px] text-white/85">VinUniversity · Phase 1 · Tuần 1 · 2026</p>
+    </div>
+  </div>
+  <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-[#d6222f]"></div>
+</div>`;
+
+/* slide 2 — the prompt slide */
+const slide2 = `
+<div class="relative h-full w-full overflow-hidden rounded-xl bg-[#134d8b] text-white">
+  <span class="pointer-events-none absolute right-6 top-2 select-none text-[150px] font-black leading-none text-white/10">?</span>
+  <p class="absolute left-5 top-4 text-[9px] font-bold uppercase tracking-[0.12em] text-[#ff8f97] underline decoration-[#d6222f]">Hãy suy nghĩ...</p>
+  <div class="flex h-full flex-col items-center justify-center px-10 text-center">
+    <p class="text-[16px] font-semibold italic leading-snug">“Bạn đã build agent đẹp. Nhưng<br>user không dùng. Tại sao?”</p>
+  </div>
+  <p class="absolute bottom-4 left-0 right-0 text-center text-[8px] text-white/70">Giữ câu hỏi này trong đầu khi học bài hôm nay</p>
+</div>`;
+
+/* slide 3 — agenda */
+const agendaLeft = ['Product thinking cho AI','Responsible AI fundamentals','User research cho AI products','Requirements engineering'];
+const agendaRight = ['PRD anatomy cho AI products','User stories cho AI','Risk register &amp; go/no-go','Lab 5 + deliverable cuối buổi'];
+const slide3 = `
+<div class="relative flex h-full w-full flex-col overflow-hidden rounded-xl bg-white px-4 pb-3 pt-3">
+  <h2 class="text-[12px] font-bold text-[color:var(--vlearn-navy-dark)]">Nội Dung Bài Học</h2>
+  <div class="mt-6 grid flex-1 grid-cols-2 gap-x-6 gap-y-2 text-[11px] text-slate-700">
+    <ol class="space-y-2">${agendaLeft.map((t,i)=>`<li class="flex gap-2"><span class="font-bold text-[#124f8c]">${i+1}.</span><span>${t}</span></li>`).join('')}</ol>
+    <ol class="space-y-2">${agendaRight.map((t,i)=>`<li class="flex gap-2"><span class="font-bold text-[#124f8c]">${i+5}.</span><span>${t}</span></li>`).join('')}</ol>
+  </div>
+  <div class="flex items-center justify-between border-t border-slate-200 pt-1.5 text-[6px] text-slate-400">
+    <span>Giảng viên (VinUni)</span><span class="text-[#124f8c]">AICB · Ngày 5</span><span>Tuần 1</span><span>1 / 31</span>
+  </div>
+</div>`;
+
+const skeleton = `
+<div class="flex h-full w-full animate-pulse flex-col items-start gap-4 rounded-xl bg-slate-50/50 p-8">
+  <div class="h-6 w-1/3 rounded bg-slate-200"></div>
+  <div class="h-4 w-2/3 rounded bg-slate-200"></div>
+  <div class="min-h-[120px] w-full flex-1 rounded-lg bg-slate-200/50"></div>
+  <div class="h-4 w-1/4 self-end rounded bg-slate-200"></div>
+</div>`;
+
+const pending = n => `
+<div class="flex h-full w-full flex-col items-center justify-center rounded-xl bg-slate-50 text-slate-400">
+  <div class="h-5 w-5 animate-pulse rounded-full bg-slate-200"></div>
+  <span class="mt-2 text-[10px]">Trang ${n}</span>
+</div>`;
+
+function pageMarkup(n){
+  const body = n === 1 ? slide1 : n === 2 ? slide2 : n === 3 ? slide3 : (n <= 6 ? skeleton : pending(n));
+  const active = n === 1;
+  return `
+  <div data-pdf-page="${n}" class="note-paper relative w-full max-w-full cursor-pointer rounded-2xl border bg-[#fffdf5] p-4 shadow-sm transition-all dark:bg-slate-900 ${
+    active ? 'border-indigo-300 ring-2 ring-indigo-100 dark:border-indigo-500/50 dark:ring-indigo-500/20'
+           : 'border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600'}">
+    <div class="mb-3 flex items-center justify-between gap-4 font-mono text-[10px] text-slate-400">
+      <span>Trang ${n} / ${TOTAL}</span>
+      <span class="truncate">day05-ai-product-thinking-requirements.pdf</span>
+    </div>
+
+    <div tabindex="0" class="relative mx-auto max-w-full outline-none" style="width:min(100%, 720px)">
+      <div class="grid items-start gap-4" style="grid-template-columns:${SLIDE_W}px ${NOTE_W}px">
+        <div class="relative rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div class="relative flex items-center justify-center overflow-hidden rounded-xl bg-white" style="width:${SLIDE_W}px;height:${SLIDE_H}px">${body}</div>
+          <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-[15] overflow-hidden opacity-[0.14]">
+            <span class="document-protection-watermark__label" style="top:45%;left:28%">${WATERMARK}</span>
+          </div>
+        </div>
+        <div class="relative overflow-hidden bg-transparent" style="min-height:${SLIDE_H}px"></div>
+      </div>
+      ${n>1 ? `<p class="pointer-events-none absolute left-[52%] right-8 top-14 text-xs leading-6 text-slate-400">Kéo đến trang này để mở note riêng của trang.</p>` : ''}
+    </div>
+  </div>`;
+}
+
+const pagesEl = document.getElementById('pages');
+pagesEl.innerHTML = Array.from({length:TOTAL},(_,i)=>pageMarkup(i+1)).join('');
+paintIcons();
+
+/* ─────────── page tracking + pager ─────────── */
+const pageEls = [...pagesEl.querySelectorAll('[data-pdf-page]')];
+const pageBadge = document.getElementById('pageBadge');
+const pagerCurrent = document.getElementById('pagerCurrent');
+const prevBtn = document.getElementById('prevPage');
+const nextBtn = document.getElementById('nextPage');
+let current = 1;
+
+function setCurrent(n){
+  current = Math.min(TOTAL, Math.max(1, n));
+  pagerCurrent.textContent = current;
+  pageBadge.textContent = `Trang ${current} · ${current === 1 ? '1 note' : '0 note'}`;
+  document.querySelectorAll('.tutor-page').forEach(el=>el.textContent = current);
+  prevBtn.disabled = current === 1;
+  nextBtn.disabled = current === TOTAL;
+}
+const io = new IntersectionObserver(entries=>{
+  const vis = entries.filter(e=>e.isIntersecting)
+    .sort((a,b)=>b.intersectionRatio - a.intersectionRatio)[0];
+  if (vis) setCurrent(Number(vis.target.dataset.pdfPage));
+}, { root: document.getElementById('reader'), threshold:[0.25,0.5,0.75] });
+pageEls.forEach(el=>io.observe(el));
+
+function goTo(n){
+  const el = pageEls[n-1]; if (!el) return;
+  el.scrollIntoView({ behavior:'smooth', block:'start' });
+  setCurrent(n);
+}
+prevBtn.addEventListener('click',()=>goTo(current-1));
+nextBtn.addEventListener('click',()=>goTo(current+1));
+setCurrent(1);
+
+/* ─────────── zoom ─────────── */
+const STEPS = [50,60,70,80,90,100,110,125,150,175,200];
+let zi = STEPS.indexOf(100);
+const scaleEl = document.getElementById('pagesScale');
+const zoomLabel = document.getElementById('zoomLabel');
+function applyZoom(){
+  const z = STEPS[zi];
+  zoomLabel.textContent = z + '%';
+  scaleEl.style.transform = `scale(${z/100})`;
+  document.querySelectorAll('[data-zoom="-1"]').forEach(b=>b.disabled = zi === 0);
+  document.querySelectorAll('[data-zoom="1"]').forEach(b=>b.disabled = zi === STEPS.length-1);
+}
+document.querySelectorAll('[data-zoom]').forEach(b=>b.addEventListener('click',()=>{
+  zi = Math.min(STEPS.length-1, Math.max(0, zi + Number(b.dataset.zoom)));
+  applyZoom();
+}));
+zoomLabel.addEventListener('click',()=>{ zi = STEPS.indexOf(100); applyZoom(); });
+document.getElementById('reader').addEventListener('wheel', e=>{
+  if (!e.ctrlKey) return;
+  e.preventDefault();
+  zi = Math.min(STEPS.length-1, Math.max(0, zi + (e.deltaY < 0 ? 1 : -1)));
+  applyZoom();
+}, { passive:false });
+applyZoom();
+
+/* ─────────── panels ─────────── */
+const reader = document.getElementById('reader');
+const leftPanel = document.getElementById('leftPanel');
+const leftToggle = document.getElementById('leftToggle');
+leftToggle.addEventListener('click',()=>{
+  const open = leftPanel.classList.toggle('-translate-x-full') === false;
+  leftPanel.classList.toggle('translate-x-0', open);
+  reader.classList.toggle('ml-80', open);
+  reader.classList.toggle('ml-0', !open);
+  leftToggle.setAttribute('aria-expanded', String(open));
+  leftToggle.title = open ? 'Thu gọn danh sách học liệu' : 'Mở danh sách học liệu';
+  leftToggle.querySelector('[data-icon]').classList.toggle('rotate-180', !open);
+});
+
+const rightPanel = document.getElementById('rightPanel');
+const rightToggle = document.getElementById('rightToggle');
+rightToggle.addEventListener('click',()=>{
+  const open = rightPanel.classList.toggle('translate-x-full') === false;
+  reader.style.marginRight = open ? '384px' : '0px';
+  rightToggle.setAttribute('aria-expanded', String(open));
+  rightToggle.title = open ? 'Ẩn VLearn Tutor' : 'Hiện VLearn Tutor';
+});
+
+/* ─────────── header toggles ─────────── */
+const askInput = document.getElementById('askInput');
+const askSend = document.getElementById('askSend');
+askInput.addEventListener('input',()=>{ askSend.disabled = askInput.value.trim() === ''; });
+
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click',()=>{
+  const dark = document.documentElement.classList.toggle('dark');
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  const icon = themeToggle.querySelector('[data-icon]');
+  icon.dataset.icon = dark ? 'sun' : 'moon';
+  icon.dataset.painted = '';
+  paintIcons(themeToggle);
+  themeToggle.title = dark ? 'Chuyển giao diện sáng' : 'Chuyển giao diện tối';
+  themeToggle.setAttribute('aria-label', themeToggle.title);
+});
+
+const langToggle = document.getElementById('langToggle');
+langToggle.addEventListener('click',()=>{
+  const vi = langToggle.textContent.trim() === 'VI';
+  langToggle.textContent = vi ? 'EN' : 'VI';
+  langToggle.title = vi ? 'Chuyển sang Tiếng Việt' : 'Switch to English';
+  langToggle.setAttribute('aria-label', langToggle.title);
+});
+</script>
+</body>
+</html>
