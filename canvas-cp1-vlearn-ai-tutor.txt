@@ -1,0 +1,43 @@
+CANVAS 7 DÒNG — CP1
+Chủ đề: Tối ưu VLearn AI Tutor — đọc hiểu slide và trả lời có trích dẫn
+
+1. Chiến tuyến
+VLearn — tối ưu AI Tutor hiện có.
+
+2. Ai đang làm việc này — một vai cụ thể
+Học viên đang xem slide trong buổi học, cần hiểu hoặc tóm tắt nội dung của một slide/đoạn slide.
+
+3. Họ vướng gì — ai, đang làm gì, vướng đâu, hậu quả gì
+Khi hỏi về một slide, AI Tutor chưa đọc hiểu được nội dung slide và thường chỉ trả lời lý thuyết bằng kiến thức bên ngoài mà không có trích dẫn cụ thể; học viên không kiểm chứng được câu trả lời với bài giảng, phải tự dò slide hoặc có nguy cơ học lệch so với nội dung khoá học.
+
+4. 1–2 bằng chứng đầu tiên
+- Bằng chứng 1: Khảo sát/quan sát thực tế của nhóm: AI Tutor chưa đọc hiểu hoặc tóm tắt trực tiếp nội dung slide khi học viên hỏi.
+  Log cần lưu: câu hỏi, slide/đoạn được chọn, phản hồi thực tế của Tutor, kết quả đúng/sai (tối thiểu ____ lượt).
+- Bằng chứng 2: 582/1.261 phản hồi Tutor có citations = [] (46,2%).
+  Cách đếm: Import CSV, lọc role = tutor; đếm citations = [] hoặc rỗng. Mã minh hoạ: T0020, T0014, T0377, T0702, T1261.
+
+5. Lát cắt MỘT CÂU
+Học viên đang xem slide trong buổi học · cần hiểu hoặc tóm tắt đúng nội dung của slide đang xem · AI quyết định trả lời từ slide và trích dẫn trang/đoạn, chỉ dùng nguồn bên ngoài khi slide không có thông tin và phải dẫn nguồn rõ ràng · để học viên kiểm chứng được câu trả lời và học đúng theo bài giảng.
+
+6. AI tự làm đến đâu + 1 dòng lý do
+AI tự: đọc/parse slide, xác định slide hoặc đoạn liên quan, tóm tắt/giải thích theo câu hỏi và hiển thị trích dẫn slide (số trang + đoạn). Nếu cần nguồn ngoài, AI tìm nguồn đáng tin cậy và hiển thị link/tên nguồn.
+AI không tự: khẳng định thông tin không có trong slide hoặc không có nguồn ngoài kiểm chứng được; khi đó phải nói rõ giới hạn hoặc hỏi lại học viên.
+Lý do: Nội dung học tập cần bám bài giảng và kiểm chứng được; câu trả lời từ kiến thức ngoài nhưng không trích dẫn có thể làm học viên học sai hoặc lệch trọng tâm.
+
+7. ≥3 người sẽ thử + phân công có tên
+Người thử ngoài nhóm (điền tên thật trước CP1):
+- [Tên người thử 1]: ______________________________
+- [Tên người thử 2]: ______________________________
+- [Tên người thử 3]: ______________________________
+
+Phân công (điền tên thật trước CP1):
+- [Tên]: Khảo sát thực tế, mining evidence và lưu log 5 ca minh hoạ.
+- [Tên]: Thiết kế đọc slide, retrieval/prompt và tiêu chí trích dẫn.
+- [Tên]: Build prototype giao diện + AI call thật.
+- [Tên]: Viết spec, golden set và chuẩn bị demo.
+- [Tên]: User test, feedback log và changelog.
+
+Ghi chú kiểm tra
+- Tách rõ kết quả khảo sát thực tế của nhóm và bằng chứng mining từ chatlog.
+- Chỉ trích dẫn nguồn ngoài khi nguồn đó xuất hiện rõ trong UI; nếu chưa xác thực được thì nêu “không tìm thấy nguồn”.
+- Không đưa nguyên file chatlog vào repo nộp bài; chỉ lưu mã hội thoại và trích dẫn ngắn khi cần.
