@@ -1,0 +1,9 @@
+{
+  "name": "vlearn-tutor-clickable-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Clickable prototype for a slide-aware VLearn Tutor",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

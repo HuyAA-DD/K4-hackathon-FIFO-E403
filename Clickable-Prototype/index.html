@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLearn Tutor Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <button class="icon-button" aria-label="Quay lại">‹</button>
+        <div class="brand"><span class="brand-mark">◆</span><strong>V<span>Learn</span></strong></div>
+        <span class="divider"></span>
+        <div class="file-meta">
+          <strong>d1-slide-hackathon.pdf</strong>
+          <small>COMP2010 · AI Thực Chiến</small>
+        </div>
+        <div class="top-actions"><button class="icon-button">VI</button><button class="icon-button">☾</button></div>
+      </header>
+
+      <section class="workspace">
+        <section class="slide-area" aria-label="Trình đọc slide">
+          <div class="toolbar">
+            <button class="tool active">⌁ Đọc</button><button class="tool">✎ Bút</button><button class="tool">⌁ Highlight</button>
+            <span class="toolbar-divider"></span><span class="page-pill">Tài liệu gốc</span><button class="zoom">−</button><strong>100%</strong><button class="zoom">+</button>
+          </div>
+          <div class="slide-card">
+            <div class="slide-label">Tài liệu bài giảng · PDF gốc</div>
+            <iframe title="Slide Day 1" src="/slides/d1-slide-hackathon.pdf#page=1" class="pdf-viewer"></iframe>
+          </div>
+          <div class="slide-footer"><button class="round-button">‹</button><span>Slide hiển thị từ data pack</span><button class="round-button">›</button></div>
+        </section>
+
+        <button id="tutor-toggle" class="panel-toggle" aria-expanded="true" aria-controls="tutor-panel">›</button>
+
+        <aside id="tutor-panel" class="tutor-panel" aria-label="VLearn Tutor">
+          <header class="tutor-header"><span class="bot-icon">♙</span><div><strong>VLearn Tutor</strong><small><i></i> Trợ lý học theo ngữ cảnh</small></div><button id="close-tutor" class="icon-button" aria-label="Ẩn Tutor">×</button></header>
+          <div id="messages" class="messages">
+            <p class="context">Ngữ cảnh: Slide Day 1 · d1-slide-hackathon.pdf</p>
+            <article class="message tutor-message">Chào bạn! Mình có thể giải thích hoặc tóm tắt nội dung slide. Mỗi câu trả lời sẽ ghi rõ nguồn là <b>trong tài liệu</b> hay <b>nguồn ngoài</b>.</article>
+            <div class="suggestions"><button data-question="Tóm tắt nội dung slide này">Tóm tắt slide này</button><button data-question="Transformer là gì?">Transformer là gì?</button></div>
+          </div>
+          <form id="chat-form" class="composer">
+            <input id="question-input" autocomplete="off" placeholder="Nhập câu hỏi hoặc bôi đen tài liệu..." />
+            <button type="submit" aria-label="Gửi câu hỏi">➤</button>
+          </form>
+        </aside>
+      </section>
+    </main>
+    <script src="data/rules.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
