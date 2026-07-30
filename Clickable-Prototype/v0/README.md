@@ -7,7 +7,7 @@ Prototype web tĩnh mô phỏng màn hình VLearn: PDF slide ở trái, VLearn T
 Yêu cầu: Node.js 18+.
 
 ```powershell
-cd D:\AIIA\hackathon-clickable-prototype
+cd D:\AIIA\K4-hackathon-FIFO-E403\Clickable-prototype\v0
 npm start
 ```
 

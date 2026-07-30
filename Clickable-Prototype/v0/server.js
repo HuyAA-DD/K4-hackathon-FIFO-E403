@@ -5,7 +5,7 @@ const path = require("path");
 const root = __dirname;
 const slidePdf = path.resolve(
   root,
-  "../data/vlearn-pack/slides/d1-slide-hackathon.pdf"
+  "../../data/vlearn-pack/slides/d1-slide-hackathon.pdf"
 );
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
