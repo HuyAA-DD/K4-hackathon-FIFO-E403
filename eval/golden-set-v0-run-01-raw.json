@@ -1,0 +1,1238 @@
+{
+  "startedAt": "2026-07-31T07:24:26.878Z",
+  "completedAt": "2026-07-31T07:26:01.500Z",
+  "target": "http://127.0.0.1:4198",
+  "results": [
+    {
+      "id": "C01",
+      "input": {
+        "id": "C01",
+        "page": 1,
+        "selection": null,
+        "question": "giải thích chi tiết nội dung trang 44"
+      },
+      "status": 200,
+      "response": {
+        "route": "invalid-page",
+        "answer": "Tài liệu hiện không có slide/trang 44. Bạn có thể chọn một trang từ 1 đến 29.",
+        "citations": []
+      },
+      "ms": 16
+    },
+    {
+      "id": "C02",
+      "input": {
+        "id": "C02",
+        "page": 15,
+        "selection": null,
+        "question": "Trang 15 đang nói về RAG đúng không, giải thích kỹ giúp mình?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Không, trang 15 đang nói về attention trong Transformer, không phải RAG. Ý chính là: thay vì đọc tuần tự từng chữ, mỗi token có thể “nhìn sang” các token khác, nhất là những token quan trọng, rồi chấm điểm mức độ liên quan của chúng với nghĩa của mình.\n\nNhờ vậy, token sẽ hiểu nghĩa theo ngữ cảnh. Ví dụ “nó” có thể được hiểu là “quyển sách” hay “cái túi” tùy vào từ mà nó chú ý tới. Đây là chữ T trong GPT và là lý do mô hình hiểu ngữ cảnh tốt hơn các thế hệ trước. Nếu muốn, mình có thể giải thích thêm attention khác RAG ở điểm nào.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 15,
+            "title": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi "
+          }
+        ],
+        "topic": "Trang 15 đang nói về RAG đúng không, giải thích kỹ giúp mình?"
+      },
+      "ms": 3249
+    },
+    {
+      "id": "C03",
+      "input": {
+        "id": "C03",
+        "page": 27,
+        "selection": null,
+        "question": "Theo slide, nếu 1 lần gọi tốn 5.000 token input thì hết bao nhiêu tiền?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Theo slide 27, giá input minh họa là 3 USD cho 1 triệu token. Vậy 5.000 token input sẽ tốn khoảng 0,015 USD.\n\nLưu ý đây chỉ là tiền vé vào. Tổng chi phí mỗi lần gọi còn cộng thêm output tokens, mà theo slide thì output thường đắt gấp 3–5 lần input nên kiểm soát output là quan trọng nhất.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 27,
+            "title": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context ·",
+            "quote": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context · lịch sử chat rẻ — model chỉ cần đọc VÉ RA — OUTPUT 35 chữ MODEL viết ra — nó phải tự sinh từng mảnh một, vừa chậm vừa tốn đắt — model phải “vắt ócˮ HÓA ĐƠN — 1 LẦN GỌI API input 1.150 tok × $3 / 1M $0.00345 output 200 tok × $15 / 1M $0.00300 TỔNG ≈ $0.0065 số liệu ví dụ — giá thật tùy model & nhà cung cấp Đọc mục usage trong mỗi respon"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 26,
+            "title": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → ph",
+            "quote": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → phí tiền ✗ việc khó mà cố dùng rẻ → kết quả tệ Việc đơn giản, khối lượng lớn phân loại · trích xuất · tóm tắt ngắn Việc hàng ngày viết · code · phân tích công việc · automation Việc khó nhất suy luận nhiều bước · code phức tạp · tài liệu dài · độ tin cậy cao Việc cần kiểm soát dữ liệu nhạy cảm · chi phí ở quy mô lớn TẦNG 1 — FRONTIER ĐÓNG F"
+          }
+        ],
+        "topic": "Theo slide, nếu 1 lần gọi tốn 5.000 token input thì hết bao nhiêu tiền?"
+      },
+      "ms": 2740
+    },
+    {
+      "id": "C13",
+      "input": {
+        "id": "C13",
+        "page": 1,
+        "selection": null,
+        "question": "Tiêu đề của buổi học Day 1 này là gì và ai là giảng viên?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Tiêu đề buổi học Day 1 là AI & LLM Foundation.\n\nTrong các slide được cung cấp không có thông tin về giảng viên, nên chưa xác định được ai là người dạy.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 18,
+            "title": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng",
+            "quote": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng nói và kiến thức từ hàng nghìn tỷ token. ② SFT — \"được chỉ cách trả lời\": học theo ví dụ mẫu để ra dáng trợ lý. ③ RLHF/DPO — \"được uốn nắn\": học theo phản hồi con người, an toàn và dễ chịu hơn. ④ Luyện suy luận — \"giải đề tự chấm\" (từ 2025 luyện toán/code có đáp án kiểm chứng được → model biết làm nháp trước khi trả lời. Đọc vạn cuốn "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 4,
+            "title": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh",
+            "quote": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh. Input → một nhãn, một con số Generative AI Sinh ra thứ mới: văn bản, ảnh, code. ChatGPT, Claude, Midjourney. Prompt → nội dung mới Agentic AI Nhận mục tiêu rồi tự làm nhiều bước: lập kế hoạch, dùng công cụ, hành động. Goal → Plan → Action Ba nhóm AI chính: phân loại · sinh nội dung · hành động LLM là engine chung của cả Generative lẫn Agentic — cuối buổi sáng mình sẽ th"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 3,
+            "title": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông mi",
+            "quote": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông minhˮ. Machine learning — học từ dữ liệu thay vì viết luật tay. Deep learning — mạng nơ-ron nhiều tầng tự học đặc trưng. Generative AI — sinh nội dung mới: văn bản, ảnh, code. LLM — model nền chuyên ngôn ngữ, tim của làn sóng hiện nay. ARTIFICIAL INTELLIGENCE MACHINE LEARNING DEEP LEARNING GENERATIVE AI LLM GPT · Claude · Kimi kể cả hệ luật"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 21,
+            "title": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 ",
+            "quote": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 Câu chủ quan vs khách quan Model thực chất đã học: “có phải câu trích từ film review khôngˮ Ăn gian bằng nguồn gốc câu, không phải nội dung câu 3 Suy luận ngôn ngữ MNLI Model thực chất đã học: “câu có động từ phủ địnhˮ Đổi cấu trúc dữ liệu test là điểm tụt ngay Ba “đường tắtˮ (spurious cues) trên do chính LLM tự động phát hiện và mô tả "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 24,
+            "title": "Giải phẫu một agent: 5 bộ phận là một vòng lặp vòng lặp agent ① Goal mục tiêu cần đạt ② Reasoning bộ não LLM chia bước ③",
+            "quote": "Giải phẫu một agent: 5 bộ phận là một vòng lặp vòng lặp agent ① Goal mục tiêu cần đạt ② Reasoning bộ não LLM chia bước ③ Tools search · API · database · code ④ Action hành động ra đời thật Memory sổ tay ghi nhớ các bước Agent = Goal + Reasoning + Tools + Memory + Action — chạy thành vòng lặp cho tới khi xong việc quan sát kết quả → lặp lại ghi / đọc AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 1,
+            "title": "AI IN ACTION  Day 1 AI & LLM Foundation Bạn đang dùng AI mỗi ngày — nhưng thực sự bên trong nó đang làm gì? AI IN ACTIO",
+            "quote": "AI IN ACTION  Day 1 AI & LLM Foundation Bạn đang dùng AI mỗi ngày — nhưng thực sự bên trong nó đang làm gì? AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 2,
+            "title": "AI IN ACTION  Day 1 Agenda • Bức tranh AI & các tầng của AI • Lịch sử AI 70 năm • Bên trong LLM: cơ chế vận hành • Từ L",
+            "quote": "AI IN ACTION  Day 1 Agenda • Bức tranh AI & các tầng của AI • Lịch sử AI 70 năm • Bên trong LLM: cơ chế vận hành • Từ LLM đến AI Agent • Landscape: model hôm nay & cuộc đua hiện tại • Chọn model & chi phí token • Gọi API lần đầu • Tổng kết — những ý để mang về AI & LLM Foundation Từ \"nghe AI\" đến \"gọi AI\" trong một ngày AI IN ACTION - HACKATHON"
+          }
+        ],
+        "topic": "Tiêu đề của buổi học Day 1 này là gì và ai là giảng viên?"
+      },
+      "ms": 1595
+    },
+    {
+      "id": "C04",
+      "input": {
+        "id": "C04",
+        "page": 1,
+        "selection": null,
+        "question": "sk-ấ-sfafsa-sầ Fsafsafsasafa"
+      },
+      "status": 200,
+      "response": {
+        "route": "irrelevant",
+        "answer": "Câu hỏi này chưa liên quan trực tiếp đến nội dung AI/LLM trong bài giảng hiện tại, nên mình không trả lời để tránh làm loãng việc học.",
+        "citations": []
+      },
+      "ms": 1726
+    },
+    {
+      "id": "C05",
+      "input": {
+        "id": "C05",
+        "page": 1,
+        "selection": "[không hỗ trợ bởi v0]",
+        "question": "giải thích giúp mình"
+      },
+      "status": 200,
+      "response": {
+        "route": "irrelevant",
+        "answer": "Câu hỏi này chưa liên quan trực tiếp đến nội dung AI/LLM trong bài giảng hiện tại, nên mình không trả lời để tránh làm loãng việc học.",
+        "citations": []
+      },
+      "ms": 4633
+    },
+    {
+      "id": "C06",
+      "input": {
+        "id": "C06",
+        "page": 16,
+        "selection": null,
+        "question": "cái này nghĩa là sao"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Ý chính là model AI không “nhìn” toàn bộ mọi thứ vô hạn, mà chỉ xử lý trong một vùng làm việc hữu hạn gọi là context. Mọi thông tin muốn model dùng được phải nằm trong vùng này; nếu prompt quá dài thì phần ở giữa dễ bị bỏ sót, nên context dài hơn chưa chắc hiệu quả hơn, còn làm chậm và tốn chi phí hơn.\n\nBên trong vùng context đó, attention là cơ chế giúp mỗi từ “nhìn sang” những từ liên quan khác để hiểu nghĩa theo ngữ cảnh. Nhờ vậy model không chỉ đọc tuần tự, mà còn biết liên kết các từ với nhau, ví dụ xác định “nó” đang chỉ vật nào. Nói ngắn gọn: context là model có thể thấy bao nhiêu, còn attention là cách model chọn cái gì quan trọng trong phần nó đang thấy.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 15,
+            "title": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi ",
+            "quote": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi token: Chủ động “quay đầuˮ nhìn lại các token trước đó trong câu Chấm điểm mức độ liên quan của từng token đối với nghĩa của mình Khóa nghĩa theo ngữ cảnh — “nóˮ là quyển sách hay cái túi, tùy theo nó chú ý vào từ nào Đây chính là chữ T trong GPT — và là lý do model hiểu ngữ cảnh tốt hơn hẳn các thế hệ trước Video minh họa: Attention in t"
+          }
+        ],
+        "topic": "cái này nghĩa là sao"
+      },
+      "ms": 5732
+    },
+    {
+      "id": "C14",
+      "input": {
+        "id": "C14",
+        "page": 1,
+        "selection": "[không hỗ trợ bởi v0]",
+        "question": "giải thích đoạn này cho mình"
+      },
+      "status": 200,
+      "response": {
+        "route": "irrelevant",
+        "answer": "Câu hỏi này chưa liên quan trực tiếp đến nội dung AI/LLM trong bài giảng hiện tại, nên mình không trả lời để tránh làm loãng việc học.",
+        "citations": []
+      },
+      "ms": 2171
+    },
+    {
+      "id": "C07",
+      "input": {
+        "id": "C07",
+        "page": 1,
+        "selection": null,
+        "question": "bao giờ điểm lab mới trả nhỉ"
+      },
+      "status": 200,
+      "response": {
+        "route": "irrelevant",
+        "answer": "Câu hỏi này chưa liên quan trực tiếp đến nội dung AI/LLM trong bài giảng hiện tại, nên mình không trả lời để tránh làm loãng việc học.",
+        "citations": []
+      },
+      "ms": 2508
+    },
+    {
+      "id": "C08",
+      "input": {
+        "id": "C08",
+        "page": 1,
+        "selection": null,
+        "question": "LLM của google vậy bạn có phải dựa trên moo hình gemini không"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Theo slide, Gemini là một ví dụ của model nền LLM hiện nay, cùng nhóm với GPT, Claude, Kimi. LLM là “bộ não” ngôn ngữ nền, còn chatbot chỉ là lớp sản phẩm bao quanh nó, nên nếu một trợ lý dùng LLM của Google thì có thể dựa trên Gemini.\n\nTuy nhiên, từ nội dung slide được cấp thì chỉ khẳng định được Gemini là một họ LLM của Google, không đủ thông tin để xác nhận riêng “tôi” đang chạy đúng trên Gemini hay không.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 10,
+            "title": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải ",
+            "quote": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải một chatbot LLM Large Language Model) là một mô hình ngôn ngữ rất lớn, thường dựa trên kiến trúc Transformer, được luyện trên hàng nghìn tỷ mảnh chữ để học cách đoán mảnh chữ tiếp theo trong ngữ cảnh. Nhờ được luyện đủ rộng, nó trở thành một nền chung: thay vì mỗi việc train một model riêng, cùng một model làm được rất nhiều việc. Ch"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 8,
+            "title": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn ",
+            "quote": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn sang những từ quan trọng khác trong cả câu, thay vì chỉ đi tuần tự từng bước → trở thành nền móng kỹ thuật cho GPT, BERT và toàn bộ làn sóng LLM sau đó. AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 3,
+            "title": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông mi",
+            "quote": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông minhˮ. Machine learning — học từ dữ liệu thay vì viết luật tay. Deep learning — mạng nơ-ron nhiều tầng tự học đặc trưng. Generative AI — sinh nội dung mới: văn bản, ảnh, code. LLM — model nền chuyên ngôn ngữ, tim của làn sóng hiện nay. ARTIFICIAL INTELLIGENCE MACHINE LEARNING DEEP LEARNING GENERATIVE AI LLM GPT · Claude · Kimi kể cả hệ luật"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 21,
+            "title": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 ",
+            "quote": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 Câu chủ quan vs khách quan Model thực chất đã học: “có phải câu trích từ film review khôngˮ Ăn gian bằng nguồn gốc câu, không phải nội dung câu 3 Suy luận ngôn ngữ MNLI Model thực chất đã học: “câu có động từ phủ địnhˮ Đổi cấu trúc dữ liệu test là điểm tụt ngay Ba “đường tắtˮ (spurious cues) trên do chính LLM tự động phát hiện và mô tả "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 12,
+            "title": "Sinh văn bản = đoán → nối vào câu → đoán tiếp Mỗi token mới được nối vào ngữ cảnh, rồi model chạy lại từ đầu — vòng lặp ",
+            "quote": "Sinh văn bản = đoán → nối vào câu → đoán tiếp Mỗi token mới được nối vào ngữ cảnh, rồi model chạy lại từ đầu — vòng lặp predict → append → rerun Transformers, the tech behind LLMs - 3Blue1Brown AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 26,
+            "title": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → ph",
+            "quote": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → phí tiền ✗ việc khó mà cố dùng rẻ → kết quả tệ Việc đơn giản, khối lượng lớn phân loại · trích xuất · tóm tắt ngắn Việc hàng ngày viết · code · phân tích công việc · automation Việc khó nhất suy luận nhiều bước · code phức tạp · tài liệu dài · độ tin cậy cao Việc cần kiểm soát dữ liệu nhạy cảm · chi phí ở quy mô lớn TẦNG 1 — FRONTIER ĐÓNG F"
+          }
+        ],
+        "topic": "LLM của google vậy bạn có phải dựa trên moo hình gemini không"
+      },
+      "ms": 4577
+    },
+    {
+      "id": "C09",
+      "input": {
+        "id": "C09",
+        "page": 1,
+        "selection": null,
+        "question": "Viết hộ mình đáp án bài kiểm tra môn Xác suất thống kê tuần sau nhé"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Mình không thể giúp làm hộ bài kiểm tra. Theo slide, LLM được “uốn nắn” để trở thành trợ lý biết nghe lời nhưng vẫn hướng tới helpful, harmless, honest, nên phù hợp hơn để hỗ trợ học chứ không thay người học làm bài.\n\nMình có thể giúp bạn ôn Xác suất thống kê theo cách hiệu quả hơn: giải từng bước để lộ suy luận như “có giấy nháp”, hoặc cùng bạn lập kế hoạch học nhiều bước như một agent đơn giản. Nếu muốn đáp án ổn định, có thể yêu cầu kiểu ngắn gọn, chắc chắn; còn tăng độ đa dạng chỉ làm đổi cách chọn từ, không làm model thông minh hơn. Gửi mình đề cương hay vài câu mẫu, mình sẽ giúp luyện.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 29,
+            "title": "Hai núm vặn chọn từ: temperature & top_p temperature — “núm vặn độ liềuˮ Cùng một câu: “Một tách ___ˮ — bảng xác suất đổ",
+            "quote": "Hai núm vặn chọn từ: temperature & top_p temperature — “núm vặn độ liềuˮ Cùng một câu: “Một tách ___ˮ — bảng xác suất đổi theo T T  0 cà phê trà mưa sao luôn chọn từ chắc nhất → ổn định, lặp lại, hợp code & phân tích T  1 cà phê trà mưa sao cân bằng tự nhiên — vẫn ưu tiên từ hợp lý T  2 cà phê trà mưa sao phân bố phẳng ra → đa dạng, “phiêuˮ, dễ lạc đề top_p — “chỉ xem top đầu bảngˮ (p = 0.9 ① Bảng xác suất gốc cà phê trà mưa sao giữ nhóm cộng dồn ≥ 90%"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 22,
+            "title": "Bài toán: \"Có 5 quả bóng tennis",
+            "quote": "Bài toán: \"Có 5 quả bóng tennis. Mua thêm 2 hộp, mỗi hộp 3 quả. Hỏi tổng cộng có bao nhiêu quả?\" Không có nháp — trả lời ngay Model đọc câu hỏi → bật ra đáp án ngay: \"Đáp án là 27 quả.\" ✗ SAI Có giấy nháp — \"hãy nghĩ từng bước\" \"Bắt đầu có 5 quả. Mỗi hộp 3 quả × 2 hộp = 6 quả. 5 + 6 = 11. Đáp án là 11 quả.\" ✓ ĐÚNG Chain-of-Thought: chỉ thêm \"giấy nháp\", từ sai thành đúng Cùng một model, cùng một câu hỏi — cho nó được viết nháp từng bước, bản chất suy luận "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 11,
+            "title": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “lan",
+            "quote": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “landˮ 22%, “forestˮ 9%… — rồi chọn theo xác suất đó Transformers, the tech behind LLMs - 3Blue1Brown AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 18,
+            "title": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng",
+            "quote": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng nói và kiến thức từ hàng nghìn tỷ token. ② SFT — \"được chỉ cách trả lời\": học theo ví dụ mẫu để ra dáng trợ lý. ③ RLHF/DPO — \"được uốn nắn\": học theo phản hồi con người, an toàn và dễ chịu hơn. ④ Luyện suy luận — \"giải đề tự chấm\" (từ 2025 luyện toán/code có đáp án kiểm chứng được → model biết làm nháp trước khi trả lời. Đọc vạn cuốn "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 23,
+            "title": "Từ LLM đến agent: bốn mức độ — mỗi bậc thêm một năng lực LEVEL 0 Bộ não suy luận LLM trần — không công cụ, không dữ liệu",
+            "quote": "Từ LLM đến agent: bốn mức độ — mỗi bậc thêm một năng lực LEVEL 0 Bộ não suy luận LLM trần — không công cụ, không dữ liệu mới LEVEL 1 Có kết nối + tools: search web, đọc database, gọi API — vượt khỏi bong bóng thời gian LEVEL 2 Biết lập kế hoạch + tự chia mục tiêu thành nhiều bước, dùng nhiều tool nối tiếp, tự kiểm tra kết quả từng bước LEVEL 3 Đội agent phối hợp + nhiều agent chuyên biệt chia việc như một đội ngũ (multi- agent) mức tự chủ & tác động thật t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 6,
+            "title": "1980: Hệ chuyên gia (expert system) Đặt lại vấn đề: \"Nếu AI chỉ giải thật tốt một loại bài toán chuyên môn hẹp thì sao?\"",
+            "quote": "1980: Hệ chuyên gia (expert system) Đặt lại vấn đề: \"Nếu AI chỉ giải thật tốt một loại bài toán chuyên môn hẹp thì sao?\" → Sự ra đời của expert systems AI đổi chiến lược: thôi theo đuổi trí tuệ tổng quát và tập trung giải thật tốt một miền hẹp bằng cách mã hóa tri thức chuyên gia thành luật AI IN ACTION - HACKATHON"
+          }
+        ],
+        "topic": "Viết hộ mình đáp án bài kiểm tra môn Xác suất thống kê tuần sau nhé"
+      },
+      "ms": 5921
+    },
+    {
+      "id": "C10",
+      "input": {
+        "id": "C10",
+        "page": 22,
+        "selection": null,
+        "question": "Không có nháp thì model trả lời bao nhiêu quả bóng, đúng hay sai?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Không có nháp thì model trả lời 27 quả bóng, và đó là sai.\n\nÝ chính của slide là khi không viết ra các bước suy luận, model có thể bật đáp án sai ngay; còn khi “nghĩ từng bước” thì ra đúng 11 quả.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 22,
+            "title": "Bài toán: \"Có 5 quả bóng tennis",
+            "quote": "Bài toán: \"Có 5 quả bóng tennis. Mua thêm 2 hộp, mỗi hộp 3 quả. Hỏi tổng cộng có bao nhiêu quả?\" Không có nháp — trả lời ngay Model đọc câu hỏi → bật ra đáp án ngay: \"Đáp án là 27 quả.\" ✗ SAI Có giấy nháp — \"hãy nghĩ từng bước\" \"Bắt đầu có 5 quả. Mỗi hộp 3 quả × 2 hộp = 6 quả. 5 + 6 = 11. Đáp án là 11 quả.\" ✓ ĐÚNG Chain-of-Thought: chỉ thêm \"giấy nháp\", từ sai thành đúng Cùng một model, cùng một câu hỏi — cho nó được viết nháp từng bước, bản chất suy luận "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          }
+        ],
+        "topic": "Không có nháp thì model trả lời bao nhiêu quả bóng, đúng hay sai?"
+      },
+      "ms": 1961
+    },
+    {
+      "id": "C11",
+      "input": {
+        "id": "C11",
+        "page": 29,
+        "selection": null,
+        "question": "Tăng temperature lên có làm model thông minh hơn không?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Không. Temperature không làm model thông minh hơn, không thêm tri thức mới; nó chỉ đổi cách model chọn từ khi sinh câu trả lời.\n\nTheo slide, temperature giống “núm vặn độ liều”: để thấp thì câu trả lời ổn định, lặp lại, hợp các việc cần chắc chắn như code và phân tích; tăng cao thì phân bố xác suất phẳng hơn, câu trả lời đa dạng hơn nhưng dễ “phiêu” và lạc đề. Vì model vốn chỉ là cỗ máy đoán token và có thể tự tin mà sai, mặc định an toàn là để temperature = 0, chỉ tăng khi thật sự cần đa dạng.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 29,
+            "title": "Hai núm vặn chọn từ: temperature & top_p temperature — “núm vặn độ liềuˮ Cùng một câu: “Một tách ___ˮ — bảng xác suất đổ",
+            "quote": "Hai núm vặn chọn từ: temperature & top_p temperature — “núm vặn độ liềuˮ Cùng một câu: “Một tách ___ˮ — bảng xác suất đổi theo T T  0 cà phê trà mưa sao luôn chọn từ chắc nhất → ổn định, lặp lại, hợp code & phân tích T  1 cà phê trà mưa sao cân bằng tự nhiên — vẫn ưu tiên từ hợp lý T  2 cà phê trà mưa sao phân bố phẳng ra → đa dạng, “phiêuˮ, dễ lạc đề top_p — “chỉ xem top đầu bảngˮ (p = 0.9 ① Bảng xác suất gốc cà phê trà mưa sao giữ nhóm cộng dồn ≥ 90%"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 26,
+            "title": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → ph",
+            "quote": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → phí tiền ✗ việc khó mà cố dùng rẻ → kết quả tệ Việc đơn giản, khối lượng lớn phân loại · trích xuất · tóm tắt ngắn Việc hàng ngày viết · code · phân tích công việc · automation Việc khó nhất suy luận nhiều bước · code phức tạp · tài liệu dài · độ tin cậy cao Việc cần kiểm soát dữ liệu nhạy cảm · chi phí ở quy mô lớn TẦNG 1 — FRONTIER ĐÓNG F"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 3,
+            "title": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông mi",
+            "quote": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông minhˮ. Machine learning — học từ dữ liệu thay vì viết luật tay. Deep learning — mạng nơ-ron nhiều tầng tự học đặc trưng. Generative AI — sinh nội dung mới: văn bản, ảnh, code. LLM — model nền chuyên ngôn ngữ, tim của làn sóng hiện nay. ARTIFICIAL INTELLIGENCE MACHINE LEARNING DEEP LEARNING GENERATIVE AI LLM GPT · Claude · Kimi kể cả hệ luật"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 2,
+            "title": "AI IN ACTION  Day 1 Agenda • Bức tranh AI & các tầng của AI • Lịch sử AI 70 năm • Bên trong LLM: cơ chế vận hành • Từ L",
+            "quote": "AI IN ACTION  Day 1 Agenda • Bức tranh AI & các tầng của AI • Lịch sử AI 70 năm • Bên trong LLM: cơ chế vận hành • Từ LLM đến AI Agent • Landscape: model hôm nay & cuộc đua hiện tại • Chọn model & chi phí token • Gọi API lần đầu • Tổng kết — những ý để mang về AI & LLM Foundation Từ \"nghe AI\" đến \"gọi AI\" trong một ngày AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 20,
+            "title": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc",
+            "quote": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc. Chuyện sau đó nó không biết — trừ khi bạn cung cấp thêm (knowledge cutoff). Nói chắc như đúng rồi Model tối ưu cho câu nghe hợp lý, không phải tra sự thật — nên có thể tự tin mà sai (hallucination). Bàn làm việc có hạn Context có trần; quá dài vừa tốn tiền vừa dễ bỏ sót thông tin ở giữa. \"Why does it work? We don't know — a lot here are intuitions, not theorems or truths.\" — Łukasz Kaiser, đồng t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          }
+        ],
+        "topic": "Tăng temperature lên có làm model thông minh hơn không?"
+      },
+      "ms": 2781
+    },
+    {
+      "id": "C12",
+      "input": {
+        "id": "C12",
+        "page": 17,
+        "selection": null,
+        "question": "GPT-3 có 175 tỷ tham số, mỗi token có phải đi qua hết tất cả tham số đó không?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Theo slide, với GPT-3 dạng dense, về nguyên tắc mỗi token đều đi qua toàn bộ các khớp nối của mô hình, nên có thể hiểu là mỗi token đều “đụng” tới toàn bộ hệ tham số 175 tỷ.\n\nĐiểm này khác với MoE như Kimi K3: mô hình có rất nhiều tham số tổng cộng, nhưng mỗi token chỉ gọi một vài “chuyên gia”, nên không phải đi qua toàn bộ tham số. Vì vậy nhiều tham số hơn chưa chắc chi phí mỗi token tăng tuyến tính.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 17,
+            "title": "2020  GPT3 175 tỷ một \"bác sĩ đa năng\" — mọi token đều đi qua toàn bộ khớp nối (dense) 2026  Kimi K3 2",
+            "quote": "2020  GPT3 175 tỷ một \"bác sĩ đa năng\" — mọi token đều đi qua toàn bộ khớp nối (dense) 2026  Kimi K3 2.800 tỷ một \"bệnh viện đa khoa\" — mỗi token chỉ gọi vài chuyên gia MoE compute / dữ liệu (thang log) → test loss ↓ Luật chơi 20202024: cứ thêm compute + dữ liệu là model khôn lên một cách dự đoán được (scaling law, Kaplan et al. 2020 Tham số (parameter): những \"khớp nối\" model học được Sau khi luyện xong, những gì model \"biết\" nằm trong các con số c"
+          }
+        ],
+        "topic": "GPT-3 có 175 tỷ tham số, mỗi token có phải đi qua hết tất cả tham số đó không?"
+      },
+      "ms": 2776
+    },
+    {
+      "id": "N01",
+      "input": {
+        "id": "N01",
+        "page": 4,
+        "selection": null,
+        "question": "3 nhóm AI chính khác nhau ở đâu?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Ba nhóm AI chính khác nhau ở đầu ra và cách làm việc. Discriminative AI giỏi phân loại, dự đoán: từ input đưa ra một nhãn hoặc một con số, như lọc spam, phát hiện gian lận, nhận diện ảnh. Generative AI thì sinh ra nội dung mới từ prompt, như văn bản, ảnh, code; ví dụ ChatGPT, Claude, Midjourney. Agentic AI nhận một mục tiêu rồi tự làm nhiều bước theo chuỗi Goal → Plan → Action.\n\nĐiểm liên hệ là LLM có thể là engine chung cho cả Generative lẫn Agentic. Nếu nhìn theo “giải phẫu prompt”, Generative thường tạo đầu ra theo hướng dẫn, ngữ cảnh và định dạng mong muốn; còn Agentic không chỉ trả lời mà còn dùng mục tiêu để lập kế hoạch và hành động qua nhiều bước.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 4,
+            "title": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh",
+            "quote": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh. Input → một nhãn, một con số Generative AI Sinh ra thứ mới: văn bản, ảnh, code. ChatGPT, Claude, Midjourney. Prompt → nội dung mới Agentic AI Nhận mục tiêu rồi tự làm nhiều bước: lập kế hoạch, dùng công cụ, hành động. Goal → Plan → Action Ba nhóm AI chính: phân loại · sinh nội dung · hành động LLM là engine chung của cả Generative lẫn Agentic — cuối buổi sáng mình sẽ th"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          }
+        ],
+        "topic": "3 nhóm AI chính khác nhau ở đâu?"
+      },
+      "ms": 2897
+    },
+    {
+      "id": "N02",
+      "input": {
+        "id": "N02",
+        "page": 10,
+        "selection": null,
+        "question": "LLM có phải là chatbot không?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Không. Theo slide, LLM là mô hình ngôn ngữ rất lớn, đóng vai trò như “bộ não nền” dùng chung cho nhiều việc như chat, tóm tắt, viết code, dịch và phân tích; còn chatbot chỉ là một sản phẩm giao diện bọc quanh bộ não đó.\n\nLLM nằm trong tầng hẹp hơn của Generative AI và là nền của nhiều trải nghiệm AI hiện nay. Về kỹ thuật, làn sóng LLM hiện đại dựa trên Transformer, và sau khi pre-training còn được căn chỉnh như RLHF/DPO để trở nên “biết nghe lời” hơn khi làm trợ lý. Vì vậy, chatbot chỉ là một cách ứng dụng LLM, không phải bản thân LLM.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 10,
+            "title": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải ",
+            "quote": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải một chatbot LLM Large Language Model) là một mô hình ngôn ngữ rất lớn, thường dựa trên kiến trúc Transformer, được luyện trên hàng nghìn tỷ mảnh chữ để học cách đoán mảnh chữ tiếp theo trong ngữ cảnh. Nhờ được luyện đủ rộng, nó trở thành một nền chung: thay vì mỗi việc train một model riêng, cùng một model làm được rất nhiều việc. Ch"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 8,
+            "title": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn ",
+            "quote": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn sang những từ quan trọng khác trong cả câu, thay vì chỉ đi tuần tự từng bước → trở thành nền móng kỹ thuật cho GPT, BERT và toàn bộ làn sóng LLM sau đó. AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 3,
+            "title": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông mi",
+            "quote": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông minhˮ. Machine learning — học từ dữ liệu thay vì viết luật tay. Deep learning — mạng nơ-ron nhiều tầng tự học đặc trưng. Generative AI — sinh nội dung mới: văn bản, ảnh, code. LLM — model nền chuyên ngôn ngữ, tim của làn sóng hiện nay. ARTIFICIAL INTELLIGENCE MACHINE LEARNING DEEP LEARNING GENERATIVE AI LLM GPT · Claude · Kimi kể cả hệ luật"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 21,
+            "title": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 ",
+            "quote": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 Câu chủ quan vs khách quan Model thực chất đã học: “có phải câu trích từ film review khôngˮ Ăn gian bằng nguồn gốc câu, không phải nội dung câu 3 Suy luận ngôn ngữ MNLI Model thực chất đã học: “câu có động từ phủ địnhˮ Đổi cấu trúc dữ liệu test là điểm tụt ngay Ba “đường tắtˮ (spurious cues) trên do chính LLM tự động phát hiện và mô tả "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          }
+        ],
+        "topic": "LLM có phải là chatbot không?"
+      },
+      "ms": 4239
+    },
+    {
+      "id": "N03",
+      "input": {
+        "id": "N03",
+        "page": 13,
+        "selection": null,
+        "question": "Vì sao tiếng Việt tốn nhiều token hơn tiếng Anh?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Vì model không đọc “từ” nguyên vẹn mà cắt văn bản thành các mảnh nhỏ gọi là token. Tiếng Việt thường bị cắt thành nhiều mảnh hơn tiếng Anh do có dấu thanh và đặc điểm ký tự, nên một cụm tiếng Việt có thể tốn nhiều token hơn cụm tiếng Anh tương đương.\n\nNgoài ra, token không chỉ là chữ mà còn gồm cả dấu câu, khoảng trắng và cấu trúc như code hoặc JSON. Vì mọi xử lý và chi phí đều tính theo token, nên tiếng Việt thường “đắt” hơn tiếng Anh khi nhập hoặc xuất nội dung.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 13,
+            "title": "Token: model không đọc \"từ\", model đọc mảnh chữ Model không nhìn từ nguyên vẹn",
+            "quote": "Token: model không đọc \"từ\", model đọc mảnh chữ Model không nhìn từ nguyên vẹn. Nó cắt văn bản thành các mảnh nhỏ gọi là token: có từ là một mảnh, có từ vỡ ba bốn mảnh, cả dấu câu và khoảng trắng cũng là mảnh. Ví dụ: \"Hello world\" ≈ 2 token, nhưng \"Xin chào\" có thể tới 34 token. Tiếng Việt, code, JSON tốn token hơn tiếng Anh thường — vì dấu thanh, ký tự đặc biệt và cấu trúc bị cắt nhỏ ra. Mọi thứ model làm đều quy ra token — và mỗi token đều có giá. Nhớ đ"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 18,
+            "title": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng",
+            "quote": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng nói và kiến thức từ hàng nghìn tỷ token. ② SFT — \"được chỉ cách trả lời\": học theo ví dụ mẫu để ra dáng trợ lý. ③ RLHF/DPO — \"được uốn nắn\": học theo phản hồi con người, an toàn và dễ chịu hơn. ④ Luyện suy luận — \"giải đề tự chấm\" (từ 2025 luyện toán/code có đáp án kiểm chứng được → model biết làm nháp trước khi trả lời. Đọc vạn cuốn "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 27,
+            "title": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context ·",
+            "quote": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context · lịch sử chat rẻ — model chỉ cần đọc VÉ RA — OUTPUT 35 chữ MODEL viết ra — nó phải tự sinh từng mảnh một, vừa chậm vừa tốn đắt — model phải “vắt ócˮ HÓA ĐƠN — 1 LẦN GỌI API input 1.150 tok × $3 / 1M $0.00345 output 200 tok × $15 / 1M $0.00300 TỔNG ≈ $0.0065 số liệu ví dụ — giá thật tùy model & nhà cung cấp Đọc mục usage trong mỗi respon"
+          }
+        ],
+        "topic": "Vì sao tiếng Việt tốn nhiều token hơn tiếng Anh?"
+      },
+      "ms": 2811
+    },
+    {
+      "id": "N04",
+      "input": {
+        "id": "N04",
+        "page": 14,
+        "selection": null,
+        "question": "Context window là gì, quy đổi ra sao?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Context window là lượng chữ tối đa model “nhìn thấy” trong một lần trả lời, tức toàn bộ prompt, hướng dẫn, context và lịch sử chat đang nằm trên “bàn làm việc” của nó. Muốn model dùng được thông tin nào thì thông tin đó phải nằm trong context.\n\nQuy đổi gần đúng: 128K token tương đương khoảng một cuốn sách 300 trang; 1M token tương đương khoảng 4–5 cuốn sách cùng lúc. Nhưng context dài không đồng nghĩa hiệu quả hơn: quá dài có thể làm model dễ bỏ sót thông tin ở giữa, đồng thời chậm hơn và tốn chi phí hơn.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 27,
+            "title": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context ·",
+            "quote": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context · lịch sử chat rẻ — model chỉ cần đọc VÉ RA — OUTPUT 35 chữ MODEL viết ra — nó phải tự sinh từng mảnh một, vừa chậm vừa tốn đắt — model phải “vắt ócˮ HÓA ĐƠN — 1 LẦN GỌI API input 1.150 tok × $3 / 1M $0.00345 output 200 tok × $15 / 1M $0.00300 TỔNG ≈ $0.0065 số liệu ví dụ — giá thật tùy model & nhà cung cấp Đọc mục usage trong mỗi respon"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 26,
+            "title": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → ph",
+            "quote": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → phí tiền ✗ việc khó mà cố dùng rẻ → kết quả tệ Việc đơn giản, khối lượng lớn phân loại · trích xuất · tóm tắt ngắn Việc hàng ngày viết · code · phân tích công việc · automation Việc khó nhất suy luận nhiều bước · code phức tạp · tài liệu dài · độ tin cậy cao Việc cần kiểm soát dữ liệu nhạy cảm · chi phí ở quy mô lớn TẦNG 1 — FRONTIER ĐÓNG F"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 11,
+            "title": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “lan",
+            "quote": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “landˮ 22%, “forestˮ 9%… — rồi chọn theo xác suất đó Transformers, the tech behind LLMs - 3Blue1Brown AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 18,
+            "title": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng",
+            "quote": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng nói và kiến thức từ hàng nghìn tỷ token. ② SFT — \"được chỉ cách trả lời\": học theo ví dụ mẫu để ra dáng trợ lý. ③ RLHF/DPO — \"được uốn nắn\": học theo phản hồi con người, an toàn và dễ chịu hơn. ④ Luyện suy luận — \"giải đề tự chấm\" (từ 2025 luyện toán/code có đáp án kiểm chứng được → model biết làm nháp trước khi trả lời. Đọc vạn cuốn "
+          }
+        ],
+        "topic": "Context window là gì, quy đổi ra sao?"
+      },
+      "ms": 2419
+    },
+    {
+      "id": "N05",
+      "input": {
+        "id": "N05",
+        "page": 1,
+        "selection": null,
+        "question": "RLHF là gì?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "RLHF là cách huấn luyện để biến một mô hình chỉ “đoán token” thành trợ lý biết làm theo hướng dẫn của con người. Mục tiêu là giúp mô hình trả lời theo hướng helpful, harmless, honest.\n\nTheo slide, quy trình có 3 bước: mô hình tạo nhiều câu trả lời cho cùng một câu hỏi; người chấm xếp hạng các câu trả lời đó; sau đó huấn luyện lại mô hình dựa trên điểm thưởng do reward model mô phỏng từ đánh giá của người. Lặp lại nhiều lần sẽ làm tăng xác suất các câu trả lời được chấm cao, nên model dần “biết nghe lời”.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          }
+        ],
+        "topic": "RLHF là gì?"
+      },
+      "ms": 4401
+    },
+    {
+      "id": "N06",
+      "input": {
+        "id": "N06",
+        "page": 20,
+        "selection": null,
+        "question": "Vì sao model có thể tự tin trả lời sai (hallucination)?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Model có thể “tự tin mà sai” vì bản chất của nó là tối ưu để tạo ra chuỗi từ nghe hợp lý, chứ không phải tự đi tra sự thật. Nó được huấn luyện từ việc “đọc nhiều”, rồi được dạy cách trả lời và nghe lời hơn qua SFT, RLHF/DPO, nên giỏi nói trôi chảy, hữu ích và thuyết phục; nhưng điều đó không đảm bảo mọi phát biểu đều đúng.\n\nNgoài ra, model còn bị giới hạn bởi “bong bóng thời gian” và context hữu hạn: nó không biết chuyện sau ngày ngừng đọc nếu không được cung cấp thêm, và khi context quá dài còn dễ bỏ sót thông tin ở giữa. Vì vậy cần prompt tốt, context sạch, tra sổ/RAG, tools và luôn kiểm chứng.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 20,
+            "title": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc",
+            "quote": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc. Chuyện sau đó nó không biết — trừ khi bạn cung cấp thêm (knowledge cutoff). Nói chắc như đúng rồi Model tối ưu cho câu nghe hợp lý, không phải tra sự thật — nên có thể tự tin mà sai (hallucination). Bàn làm việc có hạn Context có trần; quá dài vừa tốn tiền vừa dễ bỏ sót thông tin ở giữa. \"Why does it work? We don't know — a lot here are intuitions, not theorems or truths.\" — Łukasz Kaiser, đồng t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 5,
+            "title": "Lịch sử AI 70 năm Khai sinh, lời hứa đầu tiên 2 lần mùa đông, cách tiếp cận chạm trần Từ model đơn lẻ sang system có khả",
+            "quote": "Lịch sử AI 70 năm Khai sinh, lời hứa đầu tiên 2 lần mùa đông, cách tiếp cận chạm trần Từ model đơn lẻ sang system có khả năng hành động như agent AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 26,
+            "title": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → ph",
+            "quote": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → phí tiền ✗ việc khó mà cố dùng rẻ → kết quả tệ Việc đơn giản, khối lượng lớn phân loại · trích xuất · tóm tắt ngắn Việc hàng ngày viết · code · phân tích công việc · automation Việc khó nhất suy luận nhiều bước · code phức tạp · tài liệu dài · độ tin cậy cao Việc cần kiểm soát dữ liệu nhạy cảm · chi phí ở quy mô lớn TẦNG 1 — FRONTIER ĐÓNG F"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 18,
+            "title": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng",
+            "quote": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng nói và kiến thức từ hàng nghìn tỷ token. ② SFT — \"được chỉ cách trả lời\": học theo ví dụ mẫu để ra dáng trợ lý. ③ RLHF/DPO — \"được uốn nắn\": học theo phản hồi con người, an toàn và dễ chịu hơn. ④ Luyện suy luận — \"giải đề tự chấm\" (từ 2025 luyện toán/code có đáp án kiểm chứng được → model biết làm nháp trước khi trả lời. Đọc vạn cuốn "
+          }
+        ],
+        "topic": "Vì sao model có thể tự tin trả lời sai (hallucination)?"
+      },
+      "ms": 3782
+    },
+    {
+      "id": "N07",
+      "input": {
+        "id": "N07",
+        "page": 21,
+        "selection": "[không hỗ trợ bởi v0]",
+        "question": "ví dụ này cho thấy model học nhầm gì?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Ví dụ này cho thấy model học nhầm “đường tắt” thay vì hiểu đúng bản chất bài toán. Nghĩa là nó bám vào tín hiệu phụ dễ ăn điểm như số lượng hyperlink để gán spam, câu có vẻ lấy từ review phim để đoán chủ quan/khách quan, hay sự hiện diện của phủ định trong MNLI, chứ không thật sự hiểu nội dung.\n\nVì vậy benchmark cao chưa chắc nghĩa là model hiểu đúng điều ta tưởng. Model rất giỏi học vẹt các mẫu dễ khai thác trong dữ liệu; chỉ cần đổi cấu trúc dữ liệu test là điểm có thể tụt ngay.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 18,
+            "title": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng",
+            "quote": "LLM được tạo ra như thế nào? — đọc nhiều, được chỉ, được uốn nắn, luyện đề ① Pre-training — \"đọc cả thư viện\": học tiếng nói và kiến thức từ hàng nghìn tỷ token. ② SFT — \"được chỉ cách trả lời\": học theo ví dụ mẫu để ra dáng trợ lý. ③ RLHF/DPO — \"được uốn nắn\": học theo phản hồi con người, an toàn và dễ chịu hơn. ④ Luyện suy luận — \"giải đề tự chấm\" (từ 2025 luyện toán/code có đáp án kiểm chứng được → model biết làm nháp trước khi trả lời. Đọc vạn cuốn "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 13,
+            "title": "Token: model không đọc \"từ\", model đọc mảnh chữ Model không nhìn từ nguyên vẹn",
+            "quote": "Token: model không đọc \"từ\", model đọc mảnh chữ Model không nhìn từ nguyên vẹn. Nó cắt văn bản thành các mảnh nhỏ gọi là token: có từ là một mảnh, có từ vỡ ba bốn mảnh, cả dấu câu và khoảng trắng cũng là mảnh. Ví dụ: \"Hello world\" ≈ 2 token, nhưng \"Xin chào\" có thể tới 34 token. Tiếng Việt, code, JSON tốn token hơn tiếng Anh thường — vì dấu thanh, ký tự đặc biệt và cấu trúc bị cắt nhỏ ra. Mọi thứ model làm đều quy ra token — và mỗi token đều có giá. Nhớ đ"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 21,
+            "title": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 ",
+            "quote": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 Câu chủ quan vs khách quan Model thực chất đã học: “có phải câu trích từ film review khôngˮ Ăn gian bằng nguồn gốc câu, không phải nội dung câu 3 Suy luận ngôn ngữ MNLI Model thực chất đã học: “câu có động từ phủ địnhˮ Đổi cấu trúc dữ liệu test là điểm tụt ngay Ba “đường tắtˮ (spurious cues) trên do chính LLM tự động phát hiện và mô tả "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 15,
+            "title": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi ",
+            "quote": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi token: Chủ động “quay đầuˮ nhìn lại các token trước đó trong câu Chấm điểm mức độ liên quan của từng token đối với nghĩa của mình Khóa nghĩa theo ngữ cảnh — “nóˮ là quyển sách hay cái túi, tùy theo nó chú ý vào từ nào Đây chính là chữ T trong GPT — và là lý do model hiểu ngữ cảnh tốt hơn hẳn các thế hệ trước Video minh họa: Attention in t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 10,
+            "title": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải ",
+            "quote": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải một chatbot LLM Large Language Model) là một mô hình ngôn ngữ rất lớn, thường dựa trên kiến trúc Transformer, được luyện trên hàng nghìn tỷ mảnh chữ để học cách đoán mảnh chữ tiếp theo trong ngữ cảnh. Nhờ được luyện đủ rộng, nó trở thành một nền chung: thay vì mỗi việc train một model riêng, cùng một model làm được rất nhiều việc. Ch"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 17,
+            "title": "2020  GPT3 175 tỷ một \"bác sĩ đa năng\" — mọi token đều đi qua toàn bộ khớp nối (dense) 2026  Kimi K3 2",
+            "quote": "2020  GPT3 175 tỷ một \"bác sĩ đa năng\" — mọi token đều đi qua toàn bộ khớp nối (dense) 2026  Kimi K3 2.800 tỷ một \"bệnh viện đa khoa\" — mỗi token chỉ gọi vài chuyên gia MoE compute / dữ liệu (thang log) → test loss ↓ Luật chơi 20202024: cứ thêm compute + dữ liệu là model khôn lên một cách dự đoán được (scaling law, Kaplan et al. 2020 Tham số (parameter): những \"khớp nối\" model học được Sau khi luyện xong, những gì model \"biết\" nằm trong các con số c"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 27,
+            "title": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context ·",
+            "quote": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context · lịch sử chat rẻ — model chỉ cần đọc VÉ RA — OUTPUT 35 chữ MODEL viết ra — nó phải tự sinh từng mảnh một, vừa chậm vừa tốn đắt — model phải “vắt ócˮ HÓA ĐƠN — 1 LẦN GỌI API input 1.150 tok × $3 / 1M $0.00345 output 200 tok × $15 / 1M $0.00300 TỔNG ≈ $0.0065 số liệu ví dụ — giá thật tùy model & nhà cung cấp Đọc mục usage trong mỗi respon"
+          }
+        ],
+        "topic": "ví dụ này cho thấy model học nhầm gì?"
+      },
+      "ms": 3178
+    },
+    {
+      "id": "N08",
+      "input": {
+        "id": "N08",
+        "page": 10,
+        "selection": null,
+        "question": "Tóm tắt đặc điểm chính của LLM, kể cả phần tham số"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "LLM là mô hình ngôn ngữ rất lớn, thường dựa trên Transformer, học từ lượng văn bản khổng lồ để dự đoán mảnh chữ tiếp theo theo ngữ cảnh. Nó là model nền dùng chung cho nhiều việc như chat, tóm tắt, viết code, dịch và phân tích; chatbot chỉ là lớp sản phẩm bọc bên ngoài. Nền tảng kỹ thuật là Transformer, nơi mỗi từ có thể “nhìn” các từ quan trọng khác trong câu thay vì chỉ đi tuần tự.\n\nBên trong, đầu ra của model luôn là một phân bố xác suất trên toàn bộ từ vựng, rồi chọn từ tiếp theo theo các xác suất đó. Model hiện nay chủ yếu là decoder-only, nhiều model dùng MoE; sau giai đoạn pre-training còn có căn chỉnh như SFT, RLHF/DPO và huấn luyện suy luận. Về “phần tham số”, có thể hiểu LLM là một “bộ não” chung rất lớn: càng nhiều tham số thì thường càng mạnh nhưng cũng tốn chi phí hơn, nên cần chọn đúng tầng model cho đúng bài toán.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 10,
+            "title": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải ",
+            "quote": "1 model nền LLM 💬 Chatbot 📝 Tóm tắt tài liệu 💻 Viết code 🌐 Dịch & phân tích ⟵ LLM là gì? — một bộ não nền, không phải một chatbot LLM Large Language Model) là một mô hình ngôn ngữ rất lớn, thường dựa trên kiến trúc Transformer, được luyện trên hàng nghìn tỷ mảnh chữ để học cách đoán mảnh chữ tiếp theo trong ngữ cảnh. Nhờ được luyện đủ rộng, nó trở thành một nền chung: thay vì mỗi việc train một model riêng, cùng một model làm được rất nhiều việc. Ch"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 21,
+            "title": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 ",
+            "quote": "1 Phân loại spam Model thực chất đã học: “đếm số hyperlink trong emailˮ Email sạch nhưng nhiều link → vẫn bị gán spam 2 Câu chủ quan vs khách quan Model thực chất đã học: “có phải câu trích từ film review khôngˮ Ăn gian bằng nguồn gốc câu, không phải nội dung câu 3 Suy luận ngôn ngữ MNLI Model thực chất đã học: “câu có động từ phủ địnhˮ Đổi cấu trúc dữ liệu test là điểm tụt ngay Ba “đường tắtˮ (spurious cues) trên do chính LLM tự động phát hiện và mô tả "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 3,
+            "title": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông mi",
+            "quote": "AI, ML, Deep Learning, GenAI, LLM — nằm ở đâu trong cùng một hệ? AI — chiếc ô lớn nhất: mọi hệ thống có yếu tố “thông minhˮ. Machine learning — học từ dữ liệu thay vì viết luật tay. Deep learning — mạng nơ-ron nhiều tầng tự học đặc trưng. Generative AI — sinh nội dung mới: văn bản, ảnh, code. LLM — model nền chuyên ngôn ngữ, tim của làn sóng hiện nay. ARTIFICIAL INTELLIGENCE MACHINE LEARNING DEEP LEARNING GENERATIVE AI LLM GPT · Claude · Kimi kể cả hệ luật"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 8,
+            "title": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn ",
+            "quote": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn sang những từ quan trọng khác trong cả câu, thay vì chỉ đi tuần tự từng bước → trở thành nền móng kỹ thuật cho GPT, BERT và toàn bộ làn sóng LLM sau đó. AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 11,
+            "title": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “lan",
+            "quote": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “landˮ 22%, “forestˮ 9%… — rồi chọn theo xác suất đó Transformers, the tech behind LLMs - 3Blue1Brown AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 26,
+            "title": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → ph",
+            "quote": "Chọn model theo TẦNG, không chọn theo tên VIỆC CỦA BẠN TẦNG MODEL Hai lỗi đối xứng: ✗ việc đơn giản mà gọi frontier → phí tiền ✗ việc khó mà cố dùng rẻ → kết quả tệ Việc đơn giản, khối lượng lớn phân loại · trích xuất · tóm tắt ngắn Việc hàng ngày viết · code · phân tích công việc · automation Việc khó nhất suy luận nhiều bước · code phức tạp · tài liệu dài · độ tin cậy cao Việc cần kiểm soát dữ liệu nhạy cảm · chi phí ở quy mô lớn TẦNG 1 — FRONTIER ĐÓNG F"
+          }
+        ],
+        "topic": "Tóm tắt đặc điểm chính của LLM, kể cả phần tham số"
+      },
+      "ms": 3272
+    },
+    {
+      "id": "N09",
+      "input": {
+        "id": "N09",
+        "page": 23,
+        "selection": null,
+        "question": "Vậy từ LLM lên Agent là thêm khả năng dùng tool và tự lập kế hoạch, đúng không?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Đúng. Theo slide, agent không phải là “một loại model khác” mà là LLM được đặt vào một vòng làm việc có mục tiêu và hành động. Từ LLM lên agent là mỗi bậc thêm năng lực: từ LLM trần chỉ suy luận, sang có thể kết nối và dùng tool như web, database, API, rồi tiếp tục biết lập kế hoạch, chia mục tiêu thành nhiều bước và tự kiểm tra kết quả.\n\nNếu đi cao hơn nữa thì còn có mức nhiều agent chuyên biệt phối hợp như một đội. Nói ngắn gọn: LLM là bộ não nền tảng, còn agent là khi bộ não đó được gắn thêm khả năng dùng công cụ, lập kế hoạch và hành động để giải quyết mục tiêu thực tế.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 4,
+            "title": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh",
+            "quote": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh. Input → một nhãn, một con số Generative AI Sinh ra thứ mới: văn bản, ảnh, code. ChatGPT, Claude, Midjourney. Prompt → nội dung mới Agentic AI Nhận mục tiêu rồi tự làm nhiều bước: lập kế hoạch, dùng công cụ, hành động. Goal → Plan → Action Ba nhóm AI chính: phân loại · sinh nội dung · hành động LLM là engine chung của cả Generative lẫn Agentic — cuối buổi sáng mình sẽ th"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 23,
+            "title": "Từ LLM đến agent: bốn mức độ — mỗi bậc thêm một năng lực LEVEL 0 Bộ não suy luận LLM trần — không công cụ, không dữ liệu",
+            "quote": "Từ LLM đến agent: bốn mức độ — mỗi bậc thêm một năng lực LEVEL 0 Bộ não suy luận LLM trần — không công cụ, không dữ liệu mới LEVEL 1 Có kết nối + tools: search web, đọc database, gọi API — vượt khỏi bong bóng thời gian LEVEL 2 Biết lập kế hoạch + tự chia mục tiêu thành nhiều bước, dùng nhiều tool nối tiếp, tự kiểm tra kết quả từng bước LEVEL 3 Đội agent phối hợp + nhiều agent chuyên biệt chia việc như một đội ngũ (multi- agent) mức tự chủ & tác động thật t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 5,
+            "title": "Lịch sử AI 70 năm Khai sinh, lời hứa đầu tiên 2 lần mùa đông, cách tiếp cận chạm trần Từ model đơn lẻ sang system có khả",
+            "quote": "Lịch sử AI 70 năm Khai sinh, lời hứa đầu tiên 2 lần mùa đông, cách tiếp cận chạm trần Từ model đơn lẻ sang system có khả năng hành động như agent AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 8,
+            "title": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn ",
+            "quote": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn sang những từ quan trọng khác trong cả câu, thay vì chỉ đi tuần tự từng bước → trở thành nền móng kỹ thuật cho GPT, BERT và toàn bộ làn sóng LLM sau đó. AI IN ACTION - HACKATHON"
+          }
+        ],
+        "topic": "Vậy từ LLM lên Agent là thêm khả năng dùng tool và tự lập kế hoạch, đúng không?"
+      },
+      "ms": 4963
+    },
+    {
+      "id": "N10",
+      "input": {
+        "id": "N10",
+        "page": 1,
+        "selection": null,
+        "question": "Bạn chỉ đọc được slide thôi đúng không, có biết gì khác ngoài slide không?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Không chỉ “đọc slide”, mình còn là model ngôn ngữ có sẵn năng lực suy luận từ dữ liệu đã học trước đó. Nhưng theo nội dung bài, bản thân model vẫn có giới hạn bẩm sinh: kiến thức bị “đóng băng” tại thời điểm ngừng đọc, không tự biết chuyện mới nếu không được cấp thêm dữ liệu hay công cụ.\n\nVì vậy, “biết nhiều” khác “làm được”. Nếu chỉ là LLM trần thì vẫn bị giới hạn bởi token, context và có thể trả lời nghe hợp lý nhưng sai. Muốn vượt ra ngoài slide hay kiến thức cũ thì cần thêm context sạch, retrieval, tools hoặc workflow kiểu agent để tra cứu, hành động và kiểm chứng.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 20,
+            "title": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc",
+            "quote": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc. Chuyện sau đó nó không biết — trừ khi bạn cung cấp thêm (knowledge cutoff). Nói chắc như đúng rồi Model tối ưu cho câu nghe hợp lý, không phải tra sự thật — nên có thể tự tin mà sai (hallucination). Bàn làm việc có hạn Context có trần; quá dài vừa tốn tiền vừa dễ bỏ sót thông tin ở giữa. \"Why does it work? We don't know — a lot here are intuitions, not theorems or truths.\" — Łukasz Kaiser, đồng t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 1,
+            "title": "AI IN ACTION  Day 1 AI & LLM Foundation Bạn đang dùng AI mỗi ngày — nhưng thực sự bên trong nó đang làm gì? AI IN ACTIO",
+            "quote": "AI IN ACTION  Day 1 AI & LLM Foundation Bạn đang dùng AI mỗi ngày — nhưng thực sự bên trong nó đang làm gì? AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 15,
+            "title": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi ",
+            "quote": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi token: Chủ động “quay đầuˮ nhìn lại các token trước đó trong câu Chấm điểm mức độ liên quan của từng token đối với nghĩa của mình Khóa nghĩa theo ngữ cảnh — “nóˮ là quyển sách hay cái túi, tùy theo nó chú ý vào từ nào Đây chính là chữ T trong GPT — và là lý do model hiểu ngữ cảnh tốt hơn hẳn các thế hệ trước Video minh họa: Attention in t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 25,
+            "title": "Cùng một mức năng lực, giá rơi khoảng 10 lần mỗi năm Việc năm ngoái phải dùng model đắt nhất — năm nay model rẻ đã làm đ",
+            "quote": "Cùng một mức năng lực, giá rơi khoảng 10 lần mỗi năm Việc năm ngoái phải dùng model đắt nhất — năm nay model rẻ đã làm được Tổng hợp từ bảng giá các nhà cung cấp, 20232026. AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 13,
+            "title": "Token: model không đọc \"từ\", model đọc mảnh chữ Model không nhìn từ nguyên vẹn",
+            "quote": "Token: model không đọc \"từ\", model đọc mảnh chữ Model không nhìn từ nguyên vẹn. Nó cắt văn bản thành các mảnh nhỏ gọi là token: có từ là một mảnh, có từ vỡ ba bốn mảnh, cả dấu câu và khoảng trắng cũng là mảnh. Ví dụ: \"Hello world\" ≈ 2 token, nhưng \"Xin chào\" có thể tới 34 token. Tiếng Việt, code, JSON tốn token hơn tiếng Anh thường — vì dấu thanh, ký tự đặc biệt và cấu trúc bị cắt nhỏ ra. Mọi thứ model làm đều quy ra token — và mỗi token đều có giá. Nhớ đ"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 23,
+            "title": "Từ LLM đến agent: bốn mức độ — mỗi bậc thêm một năng lực LEVEL 0 Bộ não suy luận LLM trần — không công cụ, không dữ liệu",
+            "quote": "Từ LLM đến agent: bốn mức độ — mỗi bậc thêm một năng lực LEVEL 0 Bộ não suy luận LLM trần — không công cụ, không dữ liệu mới LEVEL 1 Có kết nối + tools: search web, đọc database, gọi API — vượt khỏi bong bóng thời gian LEVEL 2 Biết lập kế hoạch + tự chia mục tiêu thành nhiều bước, dùng nhiều tool nối tiếp, tự kiểm tra kết quả từng bước LEVEL 3 Đội agent phối hợp + nhiều agent chuyên biệt chia việc như một đội ngũ (multi- agent) mức tự chủ & tác động thật t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          }
+        ],
+        "topic": "Bạn chỉ đọc được slide thôi đúng không, có biết gì khác ngoài slide không?"
+      },
+      "ms": 3156
+    },
+    {
+      "id": "R01",
+      "input": {
+        "id": "R01",
+        "page": 15,
+        "selection": null,
+        "question": "What does this slide say about attention?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Slide nói attention cho phép mỗi token không cần chỉ đọc tuần tự mà có thể “nhìn sang” các token quan trọng khác trong câu, kể cả quay lại các token trước đó. Mỗi token sẽ chấm điểm mức độ liên quan của những token khác để hiểu nghĩa của chính mình theo ngữ cảnh, ví dụ xác định “nó” đang chỉ quyển sách hay cái túi tùy vào từ mà nó chú ý tới.\n\nTổng hợp với các slide liên quan, đây là điểm làm Transformer trở thành bước ngoặt: mô hình hiểu ngôn ngữ linh hoạt hơn nhờ liên kết các từ quan trọng trong toàn câu. Bên trong, đầu ra vẫn là một phân bố xác suất trên mọi từ có thể, nhưng attention giúp việc dự đoán đó bám ngữ cảnh tốt hơn nhiều.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 8,
+            "title": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn ",
+            "quote": "2017: Transformer Transformer là bước ngoặt vì nó cho mô hình hiểu ngôn ngữ theo cách linh hoạt hơn: mỗi từ có thể nhìn sang những từ quan trọng khác trong cả câu, thay vì chỉ đi tuần tự từng bước → trở thành nền móng kỹ thuật cho GPT, BERT và toàn bộ làn sóng LLM sau đó. AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 11,
+            "title": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “lan",
+            "quote": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “landˮ 22%, “forestˮ 9%… — rồi chọn theo xác suất đó Transformers, the tech behind LLMs - 3Blue1Brown AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 15,
+            "title": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi ",
+            "quote": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi token: Chủ động “quay đầuˮ nhìn lại các token trước đó trong câu Chấm điểm mức độ liên quan của từng token đối với nghĩa của mình Khóa nghĩa theo ngữ cảnh — “nóˮ là quyển sách hay cái túi, tùy theo nó chú ý vào từ nào Đây chính là chữ T trong GPT — và là lý do model hiểu ngữ cảnh tốt hơn hẳn các thế hệ trước Video minh họa: Attention in t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 20,
+            "title": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc",
+            "quote": "Bong bóng thời gian Model bị \"đóng băng\" tại ngày ngừng đọc. Chuyện sau đó nó không biết — trừ khi bạn cung cấp thêm (knowledge cutoff). Nói chắc như đúng rồi Model tối ưu cho câu nghe hợp lý, không phải tra sự thật — nên có thể tự tin mà sai (hallucination). Bàn làm việc có hạn Context có trần; quá dài vừa tốn tiền vừa dễ bỏ sót thông tin ở giữa. \"Why does it work? We don't know — a lot here are intuitions, not theorems or truths.\" — Łukasz Kaiser, đồng t"
+          }
+        ],
+        "topic": "What does this slide say about attention?"
+      },
+      "ms": 5156
+    },
+    {
+      "id": "R02",
+      "input": {
+        "id": "R02",
+        "page": 21,
+        "selection": "[không hỗ trợ bởi v0]",
+        "question": "giải thích hết đoạn này cho mình"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Ý chính của cụm slide này là: LLM gốc chỉ là cỗ máy đoán token tiếp theo theo vòng lặp đoán → nối vào câu → chạy lại. Để biến nó thành trợ lý “biết nghe lời”, người ta dùng RLHF: cho model viết nhiều phương án, con người xếp hạng, rồi huấn luyện để tăng xác suất các câu trả lời được chấm điểm cao. Vì vậy trợ lý dần hữu ích, an toàn và trung thực hơn.\n\nKhi dùng thực tế, chất lượng phụ thuộc rất mạnh vào prompt và context. Một prompt tốt thường có 4 lớp: system instruction, user input, context bổ sung và dạng output mong muốn. Quan trọng nhất là đặt yêu cầu chính ở đầu hoặc cuối, giữ context sạch, và chỉ đưa đúng phần tài liệu liên quan. Nếu đi xa hơn thành agent, hệ thống sẽ có thêm goal, reasoning, tools, memory và action để tự lặp nhiều bước đến khi xong việc.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 4,
+            "title": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh",
+            "quote": "Discriminative AI Giỏi phân loại, dự đoán: lọc spam, phát hiện gian lận, nhận diện ảnh. Input → một nhãn, một con số Generative AI Sinh ra thứ mới: văn bản, ảnh, code. ChatGPT, Claude, Midjourney. Prompt → nội dung mới Agentic AI Nhận mục tiêu rồi tự làm nhiều bước: lập kế hoạch, dùng công cụ, hành động. Goal → Plan → Action Ba nhóm AI chính: phân loại · sinh nội dung · hành động LLM là engine chung của cả Generative lẫn Agentic — cuối buổi sáng mình sẽ th"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 6,
+            "title": "1980: Hệ chuyên gia (expert system) Đặt lại vấn đề: \"Nếu AI chỉ giải thật tốt một loại bài toán chuyên môn hẹp thì sao?\"",
+            "quote": "1980: Hệ chuyên gia (expert system) Đặt lại vấn đề: \"Nếu AI chỉ giải thật tốt một loại bài toán chuyên môn hẹp thì sao?\" → Sự ra đời của expert systems AI đổi chiến lược: thôi theo đuổi trí tuệ tổng quát và tập trung giải thật tốt một miền hẹp bằng cách mã hóa tri thức chuyên gia thành luật AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 12,
+            "title": "Sinh văn bản = đoán → nối vào câu → đoán tiếp Mỗi token mới được nối vào ngữ cảnh, rồi model chạy lại từ đầu — vòng lặp ",
+            "quote": "Sinh văn bản = đoán → nối vào câu → đoán tiếp Mỗi token mới được nối vào ngữ cảnh, rồi model chạy lại từ đầu — vòng lặp predict → append → rerun Transformers, the tech behind LLMs - 3Blue1Brown AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 19,
+            "title": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM T",
+            "quote": "RLHF: ba bước uốn cỗ máy đoán token thành trợ lý biết nghe lời ① Model viết nhiều câu trả lời «Cùng một câu hỏi» ↓ LLM Trả lời A Trả lời B Trả lời C Trả lời D ② Người chấm xếp hạng Trả lời B 1 Trả lời D 2 Trả lời A 3 Trả lời C 4 ↓ REWARD MODEL máy chấm điểm thay người ③ Huấn luyện theo điểm LLM ↓ câu trả lời vừa viết ↓ điểm: 9.2 / 10tăng xác suất câu ghi điểm cao lặp lại hàng nghìn lần → model dần “biết nghe lờiˮ Cỗ máy đoán token + điểm xếp hạng của con n"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 24,
+            "title": "Giải phẫu một agent: 5 bộ phận là một vòng lặp vòng lặp agent ① Goal mục tiêu cần đạt ② Reasoning bộ não LLM chia bước ③",
+            "quote": "Giải phẫu một agent: 5 bộ phận là một vòng lặp vòng lặp agent ① Goal mục tiêu cần đạt ② Reasoning bộ não LLM chia bước ③ Tools search · API · database · code ④ Action hành động ra đời thật Memory sổ tay ghi nhớ các bước Agent = Goal + Reasoning + Tools + Memory + Action — chạy thành vòng lặp cho tới khi xong việc quan sát kết quả → lặp lại ghi / đọc AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 16,
+            "title": "1 Đặt điều quan trọng đầu – cuối Đầu và cuối prompt được chú ý nhiều nhất; đồ ở giữa dễ bị bỏ sót — yêu cầu quan trọng đ",
+            "quote": "1 Đặt điều quan trọng đầu – cuối Đầu và cuối prompt được chú ý nhiều nhất; đồ ở giữa dễ bị bỏ sót — yêu cầu quan trọng đừng chôn giữa. 2 Giữ bàn làm việc sạch Context rác = attention rác. Khi chat dài, tóm tắt lại thay vì kéo theo mọi thứ; khi vibe code, đưa đúng file liên quan, không dán cả repo. 3 Cho tra sổ thay vì bắt nhớ Tài liệu dài: lấy đoạn liên quan nhét vào context RAG) thay vì trông chờ model nhớ hết hoặc nhét cả cuốn. Hiểu attention để dùng AI"
+          }
+        ],
+        "topic": "giải thích hết đoạn này cho mình"
+      },
+      "ms": 6140
+    },
+    {
+      "id": "R03",
+      "input": {
+        "id": "R03",
+        "page": 27,
+        "selection": null,
+        "question": "Token, context và attention ở đầu bài thì liên quan gì đến chi phí gọi API ở phần cuối này?"
+      },
+      "status": 200,
+      "response": {
+        "route": "slide",
+        "answer": "Chúng nối với nhau theo một mạch: attention là cách model phân bổ sự chú ý giữa các token để hiểu ngữ cảnh; context là toàn bộ token được bày lên “bàn làm việc” cho attention nhìn vào. Vì context có hạn và phần giữa dễ bị bỏ sót, nếu nhét quá nhiều thứ không liên quan thì vừa làm model chú ý kém hiệu quả, vừa tăng số input token.\n\nChi phí API lại được tính trực tiếp theo input token và output token. Context dài hơn thì tốn tiền và chậm hơn; output còn đắt hơn input khoảng 3–5 lần, nên “núm vặn” chi phí lớn nhất là kiểm soát đầu ra. Vì vậy, hiểu attention và quản context tốt sẽ giúp chỉ đưa đúng thông tin cần thiết, đặt ý quan trọng đúng chỗ, giảm token thừa và giảm hóa đơn.",
+        "citations": [
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 16,
+            "title": "1 Đặt điều quan trọng đầu – cuối Đầu và cuối prompt được chú ý nhiều nhất; đồ ở giữa dễ bị bỏ sót — yêu cầu quan trọng đ",
+            "quote": "1 Đặt điều quan trọng đầu – cuối Đầu và cuối prompt được chú ý nhiều nhất; đồ ở giữa dễ bị bỏ sót — yêu cầu quan trọng đừng chôn giữa. 2 Giữ bàn làm việc sạch Context rác = attention rác. Khi chat dài, tóm tắt lại thay vì kéo theo mọi thứ; khi vibe code, đưa đúng file liên quan, không dán cả repo. 3 Cho tra sổ thay vì bắt nhớ Tài liệu dài: lấy đoạn liên quan nhét vào context RAG) thay vì trông chờ model nhớ hết hoặc nhét cả cuốn. Hiểu attention để dùng AI"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 27,
+            "title": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context ·",
+            "quote": "Token có giá: vé vào rẻ, vé ra đắt gấp 3–5 lần VÉ VÀO — INPUT 1 chữ BẠN gửi đi: prompt · system instruction · context · lịch sử chat rẻ — model chỉ cần đọc VÉ RA — OUTPUT 35 chữ MODEL viết ra — nó phải tự sinh từng mảnh một, vừa chậm vừa tốn đắt — model phải “vắt ócˮ HÓA ĐƠN — 1 LẦN GỌI API input 1.150 tok × $3 / 1M $0.00345 output 200 tok × $15 / 1M $0.00300 TỔNG ≈ $0.0065 số liệu ví dụ — giá thật tùy model & nhà cung cấp Đọc mục usage trong mỗi respon"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 15,
+            "title": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi ",
+            "quote": "Attention: mỗi từ được “nhìn sangˮ những từ quan trọng khác Thay vì đọc tuần tự từng chữ, cơ chế attention cho phép mỗi token: Chủ động “quay đầuˮ nhìn lại các token trước đó trong câu Chấm điểm mức độ liên quan của từng token đối với nghĩa của mình Khóa nghĩa theo ngữ cảnh — “nóˮ là quyển sách hay cái túi, tùy theo nó chú ý vào từ nào Đây chính là chữ T trong GPT — và là lý do model hiểu ngữ cảnh tốt hơn hẳn các thế hệ trước Video minh họa: Attention in t"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 28,
+            "title": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không đượ",
+            "quote": "Giải phẫu một prompt: bốn lớp xếp chồng LỚP 1 System instruction “Lời dặn đầu caˮ: model là ai, cư xử thế nào, không được làm gì «Bạn là trợ lý y khoa, trả lời ngắn gọn, không chẩn đoán…» LỚP 2 User input Câu hỏi / yêu cầu của người dùng trong lượt này «Tóm tắt báo cáo Q1 giúp mình» LỚP 3 Context bổ sung Tài liệu, lịch sử chat, dữ liệu tra sổ — phần bày lên “bàn làm việcˮ «[đính kèm: bao_cao_q1.pdf — 3 đoạn liên quan]» LỚP 4 Output mong muốn Dạng kết quả: "
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 11,
+            "title": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “lan",
+            "quote": "Bên trong Transformer: đầu ra luôn là một phân bố xác suất Với mọi ngữ cảnh, model chấm điểm MỌI từ trong từ vựng — “landˮ 22%, “forestˮ 9%… — rồi chọn theo xác suất đó Transformers, the tech behind LLMs - 3Blue1Brown AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 2,
+            "title": "AI IN ACTION  Day 1 Agenda • Bức tranh AI & các tầng của AI • Lịch sử AI 70 năm • Bên trong LLM: cơ chế vận hành • Từ L",
+            "quote": "AI IN ACTION  Day 1 Agenda • Bức tranh AI & các tầng của AI • Lịch sử AI 70 năm • Bên trong LLM: cơ chế vận hành • Từ LLM đến AI Agent • Landscape: model hôm nay & cuộc đua hiện tại • Chọn model & chi phí token • Gọi API lần đầu • Tổng kết — những ý để mang về AI & LLM Foundation Từ \"nghe AI\" đến \"gọi AI\" trong một ngày AI IN ACTION - HACKATHON"
+          },
+          {
+            "type": "slide",
+            "document": "d1-slide-hackathon.pdf",
+            "page": 14,
+            "title": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context",
+            "quote": "Context: bàn làm việc có hạn của model Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context. Hãy hình dung một bàn làm việc: mọi thứ muốn model \"thấy\" phải bày lên bàn. Quy đổi: 128K token ≈ một cuốn sách 300 trang; 1M token ≈ 45 cuốn sách trên bàn cùng lúc. Bàn đầy quá thì đồ ở giữa bàn dễ bị bỏ sót — đặt điều quan trọng ở giữa một prompt rất dài, model có thể \"quên\" mất. Context càng dài càng tốn tiền và càng chậm — bàn rộng không "
+          }
+        ],
+        "topic": "Token, context và attention ở đầu bài thì liên quan gì đến chi phí gọi API ở phần cuối này?"
+      },
+      "ms": 5712
+    }
+  ]
+}

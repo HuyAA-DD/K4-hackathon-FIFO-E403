@@ -80,7 +80,7 @@ async function run() {
         const response = await fetch(`${baseUrl}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: testCase.question, currentPage: testCase.page, previousTopic: "" })
+          body: JSON.stringify({ question: testCase.question, currentPage: testCase.page, selection: testCase.selection, previousTopic: "" })
         });
         const data = await response.json();
         results.push({

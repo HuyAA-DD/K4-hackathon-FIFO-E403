@@ -95,10 +95,11 @@ async function handleChat(req, res) {
   const question = String(body.question || "").trim();
   const currentPage = Number(body.currentPage || 1);
   const previousTopic = String(body.previousTopic || "").trim();
+  const selection = String(body.selection || "").trim();
   if (!question) return sendJson(res, 400, { error: "Bạn chưa nhập câu hỏi." });
 
   const index = readIndex();
-  let decision = routeQuestion({ question, previousTopic, currentPage, pages: index.pages, searchPages });
+  let decision = routeQuestion({ question, previousTopic, currentPage, selection, pages: index.pages, searchPages });
   if (decision.route === "invalid-page") {
     return sendJson(res, 200, {
       route: "invalid-page",
@@ -128,7 +129,25 @@ async function handleChat(req, res) {
     });
   }
 
+  if (decision.route === "insufficient") {
+    return sendJson(res, 200, {
+      route: "insufficient",
+      answer: decision.answer || "Mình chưa có đủ ngữ cảnh để trả lời đáng tin cậy. Bạn có thể nói rõ hơn không?",
+      citations: []
+    });
+  }
+
   if (decision.route === "slide") {
+    decision.results = decision.results.map((page, index) => {
+      if (index !== 0 || (!selection && decision.reason !== "current-page-deictic")) return page;
+      const additions = [
+        selection ? `SELECTED TEXT ON THIS PAGE:\n${selection}` : "",
+        decision.reason === "current-page-deictic"
+          ? "INSTRUCTION: Summarize every main point on this page; do not answer with only one partial idea."
+          : ""
+      ].filter(Boolean).join("\n\n");
+      return { ...page, text: `${page.text}\n\n${additions}` };
+    });
     const pageScope = decision.results.map((page) => page.page).join(", ");
     const response = await respond({
       input: `${SYSTEM_PROMPT}\n\nROUTE: SLIDE\nTrang người học đang xem: ${currentPage}.\nCác trang được retrieval chọn: ${pageScope}.\n\nCONTEXT SLIDE ĐƯỢC PHÉP DÙNG:\n${formatSlideContext(decision.results)}\n\nCÂU HỎI: ${question}\n\nTrả lời bằng tiếng Việt, ngắn gọn. Chỉ dùng CONTEXT SLIDE; nếu có nhiều trang thì phải tổng hợp thông tin xuyên trang. Không tự ghi citation trong phần văn bản.`
