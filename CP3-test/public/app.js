@@ -20,6 +20,8 @@ const popupAskBtn = document.getElementById("popup-ask");
 const popupDeleteBtn = document.getElementById("popup-delete");
 const pageIndicator = document.getElementById("page-indicator");
 const pageFooterLabel = document.getElementById("page-footer-label");
+const pageJumpInput = document.getElementById("page-jump-input");
+const pageJumpTotal = document.getElementById("page-jump-total");
 const zoomLabel = document.getElementById("zoom-label");
 const toolCaption = document.getElementById("tool-caption");
 const topbarFilenameEl = document.getElementById("topbar-filename");
@@ -55,6 +57,7 @@ let pdfDoc = null;
 let numPages = 1;
 let currentPage = 1;
 let scale = BASE_SCALE;
+let zoomTaskToken = 0;
 let currentTool = "read";
 let isRendering = false;
 let drawing = false;
@@ -216,6 +219,20 @@ async function renderAllPages() {
   zoomLabel.textContent = `${Math.round((scale / BASE_SCALE) * 100)}%`;
 }
 
+// Render page 1 immediately, then warm the remaining pages sequentially in
+// the background so opening a deck is not blocked by the whole PDF.
+async function preloadRemainingPages(startPage, token) {
+  for (let p = startPage; p <= numPages; p++) {
+    if (token !== deckLoadToken) return;
+    try {
+      await renderPage(p);
+    } catch (err) {
+      console.warn(`Failed to preload page ${p}:`, err);
+      return;
+    }
+  }
+}
+
 function setupIntersectionObserver() {
   if (pageObserver) pageObserver.disconnect();
   pageObserver = new IntersectionObserver(
@@ -240,6 +257,8 @@ function setupIntersectionObserver() {
 function updatePageLabel() {
   pageIndicator.textContent = `Trang ${currentPage} · Tài liệu bài giảng`;
   pageFooterLabel.textContent = `Slide ${currentPage}/${numPages} · từ data pack`;
+  pageJumpInput.value = String(currentPage);
+  pageJumpTotal.textContent = `/ ${numPages || "—"}`;
 }
 
 function updateHeaderForDeck(meta) {
@@ -259,15 +278,47 @@ function scrollToPage(pageNum, { smooth = false } = {}) {
 prevPageBtn.addEventListener("click", () => scrollToPage(Math.max(1, currentPage - 1), { smooth: true }));
 nextPageBtn.addEventListener("click", () => scrollToPage(Math.min(numPages, currentPage + 1), { smooth: true }));
 
+function jumpToPageFromInput() {
+  const requested = Number.parseInt(pageJumpInput.value, 10);
+  if (!Number.isFinite(requested) || !numPages) {
+    updatePageLabel();
+    return;
+  }
+  currentPage = Math.max(1, Math.min(numPages, requested));
+  updatePageLabel();
+  scrollToPage(currentPage);
+}
+pageJumpInput.addEventListener("change", jumpToPageFromInput);
+pageJumpInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    jumpToPageFromInput();
+    pageJumpInput.blur();
+  }
+});
+
 async function applyZoom(newScale) {
   if (isRendering) return;
   isRendering = true;
   hideSelectionPopup();
   scale = newScale;
   const anchorPage = currentPage;
-  await renderAllPages();
+  const taskToken = ++zoomTaskToken;
+  await renderPage(anchorPage);
   scrollToPage(anchorPage);
   isRendering = false;
+  void rerenderRemainingPagesAtScale(anchorPage, taskToken);
+}
+async function rerenderRemainingPagesAtScale(anchorPage, taskToken) {
+  for (let p = 1; p <= numPages; p++) {
+    if (p === anchorPage || taskToken !== zoomTaskToken) continue;
+    try {
+      await renderPage(p);
+    } catch (err) {
+      console.warn(`Failed to re-render page ${p} after zoom:`, err);
+      return;
+    }
+  }
 }
 zoomInBtn.addEventListener("click", () => applyZoom(Math.min(scale + 0.18, BASE_SCALE * 2.2)));
 zoomOutBtn.addEventListener("click", () => applyZoom(Math.max(scale - 0.18, BASE_SCALE * 0.6)));
@@ -794,9 +845,12 @@ async function switchDeck(id) {
   currentPage = 1;
   annotationsByPage.clear();
   buildPageShells();
-  await renderAllPages();
+  await renderPage(1);
   if (token !== deckLoadToken) return;
   setupIntersectionObserver();
+  updatePageLabel();
+  zoomLabel.textContent = `${Math.round((scale / BASE_SCALE) * 100)}%`;
+  void preloadRemainingPages(2, token);
 }
 
 async function removeCustomDeck(id) {

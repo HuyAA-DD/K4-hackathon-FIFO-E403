@@ -2,7 +2,17 @@ import express from "express";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+
+let pdfjsLibPromise;
+async function getPdfjs() {
+  // Vercel's Node runtime has no browser canvas globals. PDF.js needs these
+  // during module initialization even though this server only extracts text.
+  globalThis.DOMMatrix ??= class DOMMatrix {};
+  globalThis.Path2D ??= class Path2D {};
+  globalThis.ImageData ??= class ImageData {};
+  pdfjsLibPromise ??= import("pdfjs-dist/legacy/build/pdf.mjs");
+  return pdfjsLibPromise;
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -38,6 +48,7 @@ const deckCache = new Map(); // deckId -> Promise<{ id, label, pages: [{page,tex
 
 async function extractDeckPages(deck) {
   const data = new Uint8Array(fs.readFileSync(deck.path));
+  const pdfjsLib = await getPdfjs();
   const doc = await pdfjsLib.getDocument({ data, useSystemFonts: true, isEvalSupported: false }).promise;
   const pages = [];
   for (let p = 1; p <= doc.numPages; p++) {
@@ -745,7 +756,7 @@ app.post("/api/chat", async (req, res) => {
 
 const port = Number(process.env.PORT || 4176);
 
-getDeck(DEFAULT_DECK)
+if (!process.env.VERCEL) getDeck(DEFAULT_DECK)
   .then((deck) => {
     app.listen(port, () => {
       console.log(`CP3-test: http://localhost:${port}`);
@@ -760,3 +771,5 @@ getDeck(DEFAULT_DECK)
     console.error(`Không đọc được bộ slide mặc định (${DEFAULT_DECK}):`, err);
     process.exit(1);
   });
+
+export default app;

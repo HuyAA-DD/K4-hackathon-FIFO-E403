@@ -92,3 +92,6 @@ button, input { font:inherit; }
 .composer.is-disabled input, .composer.is-disabled button { opacity:.55; pointer-events:none; }
 
 @media (max-width:1180px) { :root { --panel:390px; } .slide-area { padding-left:22px; padding-right:22px; } .file-meta { font-size:17px; } }
+.page-jump { display:flex; align-items:center; gap:5px; }
+.page-jump input { width:42px; border:0; border-bottom:1px solid #9db8cf; background:transparent; color:#155590; font:inherit; text-align:center; outline:none; }
+.page-jump input:focus { border-bottom-color:#145a99; }
