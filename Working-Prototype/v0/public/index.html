@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLearn Tutor - Working v0</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div><strong>V<span>Learn</span></strong><span class="version">Working Prototype v0</span></div>
+      <small>Slide-grounded Tutor</small>
+    </header>
+    <main>
+      <section class="viewer">
+        <div class="viewer-label"><span>Trang 1 · Tài liệu bài giảng</span><span>d1-slide-hackathon.pdf</span></div>
+        <iframe title="Slide Day 1" src="/slides/d1-slide-hackathon.pdf#page=1&zoom=page-width"></iframe>
+      </section>
+      <aside class="tutor">
+        <div class="tutor-header">
+          <div class="bot-icon">✦</div>
+          <div><h1>VLearn Tutor</h1><p><i></i> Trợ lý học theo ngữ cảnh</p></div>
+          <span class="page-chip">Trang slide: 1</span>
+        </div>
+        <div id="messages" class="messages" aria-live="polite">
+          <p class="context">Ngữ cảnh: Day 1 · Slide trang 1</p>
+          <article class="message assistant-message"><p>Chào bạn! Mình ưu tiên trả lời từ slide và luôn hiển thị số trang nguồn. Nếu bạn muốn mở rộng một khái niệm AI/LLM, mình sẽ tìm nguồn ngoài có URL trích dẫn.</p></article>
+          <div class="quick-prompts">
+            <button data-question="Tóm tắt nội dung slide này">Tóm tắt slide này</button>
+            <button data-question="LLM là gì?">LLM là gì?</button>
+            <button data-question="Mở rộng hơn về Transformer">Mở rộng về Transformer</button>
+          </div>
+        </div>
+        <form id="chat-form" class="composer">
+          <input id="question" autocomplete="off" placeholder="Nhập câu hỏi về bài học..." />
+          <button type="submit" aria-label="Gửi câu hỏi">➤</button>
+        </form>
+      </aside>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
