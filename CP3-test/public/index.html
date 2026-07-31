@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLearn Tutor — CP3 Working Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <button class="icon-button" aria-label="Quay lại">‹</button>
+        <div class="brand"><span class="brand-mark">◆</span><strong>V<span>Learn</span></strong></div>
+        <span class="divider"></span>
+        <div class="file-meta">
+          <strong>d1-slide-hackathon.pdf</strong>
+          <small>COMP2010 · AI Thực Chiến</small>
+        </div>
+        <div class="top-actions"><button class="icon-button">VI</button><button class="icon-button">☾</button></div>
+      </header>
+
+      <section class="workspace">
+        <section class="slide-area" aria-label="Trình đọc slide">
+          <div class="toolbar">
+            <button class="tool active" id="tool-read" data-tool="read" title="Đọc / bôi đen để hỏi Tutor">⌁ Đọc</button>
+            <button class="tool" id="tool-pen" data-tool="pen" title="Vẽ ghi chú tay lên slide">✎ Bút</button>
+            <button class="tool" id="tool-highlight" data-tool="highlight" title="Bôi đen đoạn cần hỏi và lưu highlight">⌁ Highlight</button>
+            <button class="tool tool-ghost" id="clear-annotations" title="Xoá nét vẽ/highlight trên trang này">🗑</button>
+            <span class="toolbar-divider"></span>
+            <span class="page-pill">Tài liệu gốc</span>
+            <button class="zoom" id="zoom-out">−</button><strong id="zoom-label">100%</strong><button class="zoom" id="zoom-in">+</button>
+          </div>
+          <div class="slide-card">
+            <div class="slide-card-header"><span id="page-indicator">Trang 1 · Tài liệu bài giảng</span><span>d1-slide-hackathon.pdf</span></div>
+            <div class="pdf-stage">
+              <div class="pdf-page-wrap" id="pdf-page-wrap">
+                <canvas id="pdf-canvas"></canvas>
+                <div id="text-layer" class="textLayer"></div>
+                <canvas id="annot-canvas"></canvas>
+                <div id="selection-popover" class="selection-popover is-hidden">
+                  <button id="ask-selection" type="button">💬 Hỏi Tutor về đoạn này</button>
+                </div>
+              </div>
+              <div class="pdf-caption"><span class="pdf-dot"></span> <span id="tool-caption">Đang xem PDF · Day 1 Foundation</span></div>
+            </div>
+          </div>
+          <div class="slide-footer">
+            <button class="round-button" id="prev-page">‹</button>
+            <span id="page-footer-label">Slide hiển thị từ data pack</span>
+            <button class="round-button" id="next-page">›</button>
+          </div>
+        </section>
+
+        <button id="tutor-toggle" class="panel-toggle" aria-expanded="true" aria-controls="tutor-panel">›</button>
+
+        <aside id="tutor-panel" class="tutor-panel" aria-label="VLearn Tutor">
+          <header class="tutor-header"><span class="bot-icon">♙</span><div><strong>VLearn Tutor</strong><small><i></i> Trợ lý học theo ngữ cảnh · AI thật</small></div><button id="close-tutor" class="icon-button" aria-label="Ẩn Tutor">×</button></header>
+          <div id="messages" class="messages">
+            <p class="context">Ngữ cảnh: Slide Day 1 · d1-slide-hackathon.pdf</p>
+            <article class="message tutor-message">Chào bạn! Mình đọc trực tiếp nội dung slide đang mở để trả lời hoặc tóm tắt. Mỗi câu trả lời sẽ ghi rõ nguồn là <b>trong tài liệu</b>, <b>nguồn ngoài</b>, hoặc nói rõ khi <b>chưa đủ căn cứ</b>.</article>
+            <div class="suggestions"><button data-question="Tóm tắt nội dung trang này">Tóm tắt trang này</button><button data-question="Transformer là gì?">Transformer là gì?</button></div>
+          </div>
+          <form id="chat-form" class="composer">
+            <input id="question-input" autocomplete="off" placeholder="Nhập câu hỏi hoặc bôi đen tài liệu..." />
+            <button type="submit" aria-label="Gửi câu hỏi">➤</button>
+          </form>
+        </aside>
+      </section>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

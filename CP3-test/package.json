@@ -1,0 +1,14 @@
+{
+  "name": "vlearn-tutor-cp3-test",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CP3 working prototype: VLearn Tutor with real OpenAI tool-calling, PDF text-layer highlight, and pen annotation",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "pdfjs-dist": "^6.2.108"
+  }
+}
