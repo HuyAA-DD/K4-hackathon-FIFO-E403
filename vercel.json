@@ -1,15 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "npm install --prefix CP3-test",
+  "buildCommand": "npm install --prefix Working-Prototype/v0",
   "builds": [
     {
-      "src": "CP3-test/server.js",
+      "src": "Working-Prototype/v0/server.js",
       "use": "@vercel/node",
       "config": {
         "includeFiles": [
           "data/**",
-          "CP3-test/public/**",
-          "CP3-test/node_modules/pdfjs-dist/**"
+          "Working-Prototype/v0/public/**",
+          "Working-Prototype/v0/data/**"
         ]
       }
     }
@@ -17,7 +17,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "CP3-test/server.js"
+      "dest": "Working-Prototype/v0/server.js"
     }
   ]
 }
