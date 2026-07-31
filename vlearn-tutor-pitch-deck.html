@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLearn Tutor — Pitch Deck</title>
+    <style>
+      :root { --navy:#112044; --blue:#2767ed; --sky:#eaf1ff; --mint:#ddfaef; --red:#ffebed; --ink:#17213b; --muted:#61708e; --line:#dbe4f4; }
+      * { box-sizing:border-box; }
+      body { margin:0; min-width:960px; background:#121a2d; color:var(--ink); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .deck { width:1600px; height:900px; margin:20px auto; position:relative; overflow:hidden; background:#fff; box-shadow:0 28px 70px #0008; }
+      .page { width:100%; height:100%; padding:70px 88px 62px; position:absolute; inset:0; display:none; overflow:hidden; }
+      .page.active { display:block; animation:in .38s ease; }
+      @keyframes in { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:none; } }
+      .label { color:var(--blue); font-size:18px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+      h1 { max-width:1030px; margin:17px 0; font-size:72px; line-height:1.04; letter-spacing:-.06em; }
+      h2 { margin:12px 0 22px; font-size:53px; line-height:1.08; letter-spacing:-.05em; }
+      .lead { max-width:880px; margin:0; color:var(--muted); font-size:27px; line-height:1.42; }
+      .accent { color:var(--blue); }
+      .footer { position:absolute; left:88px; right:88px; bottom:26px; display:flex; align-items:center; justify-content:space-between; color:#7c89a4; font-size:15px; }
+      .num { color:var(--blue); font-weight:800; }
+      .nav { position:absolute; z-index:10; right:42px; bottom:28px; display:flex; gap:10px; align-items:center; }
+      .nav button { border:0; cursor:pointer; color:#fff; background:#24395f; width:38px; height:38px; border-radius:50%; font-size:23px; }
+      .nav button:hover { background:var(--blue); }
+      .dots { display:flex; gap:7px; margin-right:8px; }
+      .dot { width:9px; height:9px; padding:0!important; background:#cbd7eb!important; border-radius:50%!important; }
+      .dot.current { width:24px; border-radius:9px!important; background:var(--blue)!important; }
+
+      .cover { background:radial-gradient(circle at 90% 13%, #dfeaff 0, transparent 28%), radial-gradient(circle at 3% 103%, #d8f8eb 0, transparent 25%), #fff; }
+      .cover .orb { position:absolute; right:126px; top:215px; width:395px; height:395px; border-radius:50%; background:linear-gradient(145deg,#2c70f6,#153b9d); box-shadow:0 30px 50px #1f53bd44; }
+      .cover .orb::before, .cover .orb::after { content:""; position:absolute; background:#fff; border-radius:18px; box-shadow:0 14px 28px #081f5a40; }
+      .cover .orb::before { width:205px; height:116px; left:-73px; top:71px; transform:rotate(-10deg); }
+      .cover .orb::after { width:184px; height:104px; right:-58px; bottom:55px; transform:rotate(10deg); }
+      .cover .spark { position:absolute; right:263px; top:338px; color:#ffe475; font-size:92px; font-weight:200; z-index:1; }
+      .cover .tag { display:inline-flex; gap:10px; align-items:center; margin-top:32px; padding:12px 17px; border-radius:999px; background:#e9f0ff; color:#2454c6; font-weight:700; font-size:18px; }
+
+      .problem-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:35px; }
+      .problem-card { min-height:415px; padding:33px; border:1px solid var(--line); border-radius:26px; background:#fff; box-shadow:0 16px 34px #2c4f8910; }
+      .problem-card.bad { background:linear-gradient(145deg,#fff,#fff5f5); border-color:#ffd8dc; }
+      .problem-icon { width:58px; height:58px; display:grid; place-items:center; border-radius:18px; background:var(--red); color:#de3e51; font-size:31px; }
+      .problem-card h3 { margin:23px 0 13px; font-size:29px; letter-spacing:-.035em; }
+      .problem-card p { margin:0; color:#53627e; font-size:21px; line-height:1.45; }
+      .evidence { margin-top:23px; padding-top:21px; border-top:1px solid #f2dadd; color:#c6374b; font-size:20px; font-weight:750; }
+      .big { font-size:47px; letter-spacing:-.06em; }
+
+      .split { display:grid; grid-template-columns:48% 1fr; align-items:center; gap:72px; height:100%; }
+      .browser { margin-top:24px; border:1px solid #cfdcf3; border-radius:22px; overflow:hidden; box-shadow:0 22px 42px #1c4c9820; background:#fff; }
+      .browser-bar { height:46px; padding:0 16px; display:flex; align-items:center; gap:8px; background:#edf3ff; }
+      .traffic i { display:inline-block; width:10px; height:10px; margin-right:5px; border-radius:50%; background:#f26b75; }.traffic i:nth-child(2){background:#ffc758}.traffic i:nth-child(3){background:#5fcd96}
+      .url { margin-left:12px; padding:7px 12px; flex:1; border-radius:7px; background:#fff; color:#8a98b2; font-size:13px; }
+      .app { display:grid; grid-template-columns:58% 42%; min-height:340px; }
+      .slide-preview { padding:23px; background:#f8faff; }.slide-preview .mini-title{font-weight:800;font-size:15px}.slide-body{margin-top:20px;padding:24px;border-radius:8px;background:linear-gradient(135deg,#213b77,#4b8df7);color:white;height:230px}.slide-body b{font-size:21px}.slide-body p{font-size:14px;line-height:1.45;opacity:.9}
+      .chat { padding:18px; border-left:1px solid #e3eaf6; }.chat b{font-size:15px}.bubble{margin-top:15px;padding:12px;border-radius:11px;background:#edf3ff;color:#244782;font-size:13px;line-height:1.35}.cite{margin-top:9px;padding:8px;border-radius:8px;background:#e6faef;color:#127246;font-size:11px;font-weight:700}.web{background:#fff5dd;color:#93610b}
+      .steps { display:grid; gap:16px; }.step { display:flex; gap:18px; align-items:flex-start; padding:17px 19px; border-radius:18px; background:var(--sky); }.step b { display:grid; place-items:center; width:36px; height:36px; flex:0 0 auto; border-radius:50%; color:white; background:var(--blue); font-size:17px; }.step h3{margin:1px 0 5px;font-size:21px}.step p{margin:0;color:#55637e;font-size:17px;line-height:1.35}
+
+      .architecture { margin-top:41px; display:grid; grid-template-columns:1fr 55px 1fr 55px 1fr 55px 1fr; align-items:center; }.node { min-height:255px; padding:27px 24px; border-radius:24px; border:1px solid var(--line); background:#fff; box-shadow:0 14px 28px #234c8811; }.node.highlight{background:linear-gradient(145deg,#2767ed,#1743b4);color:#fff;border:0}.node.mint{background:var(--mint);border-color:#c7efdd}.node .glyph{font-size:34px}.node h3{margin:16px 0 8px;font-size:22px}.node p{margin:0;font-size:16px;line-height:1.4;color:#596782}.node.highlight p{color:#e5edff}.connector{text-align:center;color:#91a4c6;font-size:37px}
+      .callout { margin-top:28px; padding:17px 21px; border-radius:15px; background:#fff7df; color:#70510a; font-size:18px; line-height:1.35; }.callout b{color:#513b05}
+
+      .compare { margin-top:33px; display:grid; grid-template-columns:1fr 1fr; gap:22px; }.compare-card { min-height:373px; padding:31px; border:1px solid var(--line); border-radius:25px; }.compare-card.before{background:#fffafb}.compare-card.after{background:linear-gradient(145deg,#ecf4ff,#f6fbff);border-color:#b7d1ff}.compare-card h3{margin:0 0 22px;font-size:25px}.item{display:flex;gap:12px;margin:15px 0;color:#55637e;font-size:19px;line-height:1.34}.item i{font-style:normal;font-weight:900;color:#dc5264}.after .item i{color:#168657}
+      .closing { background:linear-gradient(135deg,#102147 0%,#183f96 67%,#286df2 100%); color:#fff; }.closing::after{content:"";position:absolute;width:650px;height:650px;border:90px solid #ffffff12;border-radius:50%;right:-300px;bottom:-355px}.closing h2{max-width:960px;margin-top:25px;font-size:67px}.closing .lead{color:#d7e4ff}.outcomes{display:flex;gap:16px;margin-top:47px;position:relative;z-index:1}.outcome{width:280px;padding:21px;border-radius:17px;background:#ffffff14;border:1px solid #ffffff25;font-size:18px;line-height:1.35}.outcome b{display:block;font-size:20px;margin-bottom:7px}.closing .footer{color:#c7d9ff}.closing .num{color:#fff}
+      @media print { body{background:#fff}.deck{margin:0;box-shadow:none}.page{position:relative;display:block;break-after:page}.nav{display:none} }
+      @page { size:1600px 900px; margin:0; }
+    </style>
+  </head>
+  <body>
+    <main class="deck">
+      <section class="page cover active">
+        <div class="label">K4 Hackathon · Working Prototype v0</div>
+        <h1>VLearn Tutor<br /><span class="accent">AI hiểu slide</span>,<br />người học kiểm chứng được</h1>
+        <p class="lead">Khắc phục hai khoảng trống trong trải nghiệm học cùng AI: thiếu ngữ cảnh từ học liệu và thiếu nguồn tham chiếu khi cần mở rộng.</p>
+        <div class="tag">◆ Trợ lý học tập theo ngữ cảnh</div>
+        <div class="orb"></div><div class="spark">✦</div>
+        <div class="footer"><span>Nhóm K4-hackathon-FIFO-E403</span><span><span class="num">01</span> / 06</span></div>
+      </section>
+
+      <section class="page">
+        <div class="label">01 · Vấn đề</div>
+        <h2>AI trả lời, nhưng chưa thật sự <span class="accent">đọc cùng người học</span></h2>
+        <div class="problem-grid">
+          <article class="problem-card bad">
+            <div class="problem-icon">▧</div>
+            <h3>Thiếu ngữ cảnh slide / hình minh hoạ</h3>
+            <p>Tutor không nhận được nội dung của trang slide người học đang xem. Khi hỏi “giải thích hình này”, AI không có căn cứ để bám vào học liệu.</p>
+            <div class="evidence">Hệ quả: học viên phải tự dò lại slide, dễ mất mạch học.</div>
+          </article>
+          <article class="problem-card bad">
+            <div class="problem-icon">↗</div>
+            <h3>Thiếu nguồn khi cần mở rộng</h3>
+            <p>Câu trả lời lý thuyết không kèm nguồn ngoài khiến người học khó kiểm chứng, đặc biệt khi nội dung nằm ngoài slide.</p>
+            <div class="evidence"><span class="big">46,2%</span><br />582 / 1.261 phản hồi Tutor không có citation trong data pack.</div>
+          </article>
+        </div>
+        <div class="footer"><span>Vấn đề cốt lõi: hiểu bài nhưng không biết căn cứ nằm ở đâu.</span><span><span class="num">02</span> / 06</span></div>
+      </section>
+
+      <section class="page">
+        <div class="split">
+          <div>
+            <div class="label">02 · Giải pháp</div>
+            <h2>Đưa <span class="accent">học liệu + nguồn</span> vào cùng một cuộc hội thoại</h2>
+            <p class="lead">VLearn Tutor nhận biết trang đang xem, tìm phần phù hợp trong tài liệu và gắn citation mà người học có thể mở lại ngay.</p>
+            <div class="steps" style="margin-top:29px">
+              <div class="step"><b>1</b><div><h3>Đọc theo từng trang</h3><p>Slide PDF được lập chỉ mục theo page để AI có ngữ cảnh khi trả lời.</p></div></div>
+              <div class="step"><b>2</b><div><h3>Trả lời có dẫn chứng</h3><p>Server gắn citation trang slide dựa trên kết quả truy xuất.</p></div></div>
+              <div class="step"><b>3</b><div><h3>Mở rộng có kiểm soát</h3><p>Chỉ hiển thị câu trả lời web khi nhận được URL citation xác minh.</p></div></div>
+            </div>
+          </div>
+          <div class="browser">
+            <div class="browser-bar"><span class="traffic"><i></i><i></i><i></i></span><span class="url">vlearn.ai / day-1-foundation</span></div>
+            <div class="app"><div class="slide-preview"><div class="mini-title">Trang 12 · Transformer</div><div class="slide-body"><b>Attention is all you need</b><p>Query, Key, Value giúp mô hình xác định thông tin liên quan trong chuỗi dữ liệu.</p></div></div><div class="chat"><b>✦ VLearn Tutor</b><div class="bubble">Transformer dùng cơ chế attention để đánh trọng số cho các phần tử liên quan…</div><div class="cite">✓ Trong tài liệu · Trang 12</div><div class="bubble">Bạn muốn mở rộng về self-attention?</div><div class="cite web">↗ Nguồn ngoài · Web Search</div></div></div>
+          </div>
+        </div>
+        <div class="footer"><span>Trải nghiệm mới: hỏi → hiểu → nhấp về nguồn.</span><span><span class="num">03</span> / 06</span></div>
+      </section>
+
+      <section class="page">
+        <div class="label">03 · Cách prototype vận hành</div>
+        <h2>Hai route, một nguyên tắc: <span class="accent">không có căn cứ thì không khẳng định</span></h2>
+        <div class="architecture">
+          <article class="node"><div class="glyph">▤</div><h3>Slide PDF</h3><p>Tài liệu 29 trang được trích xuất và lập chỉ mục cục bộ theo page.</p></article>
+          <div class="connector">→</div>
+          <article class="node highlight"><div class="glyph">✦</div><h3>Retrieval + GPT-5.4</h3><p>Tìm tối đa 3 trang phù hợp và trả lời trong ngữ cảnh đó.</p></article>
+          <div class="connector">→</div>
+          <article class="node mint"><div class="glyph">✓</div><h3>Citation slide</h3><p>Hiển thị số trang nguồn; nhấp để trở về đúng slide.</p></article>
+          <div class="connector">↗</div>
+          <article class="node"><div class="glyph">⌕</div><h3>Web Search</h3><p>Khi học viên yêu cầu mở rộng, chỉ trả lời cùng URL citation đã xác minh.</p></article>
+        </div>
+        <div class="callout"><b>Rào chắn an toàn:</b> câu hỏi ngoài bài học bị từ chối; nếu không tìm được nguồn web có citation, Tutor không đưa ra câu trả lời suy đoán.</div>
+        <div class="footer"><span>Backend giữ API key và kiểm soát citation trước khi hiển thị.</span><span><span class="num">04</span> / 06</span></div>
+      </section>
+
+      <section class="page">
+        <div class="label">04 · Giá trị mang lại</div>
+        <h2>Từ câu trả lời “hãy tin tôi” sang câu trả lời <span class="accent">có thể kiểm chứng</span></h2>
+        <div class="compare">
+          <section class="compare-card before"><h3>Trước đây</h3><div class="item"><i>×</i><span>AI không có ngữ cảnh rõ ràng về trang học viên đang xem.</span></div><div class="item"><i>×</i><span>Phản hồi giải thích có thể không có citation.</span></div><div class="item"><i>×</i><span>Nội dung mở rộng thiếu URL nguồn để tự học thêm.</span></div><div class="item"><i>×</i><span>Người học rời luồng học để tự tìm lại tài liệu.</span></div></section>
+          <section class="compare-card after"><h3>VLearn Tutor v0</h3><div class="item"><i>✓</i><span>Truy xuất nội dung từ slide theo page và câu hỏi hiện tại.</span></div><div class="item"><i>✓</i><span>Citation trang slide do server gắn, có thể nhấp để đối chiếu.</span></div><div class="item"><i>✓</i><span>Web Search chỉ được hiển thị khi có URL citation đi kèm.</span></div><div class="item"><i>✓</i><span>Giữ người học trong mạch bài giảng, tăng niềm tin vào câu trả lời.</span></div></section>
+        </div>
+        <div class="footer"><span>Core JTBD: hiểu và kiểm chứng nội dung slide mà không rời mạch bài giảng.</span><span><span class="num">05</span> / 06</span></div>
+      </section>
+
+      <section class="page closing">
+        <div class="label" style="color:#aac9ff">05 · Kết luận</div>
+        <h2>Không chỉ là một chatbot.<br />Đó là một <span style="color:#9fdbff">người bạn học có căn cứ.</span></h2>
+        <p class="lead">VLearn Tutor kết nối câu hỏi của học viên với đúng học liệu, đồng thời giữ nguồn ngoài minh bạch khi cần đào sâu.</p>
+        <div class="outcomes"><div class="outcome"><b>1. Hiểu ngữ cảnh</b>Slide được đưa vào luồng trả lời theo từng trang.</div><div class="outcome"><b>2. Kiểm chứng được</b>Trang slide và URL nguồn ngoài hiển thị trực tiếp.</div><div class="outcome"><b>3. Học không lệch</b>Không đủ căn cứ hoặc ngoài bài học thì Tutor nói rõ.</div></div>
+        <div class="footer"><span>◆ VLearn Tutor · Working Prototype v0</span><span><span class="num">06</span> / 06</span></div>
+      </section>
+
+      <nav class="nav" aria-label="Điều hướng slide"><div class="dots"></div><button id="prev" aria-label="Trang trước">‹</button><button id="next" aria-label="Trang sau">›</button></nav>
+    </main>
+    <script>
+      const pages = [...document.querySelectorAll('.page')];
+      const dots = document.querySelector('.dots');
+      let current = 0;
+      pages.forEach((_, i) => { const b = document.createElement('button'); b.className = 'dot'; b.setAttribute('aria-label', `Đến slide ${i + 1}`); b.onclick = () => show(i); dots.append(b); });
+      function show(index) { current = (index + pages.length) % pages.length; pages.forEach((page, i) => page.classList.toggle('active', i === current)); [...dots.children].forEach((dot, i) => dot.classList.toggle('current', i === current)); }
+      document.querySelector('#prev').onclick = () => show(current - 1);
+      document.querySelector('#next').onclick = () => show(current + 1);
+      document.addEventListener('keydown', (event) => { if (['ArrowRight','PageDown',' '].includes(event.key)) { event.preventDefault(); show(current + 1); } if (['ArrowLeft','PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); } if (event.key === 'Home') show(0); if (event.key === 'End') show(pages.length - 1); });
+      show(0);
+    </script>
+  </body>
+</html>

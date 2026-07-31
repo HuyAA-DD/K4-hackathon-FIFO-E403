@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLearn Tutor — Product Summary</title>
+    <style>
+      :root {
+        --ink: #13213e;
+        --muted: #60708d;
+        --blue: #2563eb;
+        --blue-dark: #1747b6;
+        --mint: #dff8ee;
+        --line: #dce5f3;
+        --paper: #f7faff;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-width: 960px;
+        background: #e8eef8;
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .slide {
+        width: 1600px;
+        height: 900px;
+        margin: 24px auto;
+        padding: 62px 76px 52px;
+        overflow: hidden;
+        position: relative;
+        background:
+          radial-gradient(circle at 93% 2%, #dcecff 0, transparent 26%),
+          radial-gradient(circle at 0% 100%, #ddf8ef 0, transparent 24%),
+          #fff;
+      }
+      .slide::after {
+        content: "";
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        right: -240px;
+        bottom: -250px;
+        border: 54px solid #dcecff;
+        border-radius: 50%;
+      }
+
+      .eyebrow {
+        color: var(--blue);
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 13px 0 8px;
+        max-width: 1100px;
+        font-size: 55px;
+        line-height: 1.08;
+        letter-spacing: -.045em;
+      }
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 23px;
+        line-height: 1.4;
+      }
+      .subtitle strong { color: var(--ink); }
+
+      .content {
+        display: grid;
+        grid-template-columns: 390px 1fr;
+        gap: 34px;
+        margin-top: 40px;
+        position: relative;
+        z-index: 1;
+      }
+      .problem {
+        min-height: 470px;
+        padding: 30px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255,255,255,.88);
+        box-shadow: 0 12px 30px rgba(41, 77, 139, .07);
+      }
+      .problem h2, .solution h2 {
+        margin: 0 0 16px;
+        font-size: 22px;
+        letter-spacing: -.02em;
+      }
+      .problem p {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.43;
+      }
+      .stat {
+        margin-top: 29px;
+        padding-top: 26px;
+        border-top: 1px solid var(--line);
+      }
+      .stat-number {
+        color: var(--blue);
+        font-size: 61px;
+        font-weight: 850;
+        line-height: .9;
+        letter-spacing: -.07em;
+      }
+      .stat-label {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.35;
+      }
+
+      .solution { padding: 3px 0; }
+      .solution h2 { font-size: 27px; margin-bottom: 20px; }
+      .flow {
+        display: grid;
+        grid-template-columns: 1fr 38px 1fr 38px 1fr;
+        align-items: center;
+      }
+      .step {
+        height: 188px;
+        padding: 25px 24px;
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        background: #fff;
+        box-shadow: 0 10px 25px rgba(41, 77, 139, .06);
+      }
+      .step.primary {
+        color: #fff;
+        border: 0;
+        background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      }
+      .step.mint { background: var(--mint); border-color: #bfedda; }
+      .icon { font-size: 30px; line-height: 1; }
+      .step h3 { margin: 13px 0 7px; font-size: 21px; }
+      .step p { margin: 0; font-size: 16px; line-height: 1.35; }
+      .arrow { color: #8ba0c3; font-size: 32px; text-align: center; }
+
+      .benefits {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 28px;
+      }
+      .benefit {
+        padding: 15px 17px;
+        border-left: 4px solid var(--blue);
+        border-radius: 0 12px 12px 0;
+        background: var(--paper);
+        font-size: 17px;
+        line-height: 1.3;
+      }
+      .benefit strong { display: block; margin-bottom: 3px; font-size: 18px; }
+
+      footer {
+        position: absolute;
+        left: 76px;
+        right: 76px;
+        bottom: 27px;
+        display: flex;
+        justify-content: space-between;
+        color: #71809a;
+        font-size: 15px;
+      }
+      .brand { color: var(--blue); font-weight: 800; }
+
+      @media print {
+        body { background: #fff; }
+        .slide { margin: 0; }
+      }
+      @page { size: 1600px 900px; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <main class="slide">
+      <div class="eyebrow">K4 Hackathon · Working Prototype v0</div>
+      <h1>VLearn Tutor — hiểu bài ngay trên slide,<br />kiểm chứng được câu trả lời</h1>
+      <p class="subtitle">Trợ lý học tập theo ngữ cảnh giúp học viên <strong>hỏi, hiểu và đối chiếu</strong> mà không rời mạch bài giảng.</p>
+
+      <section class="content">
+        <aside class="problem">
+          <h2>Vấn đề chúng tôi giải quyết</h2>
+          <p>Học viên không biết câu trả lời của Tutor có thực sự bám sát slide đang học hay không, nên phải tự dò lại tài liệu.</p>
+          <div class="stat">
+            <div class="stat-number">46,2%</div>
+            <div class="stat-label">582 / 1.261 phản hồi Tutor trong data pack không có citation — ảnh hưởng 255 học viên.</div>
+          </div>
+        </aside>
+
+        <section class="solution">
+          <h2>Một luồng học tập minh bạch, ngay trong trình đọc slide</h2>
+          <div class="flow">
+            <article class="step">
+              <div class="icon">▤</div>
+              <h3>Học viên hỏi</h3>
+              <p>Hỏi về slide đang xem, một trang cụ thể hoặc tìm slide theo chủ đề.</p>
+            </article>
+            <div class="arrow">→</div>
+            <article class="step primary">
+              <div class="icon">✦</div>
+              <h3>Tutor đọc ngữ cảnh</h3>
+              <p>Truy xuất tối đa 3 trang liên quan, gửi làm ngữ cảnh cho GPT-5.4.</p>
+            </article>
+            <div class="arrow">→</div>
+            <article class="step mint">
+              <div class="icon">✓</div>
+              <h3>Trả lời có căn cứ</h3>
+              <p>Hiển thị citation trang slide; mở rộng chỉ dùng nguồn web có URL rõ ràng.</p>
+            </article>
+          </div>
+
+          <div class="benefits">
+            <div class="benefit"><strong>Đúng ngữ cảnh</strong>Nhận biết slide và trang đang xem.</div>
+            <div class="benefit"><strong>Có thể kiểm chứng</strong>Nhấp citation để quay về đúng trang nguồn.</div>
+            <div class="benefit"><strong>An toàn phạm vi</strong>Từ chối câu hỏi ngoài bài học; không bịa khi thiếu căn cứ.</div>
+          </div>
+        </section>
+      </section>
+
+      <footer>
+        <span><span class="brand">◆ VLearn</span> Tutor · Nhóm K4-hackathon-FIFO-E403</span>
+        <span>Working Prototype v0 · 29 trang slide được lập chỉ mục</span>
+      </footer>
+    </main>
+  </body>
+</html>
