@@ -1,43 +1,44 @@
 CANVAS 7 DÒNG — CP1
-Chủ đề: Tối ưu VLearn AI Tutor — đọc hiểu slide và trả lời có trích dẫn
+Chủ đề: Tối ưu VLearn AI Tutor — trả lời có căn cứ từ tài liệu
 
 1. Chiến tuyến
 VLearn — tối ưu AI Tutor hiện có.
 
 2. Ai đang làm việc này — một vai cụ thể
-Học viên đang xem slide trong buổi học, cần hiểu hoặc tóm tắt nội dung của một slide/đoạn slide.
+Học viên đang đọc slide/tài liệu trong buổi học và vừa bôi đen một đoạn chưa hiểu.
 
 3. Họ vướng gì — ai, đang làm gì, vướng đâu, hậu quả gì
-Khi hỏi về một slide, AI Tutor chưa đọc hiểu được nội dung slide và thường chỉ trả lời lý thuyết bằng kiến thức bên ngoài mà không có trích dẫn cụ thể; học viên không kiểm chứng được câu trả lời với bài giảng, phải tự dò slide hoặc có nguy cơ học lệch so với nội dung khoá học.
+Khi hỏi để làm rõ đoạn vừa bôi đen, học viên nhận câu trả lời không có trích dẫn nguồn hoặc trích dẫn nguồn sai; họ không biết Tutor dựa vào đâu nên phải tự dò lại slide/tài liệu, mất mạch đọc và có nguy cơ tin vào lời giải thích không kiểm chứng được.
+Khi học viên hỏi, Tutor không phản hồi ở nhiều slide  
 
 4. 1–2 bằng chứng đầu tiên
-- Bằng chứng 1: Khảo sát/quan sát thực tế của nhóm: AI Tutor chưa đọc hiểu hoặc tóm tắt trực tiếp nội dung slide khi học viên hỏi.
-  Log cần lưu: câu hỏi, slide/đoạn được chọn, phản hồi thực tế của Tutor, kết quả đúng/sai (tối thiểu ____ lượt).
-- Bằng chứng 2: 582/1.261 phản hồi Tutor có citations = [] (46,2%).
-  Cách đếm: Import CSV, lọc role = tutor; đếm citations = [] hoặc rỗng. Mã minh hoạ: T0020, T0014, T0377, T0702, T1261.
+- Bằng chứng 1: 582/1.261 phản hồi Tutor có citations = [] (46,2%).
+  Cách đếm: Import CSV, lọc role = tutor; đếm citations = [] hoặc rỗng.
+- Bằng chứng 2: Trong 582 phản hồi không citation, có 448 lượt move_used = review_concept.
+  Mã hội thoại minh hoạ: T0020, T0014, T0377, T0702, T1261.
 
 5. Lát cắt MỘT CÂU
-Học viên đang xem slide trong buổi học · cần hiểu hoặc tóm tắt đúng nội dung của slide đang xem · AI quyết định trả lời từ slide và trích dẫn trang/đoạn, chỉ dùng nguồn bên ngoài khi slide không có thông tin và phải dẫn nguồn rõ ràng · để học viên kiểm chứng được câu trả lời và học đúng theo bài giảng.
+Học viên đang đọc slide trong buổi học · cần làm rõ đoạn vừa bôi đen · AI quyết định chỉ trả lời khi truy xuất được đoạn nguồn phù hợp, nếu không thì nói chưa đủ căn cứ và hỏi lại · để học viên kiểm chứng câu trả lời và tiếp tục học đúng mạch.
 
 6. AI tự làm đến đâu + 1 dòng lý do
-AI tự: đọc/parse slide, xác định slide hoặc đoạn liên quan, tóm tắt/giải thích theo câu hỏi và hiển thị trích dẫn slide (số trang + đoạn). Nếu cần nguồn ngoài, AI tìm nguồn đáng tin cậy và hiển thị link/tên nguồn.
-AI không tự: khẳng định thông tin không có trong slide hoặc không có nguồn ngoài kiểm chứng được; khi đó phải nói rõ giới hạn hoặc hỏi lại học viên.
-Lý do: Nội dung học tập cần bám bài giảng và kiểm chứng được; câu trả lời từ kiến thức ngoài nhưng không trích dẫn có thể làm học viên học sai hoặc lệch trọng tâm.
+AI tự: nhận đoạn bôi đen/câu hỏi, truy xuất nội dung bài học, chọn đoạn nguồn phù hợp và sinh câu trả lời kèm mã nguồn/trang.
+AI không tự: suy đoán hoặc đưa lời giải thích như sự thật khi không tìm được nguồn phù hợp; khi đó phải nêu rõ chưa đủ căn cứ và hỏi thông tin bổ sung.
+Lý do: 46,2% phản hồi hiện không có citation; với nội dung học tập, câu trả lời không kiểm chứng được có thể làm học viên học sai kiến thức.
 
 7. ≥3 người sẽ thử + phân công có tên
 Người thử ngoài nhóm (điền tên thật trước CP1):
-- [Tên người thử 1]: ______________________________
-- [Tên người thử 2]: ______________________________
-- [Tên người thử 3]: ______________________________
+- Nguyễn Quang Huy
+- Nguyễn Mai Huy
+- Bùi Minh Long
 
 Phân công (điền tên thật trước CP1):
-- [Tên]: Khảo sát thực tế, mining evidence và lưu log 5 ca minh hoạ.
-- [Tên]: Thiết kế đọc slide, retrieval/prompt và tiêu chí trích dẫn.
-- [Tên]: Build prototype giao diện + AI call thật.
-- [Tên]: Viết spec, golden set và chuẩn bị demo.
-- [Tên]: User test, feedback log và changelog.
+- Bùi Minh Long: Mining evidence, lưu bảng đếm và 5 mã hội thoại minh hoạ.
+- Nguyễn Mai Huy: Thiết kế retrieval/prompt và tiêu chí “đủ căn cứ”.
+- Nguyễn Mai Huy: Build prototype giao diện + AI call thật.
+- Nguyễn Quang Huy: Viết spec, golden set và chuẩn bị demo.
+- Bùi Minh Long: User test, feedback log và changelog.
 
 Ghi chú kiểm tra
-- Tách rõ kết quả khảo sát thực tế của nhóm và bằng chứng mining từ chatlog.
-- Chỉ trích dẫn nguồn ngoài khi nguồn đó xuất hiện rõ trong UI; nếu chưa xác thực được thì nêu “không tìm thấy nguồn”.
+- Con số đã tính trực tiếp từ chat_history_anonymized_for_hackathon.csv.
 - Không đưa nguyên file chatlog vào repo nộp bài; chỉ lưu mã hội thoại và trích dẫn ngắn khi cần.
+
