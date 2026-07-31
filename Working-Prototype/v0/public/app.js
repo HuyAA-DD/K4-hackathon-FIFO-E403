@@ -15,6 +15,10 @@ const sidebar = document.querySelector("#doc-sidebar");
 const sidebarToggle = document.querySelector("#sidebar-toggle");
 const tutorPanel = document.querySelector("#tutor-panel");
 const tutorToggle = document.querySelector("#tutor-toggle");
+const slideSearchForm = document.querySelector("#slide-search-form");
+const slideSearchInput = document.querySelector("#slide-search-input");
+const slideSearchStatus = document.querySelector("#slide-search-status");
+const slideSearchResults = document.querySelector("#slide-search-results");
 
 function updateSlide(page) {
   currentPage = Math.min(Math.max(Number(page) || 1, 1), PAGE_COUNT);
@@ -32,6 +36,45 @@ function buildSlideList() {
   documentItem.innerHTML = "<span class=\"doc-item-icon\">▧</span><span class=\"doc-item-meta\"><strong>Slide bài giảng</strong><small>d1-slide-hackathon.pdf · 29 trang</small></span>";
   documentItem.addEventListener("click", () => updateSlide(currentPage));
   docList.replaceChildren(documentItem);
+}
+
+function clearSlideSearch() {
+  slideSearchStatus.textContent = "";
+  slideSearchResults.replaceChildren();
+}
+
+function renderSlideSearchResults(data) {
+  slideSearchResults.replaceChildren();
+  slideSearchStatus.textContent = data.message || "";
+  (data.results || []).forEach((result) => {
+    const button = document.createElement("button");
+    const title = document.createElement("strong");
+    const detail = document.createElement("small");
+    button.type = "button";
+    button.className = "slide-search-result";
+    title.textContent = `Trang ${result.page}`;
+    detail.textContent = result.matchType === "all-terms"
+      ? `Khớp toàn bộ · ${result.matchedTerms.length} từ khóa`
+      : `Khớp một phần · ${result.matchedTerms.length} từ khóa`;
+    button.append(title, detail);
+    button.addEventListener("click", () => updateSlide(result.page));
+    slideSearchResults.append(button);
+  });
+}
+
+async function searchSlides(prompt) {
+  const query = prompt.trim();
+  if (!query) return clearSlideSearch();
+  slideSearchStatus.textContent = "Đang tìm trong toàn bộ slide...";
+  slideSearchResults.replaceChildren();
+  try {
+    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=5`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Không thể tìm slide.");
+    renderSlideSearchResults(data);
+  } catch (error) {
+    slideSearchStatus.textContent = error.message || "Không thể tìm slide.";
+  }
 }
 
 function setPanel(open) {
@@ -143,6 +186,10 @@ form.addEventListener("submit", (event) => {
   if (!question || input.disabled) return;
   input.value = "";
   ask(question);
+});
+slideSearchForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  searchSlides(slideSearchInput.value);
 });
 document.querySelectorAll("[data-question]").forEach((button) => button.addEventListener("click", () => ask(button.dataset.question)));
 

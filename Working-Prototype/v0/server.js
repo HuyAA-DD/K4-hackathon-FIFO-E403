@@ -1,7 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const { searchPages } = require("./src/retrieval");
+const { searchPages, searchSlidesByPrompt } = require("./src/retrieval");
 const { SYSTEM_PROMPT, routeQuestion, normalize } = require("./src/chat-policy");
 const {
   respond,
@@ -184,9 +184,14 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === "/api/search") {
       const query = url.searchParams.get("q") || "";
-      const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 6, 1), 10);
-      const results = searchPages(query, readIndex().pages, limit);
-      return sendJson(res, 200, { query, route: results.length ? "slide" : "insufficient", results });
+      const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 5, 1), 10);
+      const results = searchSlidesByPrompt(query, readIndex().pages, limit);
+      return sendJson(res, 200, {
+        query,
+        route: results.length ? "slide" : "insufficient",
+        results,
+        message: results.length ? `Tìm thấy ${results.length} slide phù hợp.` : "Chưa tìm thấy slide khớp với prompt này."
+      });
     }
 
     if (pathname === "/api/chat" && req.method === "POST") return await handleChat(req, res);

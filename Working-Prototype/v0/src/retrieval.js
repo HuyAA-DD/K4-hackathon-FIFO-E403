@@ -78,4 +78,31 @@ function searchPages(query, pages, limit = 6) {
     .slice(0, limit);
 }
 
-module.exports = { searchPages, normalizePhrase };
+// The search panel follows CP3-test's multi-slide rule: return pages that
+// match every meaningful prompt term first; only then fall back to partial matches.
+function searchSlidesByPrompt(query, pages, limit = 5) {
+  const terms = [...new Set(normalize(query))];
+  if (!terms.length) return [];
+
+  const scored = pages
+    .map((page) => {
+      const searchable = normalizePhrase(`${page.title || ""} ${page.text || ""} ${(page.keywords || []).join(" ")}`);
+      const matchedTerms = terms.filter((term) => hasWord(searchable, term));
+      return {
+        ...page,
+        score: matchedTerms.length,
+        matchedTerms,
+        excerpt: String(page.text || "").slice(0, 260)
+      };
+    })
+    .filter((page) => page.score > 0);
+
+  const fullMatches = scored.filter((page) => page.score === terms.length);
+  const results = (fullMatches.length ? fullMatches : scored)
+    .sort((a, b) => b.score - a.score || a.page - b.page)
+    .slice(0, Math.min(Math.max(Number(limit) || 5, 1), 10));
+
+  return results.map((page) => ({ ...page, matchType: fullMatches.length ? "all-terms" : "partial" }));
+}
+
+module.exports = { searchPages, searchSlidesByPrompt, normalizePhrase };

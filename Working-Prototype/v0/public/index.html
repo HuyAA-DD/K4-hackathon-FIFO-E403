@@ -33,6 +33,13 @@
             <span class="doc-sidebar-icon">▤</span>
             <div><strong>Học liệu</strong><small>Chọn slide đang xem</small></div>
           </div>
+          <form id="slide-search-form" class="slide-search" role="search">
+            <label class="sr-only" for="slide-search-input">Tìm slide bằng prompt</label>
+            <input id="slide-search-input" autocomplete="off" placeholder="Tìm nhiều slide..." />
+            <button type="submit" aria-label="Tìm slide">⌕</button>
+          </form>
+          <p id="slide-search-status" class="slide-search-status" aria-live="polite"></p>
+          <div id="slide-search-results" class="slide-search-results" aria-live="polite"></div>
           <div id="doc-list" class="doc-list"></div>
           <p class="doc-sidebar-hint">Tutor sẽ nhận biết trang bạn đang xem để trả lời theo đúng ngữ cảnh.</p>
         </aside>
