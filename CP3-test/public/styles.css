@@ -6,21 +6,22 @@ button, input { font:inherit; }
 .topbar { height:88px; padding:0 28px; display:flex; align-items:center; gap:16px; background:#fff; border-top:1px solid #f3dad8; border-bottom:1px solid #ccd9e5; box-shadow:0 2px 8px #2348670c; }
 .icon-button { min-width:40px; height:40px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--navy); font-size:22px; cursor:pointer; }
 .brand { display:flex; gap:10px; align-items:center; padding-right:12px; border-right:1px solid var(--line); font-size:27px; color:#e6333e; }.brand span { color:var(--navy); }.brand-mark { color:#0d4d84 !important; font-size:31px; transform:rotate(45deg); }
-.divider { width:1px; height:42px; background:var(--line); }.file-meta { display:grid; gap:4px; font-size:20px; }.file-meta small { color:#5c7192; font-size:14px; }.top-actions { margin-left:auto; display:flex; gap:8px; }
+.divider { width:1px; height:42px; background:var(--line); }.file-meta { display:grid; gap:4px; font-size:20px; }.file-meta small { color:#5c7192; font-size:14px; }
 .workspace { height:calc(100vh - 88px); min-height:650px; position:relative; display:flex; overflow:hidden; }.slide-area { flex:1; min-width:0; padding:18px 34px 10px 42px; display:flex; flex-direction:column; gap:12px; background:linear-gradient(135deg,#edf5fb 0%,#f8fbfd 55%,#edf3f8 100%); }
 .toolbar { align-self:center; display:flex; align-items:center; gap:5px; padding:7px 12px; min-height:53px; border:1px solid var(--line); border-radius:18px; background:#fff; box-shadow:0 5px 18px #34516b14; }.tool,.zoom { border:1px solid transparent; border-radius:9px; background:#fff; color:#3c5271; padding:8px 11px; font-weight:650; cursor:pointer; }.tool.active { border-color:#94bee8; color:#145a99; background:#f3f8fe; }.tool-ghost { color:#9a3b3b; }.toolbar-divider { width:1px; height:28px; margin:0 8px; background:var(--line); }.page-pill { background:#f1f6fb; border-radius:20px; padding:7px 12px; color:#155590; font-weight:700; font-size:13px; }
 
 .slide-card { flex:1; min-height:0; width:100%; border:1.5px solid #91c8ed; border-radius:22px; padding:0; overflow:hidden; background:#fffefa; box-shadow:0 12px 28px #34516b17; display:flex; flex-direction:column; }
 .slide-card-header { flex:0 0 42px; display:flex; justify-content:space-between; align-items:center; padding:0 20px; color:#7892b7; border-bottom:1px solid #edf0e8; font-size:12px; font-weight:600; }
 .pdf-stage { position:relative; flex:1; min-height:0; padding:16px 18px 18px; overflow:auto; background:repeating-linear-gradient(0deg,#fffdf6 0,#fffdf6 30px,#e8edf1 31px,#fffdf6 32px); }
-.pdf-page-wrap { position:relative; margin:0 auto; box-shadow:0 5px 16px #173c5c22; border-radius:14px; overflow:hidden; background:#fff; }
-.pdf-page-wrap canvas#pdf-canvas { display:block; }
-.pdf-page-wrap canvas#annot-canvas { position:absolute; inset:0; z-index:2; pointer-events:none; }
-.pdf-page-wrap.tool-pen canvas#annot-canvas { pointer-events:auto; cursor:crosshair; }
+.pdf-scroll { display:flex; flex-direction:column; align-items:center; gap:20px; }
+.pdf-page-wrap { position:relative; flex:0 0 auto; box-shadow:0 5px 16px #173c5c22; border-radius:14px; overflow:hidden; background:#fff; }
+.pdf-page-wrap canvas.pdf-canvas { display:block; }
+.pdf-page-wrap canvas.annot-canvas { position:absolute; inset:0; z-index:2; pointer-events:none; }
+.pdf-scroll.tool-pen .pdf-page-wrap canvas.annot-canvas { pointer-events:auto; cursor:crosshair; }
 .textLayer { position:absolute; inset:0; overflow:hidden; line-height:1; z-index:1; opacity:1; }
 .textLayer span, .textLayer br { color:transparent; position:absolute; white-space:pre; cursor:text; transform-origin:0% 0%; }
 .textLayer ::selection { background:rgba(20,99,167,.32); }
-.pdf-page-wrap.tool-pen .textLayer { pointer-events:none; }
+.pdf-scroll.tool-pen .textLayer { pointer-events:none; }
 
 .selection-popover { position:absolute; z-index:5; transform:translate(-50%,-115%); }
 .selection-popover.is-hidden { display:none; }

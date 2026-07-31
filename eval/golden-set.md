@@ -85,10 +85,12 @@ Hai người trong nhóm nên chấm độc lập 5 case bất kỳ rồi so —
 
 ---
 
-## Bảng kết quả chạy trọn bộ (điền sau khi chạy CP3-test qua 27 case)
+## Bảng kết quả chạy trọn bộ
 
-> Chưa chạy — điền lượt đầu tại CP3, đối chiếu quality bar chốt trong `spec.md` §7 trước 23:59 N1. Ghi cả case fail, không xoá.
+Chi tiết từng case + phát hiện: `eval/golden-set-run-01.md`. Raw response JSON (không sửa tay): `eval/golden-set-run-01-raw.json`.
 
 | Lượt | Ngày giờ | Đạt/Tổng | % | Case fail (ID) | Nguyên nhân chính | Người chạy |
 |---|---|---|---|---|---|---|
-| 1 | | /27 | | | | |
+| 1 | 2026-07-31 ~10:20 | 20/27 | 74,1% | C02, C03, C13, C12, N08, N10, R03 | Trích dẫn không đầy đủ khi trả lời tổng hợp nhiều đoạn (C02/N08/R03) · tự mâu thuẫn số liệu (C03) · im lặng bỏ sót ý không có căn cứ thay vì báo rõ (C13) · bỏ sót phần đối chiếu domain (C12) · tự mô tả sai khả năng hệ thống (N10) | script tự động qua `/api/chat` |
+
+> Quality bar chưa chốt trong `spec.md` §7 — số 74,1% ở lượt 1 dùng để nhóm tham khảo khi chốt bar trước 23:59 N1, chưa phải kết luận đạt/không đạt chính thức.

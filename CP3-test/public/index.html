@@ -16,7 +16,6 @@
           <strong>d1-slide-hackathon.pdf</strong>
           <small>COMP2010 · AI Thực Chiến</small>
         </div>
-        <div class="top-actions"><button class="icon-button">VI</button><button class="icon-button">☾</button></div>
       </header>
 
       <section class="workspace">
@@ -32,14 +31,10 @@
           </div>
           <div class="slide-card">
             <div class="slide-card-header"><span id="page-indicator">Trang 1 · Tài liệu bài giảng</span><span>d1-slide-hackathon.pdf</span></div>
-            <div class="pdf-stage">
-              <div class="pdf-page-wrap" id="pdf-page-wrap">
-                <canvas id="pdf-canvas"></canvas>
-                <div id="text-layer" class="textLayer"></div>
-                <canvas id="annot-canvas"></canvas>
-                <div id="selection-popover" class="selection-popover is-hidden">
-                  <button id="ask-selection" type="button">💬 Hỏi Tutor về đoạn này</button>
-                </div>
+            <div class="pdf-stage" id="pdf-stage">
+              <div class="pdf-scroll" id="pdf-scroll"></div>
+              <div id="selection-popover" class="selection-popover is-hidden">
+                <button id="ask-selection" type="button">💬 Hỏi Tutor về đoạn này</button>
               </div>
               <div class="pdf-caption"><span class="pdf-dot"></span> <span id="tool-caption">Đang xem PDF · Day 1 Foundation</span></div>
             </div>

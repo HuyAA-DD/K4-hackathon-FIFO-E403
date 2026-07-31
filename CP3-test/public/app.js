@@ -5,10 +5,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "/vendor/pdfjs/pdf.worker.mjs";
 const PDF_URL = "/slides/d1-slide-hackathon.pdf";
 const BASE_SCALE = 1.2;
 
-const wrap = document.getElementById("pdf-page-wrap");
-const canvas = document.getElementById("pdf-canvas");
-const textLayerDiv = document.getElementById("text-layer");
-const annotCanvas = document.getElementById("annot-canvas");
+const pdfStage = document.getElementById("pdf-stage");
+const pdfScroll = document.getElementById("pdf-scroll");
 const popover = document.getElementById("selection-popover");
 const askSelectionBtn = document.getElementById("ask-selection");
 const pageIndicator = document.getElementById("page-indicator");
@@ -39,8 +37,13 @@ let numPages = 1;
 let currentPage = 1;
 let scale = BASE_SCALE;
 let currentTool = "read";
+let isRendering = false;
 let drawing = false;
+let drawingPage = null;
 let currentStroke = null;
+let pageObserver = null;
+
+const wrapsByPage = new Map(); // page -> { page, wrapEl, canvasEl, textLayerEl, annotCanvasEl }
 const annotationsByPage = new Map();
 const conversationHistory = [];
 
@@ -54,64 +57,118 @@ function setPanel(open) {
 panelToggle.addEventListener("click", () => setPanel(panel.classList.contains("is-hidden")));
 closePanelBtn.addEventListener("click", () => setPanel(false));
 
-// ---------------- PDF rendering ----------------
+// ---------------- PDF viewer: build + render all pages (scrollable) ----------------
+function buildPageShells() {
+  pdfScroll.replaceChildren();
+  wrapsByPage.clear();
+  for (let p = 1; p <= numPages; p++) {
+    const wrapEl = document.createElement("div");
+    wrapEl.className = "pdf-page-wrap";
+    wrapEl.dataset.page = String(p);
+    wrapEl.innerHTML = `<canvas class="pdf-canvas"></canvas><div class="textLayer"></div><canvas class="annot-canvas"></canvas>`;
+    pdfScroll.appendChild(wrapEl);
+    wrapsByPage.set(p, {
+      page: p,
+      wrapEl,
+      canvasEl: wrapEl.querySelector(".pdf-canvas"),
+      textLayerEl: wrapEl.querySelector(".textLayer"),
+      annotCanvasEl: wrapEl.querySelector(".annot-canvas")
+    });
+  }
+}
+
 async function renderPage(pageNum) {
-  hidePopover();
+  const entry = wrapsByPage.get(pageNum);
   const page = await pdfDoc.getPage(pageNum);
   const viewport = page.getViewport({ scale });
 
-  wrap.style.width = `${viewport.width}px`;
-  wrap.style.height = `${viewport.height}px`;
-  wrap.style.setProperty("--scale-factor", String(scale));
-  wrap.style.setProperty("--total-scale-factor", String(scale));
-  wrap.style.setProperty("--user-unit", "1");
-  wrap.style.setProperty("--min-font-size", "1");
-  wrap.style.setProperty("--scale-round-x", "1px");
-  wrap.style.setProperty("--scale-round-y", "1px");
+  entry.wrapEl.style.width = `${viewport.width}px`;
+  entry.wrapEl.style.height = `${viewport.height}px`;
+  entry.wrapEl.style.setProperty("--scale-factor", String(scale));
+  entry.wrapEl.style.setProperty("--total-scale-factor", String(scale));
+  entry.wrapEl.style.setProperty("--user-unit", "1");
+  entry.wrapEl.style.setProperty("--min-font-size", "1");
+  entry.wrapEl.style.setProperty("--scale-round-x", "1px");
+  entry.wrapEl.style.setProperty("--scale-round-y", "1px");
 
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-  const ctx = canvas.getContext("2d");
-  await page.render({ canvasContext: ctx, viewport }).promise;
+  entry.canvasEl.width = viewport.width;
+  entry.canvasEl.height = viewport.height;
+  await page.render({ canvasContext: entry.canvasEl.getContext("2d"), viewport }).promise;
 
-  textLayerDiv.replaceChildren();
-  textLayerDiv.style.width = `${viewport.width}px`;
-  textLayerDiv.style.height = `${viewport.height}px`;
+  entry.textLayerEl.replaceChildren();
+  entry.textLayerEl.style.width = `${viewport.width}px`;
+  entry.textLayerEl.style.height = `${viewport.height}px`;
   const textContent = await page.getTextContent();
-  const textLayer = new pdfjsLib.TextLayer({ textContentSource: textContent, container: textLayerDiv, viewport });
+  const textLayer = new pdfjsLib.TextLayer({ textContentSource: textContent, container: entry.textLayerEl, viewport });
   await textLayer.render();
 
-  annotCanvas.width = viewport.width;
-  annotCanvas.height = viewport.height;
+  entry.annotCanvasEl.width = viewport.width;
+  entry.annotCanvasEl.height = viewport.height;
+  redrawAnnotationsForPage(pageNum);
+}
 
-  currentPage = pageNum;
-  redrawAnnotations();
-  pageIndicator.textContent = `Trang ${pageNum} · Tài liệu bài giảng`;
-  pageFooterLabel.textContent = `Slide ${pageNum}/${numPages} · từ data pack`;
+async function renderAllPages() {
+  for (let p = 1; p <= numPages; p++) {
+    pageIndicator.textContent = `Đang tải trang ${p}/${numPages}...`;
+    await renderPage(p);
+  }
+  updatePageLabel();
   zoomLabel.textContent = `${Math.round((scale / BASE_SCALE) * 100)}%`;
 }
 
-function goToPage(n) {
-  if (n < 1 || n > numPages || n === currentPage) return;
-  renderPage(n);
+function setupIntersectionObserver() {
+  if (pageObserver) pageObserver.disconnect();
+  pageObserver = new IntersectionObserver(
+    (entries) => {
+      let best = null;
+      for (const e of entries) {
+        if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e;
+      }
+      if (best) {
+        const p = Number(best.target.dataset.page);
+        if (p && p !== currentPage) {
+          currentPage = p;
+          updatePageLabel();
+        }
+      }
+    },
+    { root: pdfStage, threshold: [0.25, 0.5, 0.75] }
+  );
+  wrapsByPage.forEach((entry) => pageObserver.observe(entry.wrapEl));
 }
-prevPageBtn.addEventListener("click", () => goToPage(currentPage - 1));
-nextPageBtn.addEventListener("click", () => goToPage(currentPage + 1));
 
-zoomInBtn.addEventListener("click", () => {
-  scale = Math.min(scale + 0.18, BASE_SCALE * 2.2);
-  renderPage(currentPage);
-});
-zoomOutBtn.addEventListener("click", () => {
-  scale = Math.max(scale - 0.18, BASE_SCALE * 0.6);
-  renderPage(currentPage);
-});
+function updatePageLabel() {
+  pageIndicator.textContent = `Trang ${currentPage} · Tài liệu bài giảng`;
+  pageFooterLabel.textContent = `Slide ${currentPage}/${numPages} · từ data pack`;
+}
+
+function scrollToPage(pageNum, { smooth = false } = {}) {
+  const entry = wrapsByPage.get(pageNum);
+  if (!entry) return;
+  entry.wrapEl.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+}
+
+prevPageBtn.addEventListener("click", () => scrollToPage(Math.max(1, currentPage - 1), { smooth: true }));
+nextPageBtn.addEventListener("click", () => scrollToPage(Math.min(numPages, currentPage + 1), { smooth: true }));
+
+async function applyZoom(newScale) {
+  if (isRendering) return;
+  isRendering = true;
+  hidePopover();
+  scale = newScale;
+  const anchorPage = currentPage;
+  await renderAllPages();
+  scrollToPage(anchorPage);
+  isRendering = false;
+}
+zoomInBtn.addEventListener("click", () => applyZoom(Math.min(scale + 0.18, BASE_SCALE * 2.2)));
+zoomOutBtn.addEventListener("click", () => applyZoom(Math.max(scale - 0.18, BASE_SCALE * 0.6)));
 
 // ---------------- Tools ----------------
 function setTool(tool) {
   currentTool = tool;
   Object.entries(toolButtons).forEach(([key, btn]) => btn.classList.toggle("active", key === tool));
-  wrap.classList.toggle("tool-pen", tool === "pen");
+  pdfScroll.classList.toggle("tool-pen", tool === "pen");
   toolCaption.textContent =
     tool === "pen"
       ? "Chế độ vẽ ghi chú tay"
@@ -125,7 +182,7 @@ penBtn.addEventListener("click", () => setTool("pen"));
 highlightBtn.addEventListener("click", () => setTool("highlight"));
 clearBtn.addEventListener("click", () => {
   annotationsByPage.delete(currentPage);
-  redrawAnnotations();
+  redrawAnnotationsForPage(currentPage);
 });
 
 function getPageAnnotations(page) {
@@ -144,10 +201,12 @@ function drawStroke(ctx, stroke) {
   ctx.stroke();
 }
 
-function redrawAnnotations() {
-  const ctx = annotCanvas.getContext("2d");
-  ctx.clearRect(0, 0, annotCanvas.width, annotCanvas.height);
-  const data = annotationsByPage.get(currentPage);
+function redrawAnnotationsForPage(pageNum) {
+  const entry = wrapsByPage.get(pageNum);
+  if (!entry) return;
+  const ctx = entry.annotCanvasEl.getContext("2d");
+  ctx.clearRect(0, 0, entry.annotCanvasEl.width, entry.annotCanvasEl.height);
+  const data = annotationsByPage.get(pageNum);
   if (data) {
     ctx.fillStyle = "rgba(255,214,0,0.38)";
     for (const h of data.highlights) {
@@ -161,7 +220,7 @@ function redrawAnnotations() {
     ctx.lineJoin = "round";
     for (const stroke of data.pen) drawStroke(ctx, stroke);
   }
-  if (drawing && currentStroke && currentStroke.length > 1) {
+  if (drawing && drawingPage === pageNum && currentStroke && currentStroke.length > 1) {
     ctx.strokeStyle = "#e6333e";
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
@@ -170,33 +229,46 @@ function redrawAnnotations() {
   }
 }
 
-function addPoint(e) {
-  const rect = annotCanvas.getBoundingClientRect();
+function addPoint(e, canvasEl) {
+  const rect = canvasEl.getBoundingClientRect();
   currentStroke.push([(e.clientX - rect.left) / scale, (e.clientY - rect.top) / scale]);
 }
-annotCanvas.addEventListener("pointerdown", (e) => {
+pdfScroll.addEventListener("pointerdown", (e) => {
   if (currentTool !== "pen") return;
+  const canvasEl = e.target.closest(".annot-canvas");
+  if (!canvasEl) return;
+  const wrapEl = canvasEl.closest(".pdf-page-wrap");
+  drawingPage = Number(wrapEl.dataset.page);
   drawing = true;
   currentStroke = [];
-  addPoint(e);
+  addPoint(e, canvasEl);
 });
-annotCanvas.addEventListener("pointermove", (e) => {
-  if (!drawing) return;
-  addPoint(e);
-  redrawAnnotations();
+pdfScroll.addEventListener("pointermove", (e) => {
+  if (!drawing || !drawingPage) return;
+  const entry = wrapsByPage.get(drawingPage);
+  if (!entry) return;
+  addPoint(e, entry.annotCanvasEl);
+  redrawAnnotationsForPage(drawingPage);
 });
 window.addEventListener("pointerup", () => {
-  if (drawing && currentStroke && currentStroke.length > 1) {
-    getPageAnnotations(currentPage).pen.push(currentStroke);
+  if (drawing && drawingPage && currentStroke && currentStroke.length > 1) {
+    getPageAnnotations(drawingPage).pen.push(currentStroke);
   }
+  const finishedPage = drawingPage;
   drawing = false;
   currentStroke = null;
-  redrawAnnotations();
+  drawingPage = null;
+  if (finishedPage) redrawAnnotationsForPage(finishedPage);
 });
 
 // ---------------- Highlight-to-ask ----------------
-function getPdfSpaceRects(range) {
-  const wrapRect = wrap.getBoundingClientRect();
+function getPageWrapFromNode(node) {
+  const el = node && (node.nodeType === 1 ? node : node.parentNode);
+  const wrapEl = el && el.closest && el.closest(".pdf-page-wrap");
+  return wrapEl ? wrapsByPage.get(Number(wrapEl.dataset.page)) : null;
+}
+function getPdfSpaceRects(range, wrapEl) {
+  const wrapRect = wrapEl.getBoundingClientRect();
   return Array.from(range.getClientRects()).map((r) => [
     (r.left - wrapRect.left) / scale,
     (r.top - wrapRect.top) / scale,
@@ -210,13 +282,14 @@ function hidePopover() {
 function showPopoverForSelection(sel) {
   const range = sel.getRangeAt(0);
   const rangeRect = range.getBoundingClientRect();
-  const wrapRect = wrap.getBoundingClientRect();
-  popover.style.left = `${rangeRect.left - wrapRect.left + rangeRect.width / 2}px`;
-  popover.style.top = `${rangeRect.top - wrapRect.top}px`;
+  const stageRect = pdfStage.getBoundingClientRect();
+  popover.style.left = `${rangeRect.left - stageRect.left + rangeRect.width / 2}px`;
+  popover.style.top = `${rangeRect.top - stageRect.top}px`;
   popover.classList.remove("is-hidden");
 }
-wrap.addEventListener("pointerdown", (e) => {
-  if (e.target !== askSelectionBtn) hidePopover();
+pdfScroll.addEventListener("pointerdown", (e) => {
+  if (e.target === askSelectionBtn) return;
+  hidePopover();
 });
 document.addEventListener("pointerup", (e) => {
   if (currentTool === "pen" || e.target === askSelectionBtn) return;
@@ -226,9 +299,8 @@ document.addEventListener("pointerup", (e) => {
       hidePopover();
       return;
     }
-    const anchor = sel.anchorNode;
-    const anchorEl = anchor && (anchor.nodeType === 1 ? anchor : anchor.parentNode);
-    if (!anchorEl || !textLayerDiv.contains(anchorEl)) {
+    const entry = getPageWrapFromNode(sel.anchorNode);
+    if (!entry) {
       hidePopover();
       return;
     }
@@ -240,14 +312,16 @@ askSelectionBtn.addEventListener("click", () => {
   if (!sel || sel.isCollapsed) return;
   const text = sel.toString().trim();
   if (!text) return;
-  if (currentTool === "highlight") {
+  const entry = getPageWrapFromNode(sel.anchorNode);
+  const pageNum = entry ? entry.page : currentPage;
+  if (currentTool === "highlight" && entry) {
     const range = sel.getRangeAt(0);
-    getPageAnnotations(currentPage).highlights.push({ rects: getPdfSpaceRects(range), text });
-    redrawAnnotations();
+    getPageAnnotations(pageNum).highlights.push({ rects: getPdfSpaceRects(range, entry.wrapEl), text });
+    redrawAnnotationsForPage(pageNum);
   }
   sel.removeAllRanges();
   hidePopover();
-  sendQuestion(`Giải thích đoạn mình vừa bôi đen trên trang ${currentPage}.`, text);
+  sendQuestion(`Giải thích đoạn mình vừa bôi đen trên trang ${pageNum}.`, text, pageNum);
 });
 
 // ---------------- Chat ----------------
@@ -323,7 +397,7 @@ function appendTutorMessage(result, trace) {
 
   el.innerHTML = parts.join("");
   el.querySelectorAll(".jump-page").forEach((btn) => {
-    btn.addEventListener("click", () => goToPage(Number(btn.dataset.page)));
+    btn.addEventListener("click", () => scrollToPage(Number(btn.dataset.page), { smooth: true }));
   });
   messagesEl.append(el);
   scrollMessages();
@@ -333,7 +407,7 @@ function setComposerDisabled(disabled) {
   form.classList.toggle("is-disabled", disabled);
 }
 
-async function sendQuestion(question, selectionText) {
+async function sendQuestion(question, selectionText, pageOverride) {
   const trimmed = (question || "").trim();
   if (!trimmed) return;
   if (panel.classList.contains("is-hidden")) setPanel(true);
@@ -346,7 +420,7 @@ async function sendQuestion(question, selectionText) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         question: trimmed,
-        page: currentPage,
+        page: pageOverride || currentPage,
         selection: selectionText || null,
         history: conversationHistory
       })
@@ -379,9 +453,11 @@ document.querySelectorAll("[data-question]").forEach((btn) => {
 
 // ---------------- Boot ----------------
 async function init() {
-  pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
+  pdfDoc = await pdfjsLib.getDocument({ url: PDF_URL }).promise;
   numPages = pdfDoc.numPages;
-  await renderPage(1);
+  buildPageShells();
+  await renderAllPages();
+  setupIntersectionObserver();
 }
 init().catch((err) => {
   console.error(err);
