@@ -21,9 +21,12 @@
       <section class="workspace">
         <section class="slide-area" aria-label="Trình đọc slide">
           <div class="toolbar">
-            <button class="tool active" id="tool-read" data-tool="read" title="Đọc / bôi đen để hiện menu Highlight & Hỏi AI">⌁ Đọc</button>
+            <button class="tool active" id="tool-read" data-tool="read" title="Đọc / bôi đen tài liệu">⌁ Đọc</button>
             <button class="tool" id="tool-pen" data-tool="pen" title="Vẽ ghi chú tay lên slide">✎ Bút</button>
             <button class="tool tool-ghost" id="clear-annotations" title="Xoá nét vẽ/highlight trên trang này">🗑</button>
+            <span class="toolbar-divider"></span>
+            <button class="tool tool-highlight-btn" id="apply-highlight" title="Tô highlight đoạn vừa bôi đen">🖍 Highlight</button>
+            <button class="tool tool-ask-btn" id="ask-selection" title="Hỏi AI về đoạn vừa bôi đen">✨ Hỏi AI</button>
             <span class="toolbar-divider"></span>
             <span class="page-pill">Tài liệu gốc</span>
             <button class="zoom" id="zoom-out">−</button><strong id="zoom-label">100%</strong><button class="zoom" id="zoom-in">+</button>
@@ -32,10 +35,6 @@
             <div class="slide-card-header"><span id="page-indicator">Trang 1 · Tài liệu bài giảng</span><span>d1-slide-hackathon.pdf</span></div>
             <div class="pdf-stage" id="pdf-stage">
               <div class="pdf-scroll" id="pdf-scroll"></div>
-              <div id="selection-popover" class="selection-popover is-hidden">
-                <button id="apply-highlight" type="button" title="Đánh dấu highlight đoạn đã chọn">🖍 Highlight</button>
-                <button id="ask-selection" type="button" title="Hỏi AI về đoạn đã chọn">✨ Hỏi bằng AI</button>
-              </div>
               <div class="pdf-caption"><span class="pdf-dot"></span> <span id="tool-caption">Đang xem PDF · Day 1 Foundation</span></div>
             </div>
           </div>
