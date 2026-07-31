@@ -91,6 +91,6 @@ Chi tiết từng case + phát hiện: `eval/golden-set-run-01.md`. Raw response
 
 | Lượt | Ngày giờ | Đạt/Tổng | % | Case fail (ID) | Nguyên nhân chính | Người chạy |
 |---|---|---|---|---|---|---|
-| 1 | 2026-07-31 ~10:20 | 20/27 | 74,1% | C02, C03, C13, C12, N08, N10, R03 | Trích dẫn không đầy đủ khi trả lời tổng hợp nhiều đoạn (C02/N08/R03) · tự mâu thuẫn số liệu (C03) · im lặng bỏ sót ý không có căn cứ thay vì báo rõ (C13) · bỏ sót phần đối chiếu domain (C12) · tự mô tả sai khả năng hệ thống (N10) | script tự động qua `/api/chat` |
+| 1 | 2026-07-31 ~10:20 | 19/27 | 70,4% | C02, C03, C05, C13, C12, N08, N10, R03 | Trích dẫn không đầy đủ khi trả lời tổng hợp nhiều đoạn (C02/N08/R03) · tự mâu thuẫn số liệu (C03) · câu hỏi lại tự giả định tiền đề sai khi từ chối input rác (C05) · im lặng bỏ sót ý không có căn cứ thay vì báo rõ (C13) · bỏ sót phần đối chiếu domain (C12) · tự mô tả sai khả năng hệ thống (N10) | script tự động qua `/api/chat` |
 
-> Quality bar chưa chốt trong `spec.md` §7 — số 74,1% ở lượt 1 dùng để nhóm tham khảo khi chốt bar trước 23:59 N1, chưa phải kết luận đạt/không đạt chính thức.
+> Quality bar chưa chốt trong `spec.md` §7 — số 70,4% ở lượt 1 dùng để nhóm tham khảo khi chốt bar trước 23:59 N1, chưa phải kết luận đạt/không đạt chính thức.

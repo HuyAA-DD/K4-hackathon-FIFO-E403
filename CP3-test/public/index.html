@@ -13,30 +13,49 @@
         <div class="brand"><span class="brand-mark">◆</span><strong>V<span>Learn</span></strong></div>
         <span class="divider"></span>
         <div class="file-meta">
-          <strong>d1-slide-hackathon.pdf</strong>
+          <strong id="topbar-filename">d1-slide-hackathon.pdf</strong>
           <small>COMP2010 · AI Thực Chiến</small>
         </div>
       </header>
 
       <section class="workspace">
+        <aside id="doc-sidebar" class="doc-sidebar" aria-label="Danh sách slide">
+          <div class="doc-sidebar-header">
+            <span class="doc-sidebar-icon">▤</span>
+            <div>
+              <strong>Học liệu</strong>
+              <small>Chọn slide đang xem</small>
+            </div>
+          </div>
+          <div id="doc-list" class="doc-list"></div>
+          <div class="doc-sidebar-footer">
+            <button type="button" id="add-slide-btn" class="add-slide-btn">+ Thêm slide</button>
+            <input type="file" id="add-slide-input" accept="application/pdf" hidden />
+            <p class="doc-sidebar-hint">Tài liệu bạn thêm chỉ lưu trên trình duyệt này (cache máy bạn), không gửi lên server.</p>
+          </div>
+        </aside>
+        <button id="sidebar-toggle" class="sidebar-toggle" aria-expanded="true" aria-controls="doc-sidebar">‹</button>
+
         <section class="slide-area" aria-label="Trình đọc slide">
           <div class="toolbar">
-            <button class="tool active" id="tool-read" data-tool="read" title="Đọc / bôi đen để hỏi Tutor">⌁ Đọc</button>
+            <button class="tool active" id="tool-read" data-tool="read" title="Đọc / bôi đen text để hỏi AI">⌁ Đọc</button>
+            <button class="tool" id="tool-highlight" data-tool="highlight" title="Kéo chuột để tô highlight tự do — dùng được cả trên ảnh/biểu đồ không phải text">🖍 Highlight</button>
             <button class="tool" id="tool-pen" data-tool="pen" title="Vẽ ghi chú tay lên slide">✎ Bút</button>
-            <button class="tool" id="tool-highlight" data-tool="highlight" title="Bôi đen đoạn cần hỏi và lưu highlight">⌁ Highlight</button>
-            <button class="tool tool-ghost" id="clear-annotations" title="Xoá nét vẽ/highlight trên trang này">🗑</button>
+            <button class="tool tool-ghost" id="clear-annotations" title="Xoá toàn bộ nét vẽ/highlight trên trang này">🗑</button>
             <span class="toolbar-divider"></span>
             <span class="page-pill">Tài liệu gốc</span>
             <button class="zoom" id="zoom-out">−</button><strong id="zoom-label">100%</strong><button class="zoom" id="zoom-in">+</button>
           </div>
           <div class="slide-card">
-            <div class="slide-card-header"><span id="page-indicator">Trang 1 · Tài liệu bài giảng</span><span>d1-slide-hackathon.pdf</span></div>
+            <div class="slide-card-header"><span id="page-indicator">Trang 1 · Tài liệu bài giảng</span><span id="slide-doc-name">d1-slide-hackathon.pdf</span></div>
             <div class="pdf-stage" id="pdf-stage">
               <div class="pdf-scroll" id="pdf-scroll"></div>
-              <div id="selection-popover" class="selection-popover is-hidden">
-                <button id="ask-selection" type="button">💬 Hỏi Tutor về đoạn này</button>
-              </div>
               <div class="pdf-caption"><span class="pdf-dot"></span> <span id="tool-caption">Đang xem PDF · Day 1 Foundation</span></div>
+            </div>
+            <div id="selection-popup" class="selection-popup is-hidden" role="toolbar" aria-label="Thao tác với đoạn đã chọn">
+              <button type="button" id="popup-highlight" class="popup-btn popup-highlight" title="Tô vàng đoạn này">🖍 Highlight</button>
+              <button type="button" id="popup-ask" class="popup-btn popup-ask" title="Hỏi AI về đoạn này">✨ Hỏi AI</button>
+              <button type="button" id="popup-delete" class="popup-btn popup-delete" title="Xoá highlight này">🗑 Xoá highlight</button>
             </div>
           </div>
           <div class="slide-footer">
@@ -51,7 +70,7 @@
         <aside id="tutor-panel" class="tutor-panel" aria-label="VLearn Tutor">
           <header class="tutor-header"><span class="bot-icon">♙</span><div><strong>VLearn Tutor</strong><small><i></i> Trợ lý học theo ngữ cảnh · AI thật</small></div><button id="close-tutor" class="icon-button" aria-label="Ẩn Tutor">×</button></header>
           <div id="messages" class="messages">
-            <p class="context">Ngữ cảnh: Slide Day 1 · d1-slide-hackathon.pdf</p>
+            <p class="context" id="tutor-context">Ngữ cảnh: Slide Day 1 · d1-slide-hackathon.pdf</p>
             <article class="message tutor-message">Chào bạn! Mình đọc trực tiếp nội dung slide đang mở để trả lời hoặc tóm tắt. Mỗi câu trả lời sẽ ghi rõ nguồn là <b>trong tài liệu</b>, <b>nguồn ngoài</b>, hoặc nói rõ khi <b>chưa đủ căn cứ</b>.</article>
             <div class="suggestions"><button data-question="Tóm tắt nội dung trang này">Tóm tắt trang này</button><button data-question="Transformer là gì?">Transformer là gì?</button></div>
           </div>
