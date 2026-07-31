@@ -128,13 +128,60 @@ Slide ứng viên: ${JSON.stringify(candidateSummary)}`;
   return { route: "irrelevant", confidence: "low" };
 }
 
-function getWebCitations(annotations) {
+function cleanCitationUrl(value) {
+  try {
+    const url = new URL(value);
+    for (const key of [...url.searchParams.keys()]) {
+      if (key.toLowerCase().startsWith("utm_") || ["ref", "source"].includes(key.toLowerCase())) url.searchParams.delete(key);
+    }
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
+function getWebCitations(annotations, limit = 8) {
   const seen = new Set();
   return annotations
     .filter((item) => item.type === "url_citation" && item.url)
-    .map((item) => ({ type: "external", title: item.title || new URL(item.url).hostname, url: item.url }))
+    .map((item) => {
+      const url = cleanCitationUrl(item.url);
+      return { type: "external", title: item.title || new URL(url).hostname, url };
+    })
     .filter((item) => !seen.has(item.url) && seen.add(item.url))
-    .slice(0, 5);
+    .slice(0, Math.max(1, limit));
 }
 
-module.exports = { isConfigured, respond, classifyRoute, getWebCitations, toPlainText };
+function harmonizeSourceCount(value, count) {
+  return toPlainText(value).replace(/\b\d+\s+nguồn\b/giu, `${count} nguồn`);
+}
+
+async function rewriteWithVerifiedSources({ question, answer, citations, listSources = false }) {
+  if (!citations?.length) return "";
+  const verifiedSources = citations.map((citation, index) => `${index + 1}. ${citation.title} — ${citation.url}`).join("\n");
+  const rewrite = await respond({
+    input: `Bạn là biên tập viên câu trả lời của VLearn Tutor.
+Viết lại câu trả lời nháp thành văn bản tiếng Việt thuần, tối đa 2 đoạn và khoảng 120 từ.
+Chỉ được nhắc tên tài liệu/website nằm trong DANH SÁCH NGUỒN ĐÃ XÁC MINH. Không thêm nguồn mới, không chèn URL, Markdown, bullet hoặc đánh số.
+Số nguồn được nói trong nội dung phải đúng bằng ${citations.length}. ${listSources ? "Người học đang yêu cầu tài liệu tham khảo: hãy nhắc tên lần lượt đủ các nguồn đã xác minh, mỗi nguồn đúng một lần." : "Chỉ dùng các nguồn đã xác minh để củng cố câu trả lời."}
+
+CÂU HỎI: ${question}
+
+CÂU TRẢ LỜI NHÁP:
+${answer}
+
+DANH SÁCH NGUỒN ĐÃ XÁC MINH:
+${verifiedSources}`
+  });
+  return harmonizeSourceCount(rewrite.text || answer, citations.length);
+}
+
+module.exports = {
+  isConfigured,
+  respond,
+  classifyRoute,
+  getWebCitations,
+  rewriteWithVerifiedSources,
+  harmonizeSourceCount,
+  toPlainText
+};

@@ -25,6 +25,7 @@ function normalizePhrase(value) {
     .toLocaleLowerCase("vi")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -57,7 +58,7 @@ function matchingPhrases(query) {
   return [...new Set(phrases.filter((phrase) => phrase.length >= 5))];
 }
 
-function searchPages(query, pages, limit = 3) {
+function searchPages(query, pages, limit = 6) {
   const tokens = expandQuery(query);
   if (!tokens.length) return [];
   const phrases = matchingPhrases(query);
