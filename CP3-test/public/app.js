@@ -63,6 +63,7 @@ let currentStroke = null;
 let pageObserver = null;
 let activeDeckId = localStorage.getItem(LAST_DECK_KEY) || "d1";
 let customDecks = []; // [{ id, name, addedAt, size, blob, arrayBuffer }]
+let deckLoadToken = 0; // tăng mỗi lần switchDeck() để huỷ các lượt render dở dang của deck cũ
 
 const wrapsByPage = new Map(); // page -> { page, wrapEl, canvasEl, textLayerEl, annotCanvasEl }
 const annotationsByPage = new Map();
@@ -204,10 +205,13 @@ async function renderPage(pageNum) {
 }
 
 async function renderAllPages() {
+  const token = deckLoadToken; // huỷ giữa chừng nếu người dùng chuyển sang deck khác trước khi render xong
   for (let p = 1; p <= numPages; p++) {
+    if (token !== deckLoadToken) return;
     pageIndicator.textContent = `Đang tải trang ${p}/${numPages}...`;
     await renderPage(p);
   }
+  if (token !== deckLoadToken) return;
   updatePageLabel();
   zoomLabel.textContent = `${Math.round((scale / BASE_SCALE) * 100)}%`;
 }
@@ -242,6 +246,7 @@ function updateHeaderForDeck(meta) {
   topbarFilenameEl.textContent = meta.file || meta.label;
   slideDocNameEl.textContent = meta.file || meta.label;
   tutorContextEl.textContent = `Ngữ cảnh: ${meta.label}${meta.file ? " · " + meta.file : ""}`;
+  setTool(currentTool); // làm mới caption đáy trang — text mặc định "Day 1 Foundation" trong HTML gốc không tự cập nhật khi đổi deck
 }
 
 function scrollToPage(pageNum, { smooth = false } = {}) {
@@ -583,9 +588,17 @@ function appendTutorMessage(result, trace, activeMeta) {
   el.className = "message tutor-message";
   const parts = [`<p>${escapeHtml(result.answer || "")}</p>`];
 
-  if (result.source_type === "slide") {
-    const lines =
-      (result.citations || [])
+  if (result.source_type === "insufficient") {
+    const q = result.clarifying_question
+      ? `<p class="citation-quote"><strong>Hỏi lại:</strong> ${escapeHtml(result.clarifying_question)}</p>`
+      : `<p class="citation-quote">Chưa tìm thấy căn cứ đáng tin cho câu hỏi này.</p>`;
+    parts.push(`<div class="citation insufficient"><span>Chưa đủ căn cứ</span>${q}</div>`);
+  }
+
+  // Dropdown 1: trích dẫn trực tiếp từ slide/tài liệu đang xem.
+  const slideCitations = result.source_type === "slide" ? result.citations || [] : [];
+  const slideBody = slideCitations.length
+    ? slideCitations
         .map((c) => {
           const pageNum = Number(c.page) || "?";
           let deckLabel;
@@ -600,18 +613,29 @@ function appendTutorMessage(result, trace, activeMeta) {
           const jumpBtn = canJump ? `<button type="button" class="jump-page" data-page="${pageNum}">→ Xem trang ${pageNum}</button>` : "";
           return `<p class="citation-quote">${escapeHtml(deckLabel)} · Trang ${pageNum}: “${escapeHtml(c.quote || "")}”${jumpBtn}</p>`;
         })
-        .join("") || `<p class="citation-quote">(không có trích dẫn cụ thể)</p>`;
-    parts.push(`<div class="citation"><span>Trong tài liệu</span>${lines}</div>`);
-  } else if (result.source_type === "external") {
-    const name = escapeHtml(result.external_source?.name || "Nguồn ngoài không xác định");
-    const note = result.external_source?.note ? `<p class="citation-quote">${escapeHtml(result.external_source.note)}</p>` : "";
-    parts.push(`<div class="citation external"><span>Nguồn ngoài</span><strong>${name}</strong>${note}</div>`);
+        .join("")
+    : `<p class="dd-empty">Câu trả lời này không có trích dẫn trực tiếp từ slide.</p>`;
+  parts.push(
+    `<details class="citation-dropdown slide-dd"><summary>📄 Trích dẫn từ slide${slideCitations.length ? ` (${slideCitations.length})` : ""}</summary><div class="dd-body">${slideBody}</div></details>`
+  );
+
+  // Dropdown 2: tham khảo thêm — link ngoài (further_reading) hoặc tên nguồn ngoài (external_source) nếu có.
+  const fr = result.further_reading;
+  let refBody;
+  if (fr?.url) {
+    const linkLabel = escapeHtml(fr.title || fr.url);
+    refBody =
+      `<p class="citation-quote"><a href="${escapeHtml(fr.url)}" target="_blank" rel="noopener noreferrer">${linkLabel}</a></p>` +
+      (fr.note ? `<p class="citation-quote">${escapeHtml(fr.note)}</p>` : "") +
+      `<span class="dd-disclaimer">Đường link do AI gợi ý — tự kiểm tra trước khi dùng.</span>`;
+  } else if (result.source_type === "external" && result.external_source?.name) {
+    refBody =
+      `<p class="citation-quote"><strong>${escapeHtml(result.external_source.name)}</strong></p>` +
+      (result.external_source.note ? `<p class="citation-quote">${escapeHtml(result.external_source.note)}</p>` : "");
   } else {
-    const q = result.clarifying_question
-      ? `<p class="citation-quote"><strong>Hỏi lại:</strong> ${escapeHtml(result.clarifying_question)}</p>`
-      : `<p class="citation-quote">Chưa tìm thấy căn cứ đáng tin trong slide.</p>`;
-    parts.push(`<div class="citation insufficient"><span>Chưa đủ căn cứ</span>${q}</div>`);
+    refBody = `<p class="dd-empty">Không có nguồn ngoài được đề xuất cho câu trả lời này.</p>`;
   }
+  parts.push(`<details class="citation-dropdown external-dd"><summary>🔗 Tham khảo thêm</summary><div class="dd-body">${refBody}</div></details>`);
 
   if (result.scope_note) parts.push(`<p class="scope-note">${escapeHtml(result.scope_note)}</p>`);
 
@@ -750,18 +774,22 @@ function renderDocList() {
 
 async function switchDeck(id) {
   if (id === activeDeckId && pdfDoc) return;
+  const token = ++deckLoadToken;
   activeDeckId = id;
   localStorage.setItem(LAST_DECK_KEY, id);
   renderDocList();
   const meta = getDeckMetaById(id);
   updateHeaderForDeck(meta);
   pageIndicator.textContent = "Đang tải tài liệu...";
-  pdfDoc = await getDeckDocument(meta);
+  const doc = await getDeckDocument(meta);
+  if (token !== deckLoadToken) return; // đã có lượt chuyển deck khác bắt đầu sau đó, bỏ qua kết quả cũ
+  pdfDoc = doc;
   numPages = pdfDoc.numPages;
   currentPage = 1;
   annotationsByPage.clear();
   buildPageShells();
   await renderAllPages();
+  if (token !== deckLoadToken) return;
   setupIntersectionObserver();
 }
 
@@ -780,6 +808,7 @@ async function removeCustomDeck(id) {
 function setSidebar(open) {
   docSidebar.classList.toggle("is-hidden", !open);
   sidebarToggle.classList.toggle("is-collapsed", !open);
+  sidebarToggle.textContent = open ? "‹" : "›";
   sidebarToggle.setAttribute("aria-expanded", String(open));
 }
 sidebarToggle.addEventListener("click", () => setSidebar(docSidebar.classList.contains("is-hidden")));
@@ -818,8 +847,12 @@ async function init() {
   } catch (err) {
     console.warn("Không đọc được cache slide đã thêm trước đó:", err);
   }
-  if (!getDeckMetaById(activeDeckId) || (!BUILTIN_DECKS[activeDeckId] && !customDecks.some((d) => d.id === activeDeckId))) {
+  if (!BUILTIN_DECKS[activeDeckId] && !customDecks.some((d) => d.id === activeDeckId)) {
     activeDeckId = "d1";
+  }
+  // Mở nhẹ (chỉ đọc metadata, chưa render trang) các bộ chưa active để sidebar hiện số trang ngay.
+  for (const d of Object.values(BUILTIN_DECKS)) {
+    if (d.id !== activeDeckId) getDeckDocument(d).catch(() => {});
   }
   await switchDeck(activeDeckId);
 }

@@ -31,7 +31,7 @@ button, input { font:inherit; }
 .add-slide-btn:hover { background:#eef7fd; border-style:solid; }
 .doc-sidebar-hint { margin:0; font-size:10px; line-height:1.4; color:#9aacc9; }
 .sidebar-toggle { position:absolute; z-index:3; left:250px; top:45%; width:26px; height:76px; border:0; border-radius:0 20px 20px 0; background:#fff; color:#7d9abb; box-shadow:0 3px 10px #1e405322; font-size:20px; cursor:pointer; transition:left .28s ease; }
-.sidebar-toggle.is-collapsed { left:0; transform:scaleX(-1); }
+.sidebar-toggle.is-collapsed { left:0; }
 @media (max-width:1180px) { .doc-sidebar { width:210px; flex-basis:210px; } .doc-sidebar.is-hidden { margin-left:-210px; } .sidebar-toggle { left:210px; } }
 .toolbar { align-self:center; display:flex; align-items:center; gap:5px; padding:7px 12px; min-height:53px; border:1px solid var(--line); border-radius:18px; background:#fff; box-shadow:0 5px 18px #34516b14; }.tool,.zoom { border:1px solid transparent; border-radius:9px; background:#fff; color:#3c5271; padding:8px 11px; font-weight:650; cursor:pointer; }.tool.active { border-color:#94bee8; color:#145a99; background:#f3f8fe; }.tool-ghost { color:#9a3b3b; }.toolbar-divider { width:1px; height:28px; margin:0 8px; background:var(--line); }.page-pill { background:#f1f6fb; border-radius:20px; padding:7px 12px; color:#155590; font-weight:700; font-size:13px; }
 

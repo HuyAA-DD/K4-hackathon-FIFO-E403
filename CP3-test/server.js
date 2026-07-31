@@ -173,6 +173,11 @@ QUY TẮC NGUỒN:
 - source_type="external": dùng cho MỌI câu hỏi kiến thức AI/LLM/công nghệ hợp lý mà bạn đủ tự tin trả lời đúng nhưng nội dung không có trong 2 bộ slide (định nghĩa thuật ngữ, công thức, tên bài báo/mô hình phổ biến...). Đây là nhánh trả lời bình thường, không phải từ chối — hãy chủ động dùng khi phù hợp thay vì mặc định né sang "insufficient". PHẢI gọi cite_external_source trước, rồi điền external_source.name/note khớp với kết quả tool trả về (không bịa URL nếu không chắc).
 - source_type="insufficient": chỉ dùng khi mơ hồ (②), thật sự ngoài thẩm quyền (③ đúng nghĩa), hoặc không đủ tự tin về kiến thức domain (④) — không dùng chỉ vì "không có trong slide" khi bạn thực ra biết câu trả lời.
 
+QUY TẮC "THAM KHẢO THÊM" (further_reading — tuỳ chọn, độc lập với source_type, hiển thị ở dropdown riêng cho học viên):
+- Với khái niệm/thuật ngữ AI/LLM/công nghệ phổ biến có trang Wikipedia (Transformer, attention, RLHF, gradient descent, sigmoid function, backpropagation...), LUÔN điền further_reading với link Wikipedia tiếng Anh đúng dạng "https://en.wikipedia.org/wiki/Ten_Khai_Niem" (viết hoa chữ đầu mỗi từ, dấu gạch dưới thay khoảng trắng) — đây là nguồn ổn định, hầu như luôn tồn tại cho thuật ngữ phổ biến, không cần chắc chắn tuyệt đối như các URL khác.
+- Với nguồn cụ thể khác (một bài báo/paper, một trang web riêng lẻ...): chỉ điền "url" khi chắc chắn 100% đúng — không bịa. Không chắc thì vẫn điền "title" (tên tài liệu, ví dụ "Attention Is All You Need — Vaswani et al. 2017") để học viên tự tìm, nhưng để trống "url".
+- Đừng chỉ nhắc tên nguồn/bài báo trong "answer" rồi bỏ trống further_reading — hãy đưa nó vào further_reading để hiển thị đúng ở dropdown "Tham khảo thêm", giữ answer gọn gàng.
+
 QUY TẮC HÀNH VI (HAX/PAIR):
 - Luôn điền scope_note một câu ngắn nói rõ phạm vi bạn trả lời được đến đâu, nêu rõ đã dùng bộ slide nào.
 - Giải thích ngắn gọn vì sao câu trả lời đúng/kèm căn cứ, gắn với hành động tiếp theo học viên có thể làm (vd: xem lại trang X, hỏi lại rõ hơn).
@@ -280,6 +285,16 @@ const tools = [
               note: { type: "string", description: "Vì sao cần dùng nguồn ngoài slide." }
             }
           },
+          further_reading: {
+            type: "object",
+            description:
+              "Tuỳ chọn, độc lập với source_type — gợi ý thêm 1 link cho học viên đọc thêm (áp dụng được cho MỌI source_type, kể cả 'slide'). Với khái niệm phổ biến có trang Wikipedia, LUÔN điền url dạng 'https://en.wikipedia.org/wiki/Ten_Khai_Niem'. Với nguồn cụ thể khác (paper, trang web riêng) chỉ điền url khi chắc chắn 100% đúng — nếu không chắc vẫn điền title nhưng để trống url, đừng bịa link.",
+            properties: {
+              title: { type: "string", description: "Tên nguồn/tài liệu tham khảo thêm." },
+              url: { type: "string", description: "URL đầy đủ (bắt đầu bằng http/https). Ưu tiên link Wikipedia cho khái niệm phổ biến; chỉ điền URL khác khi chắc chắn." },
+              note: { type: "string", description: "Một câu ngắn giải thích vì sao nguồn này đáng đọc thêm." }
+            }
+          },
           clarifying_question: {
             type: "string",
             description: "Chỉ điền khi source_type = 'insufficient' và nguyên nhân là câu hỏi/đoạn bôi đen chưa đủ rõ."
@@ -295,14 +310,16 @@ const tools = [
   }
 ];
 
-async function callOpenAI(messages, forceFinal) {
+const CUSTOM_TOOLS = tools.filter((t) => ["cite_external_source", "final_answer"].includes(t.function.name));
+
+async function callOpenAI(messages, forceFinal, toolsOverride) {
   if (!OPENAI_API_KEY) {
     throw new Error("MISSING_API_KEY");
   }
   const body = {
     model: MODEL,
     messages,
-    tools,
+    tools: toolsOverride || tools,
     tool_choice: forceFinal ? { type: "function", function: { name: "final_answer" } } : "auto",
     temperature: 0.2
   };
@@ -341,8 +358,138 @@ function canonicalToolKey(name, args) {
 
 const MAX_TOOL_ROUNDS = 6;
 
-async function answerQuestion({ question, page, selection, history }) {
-  const deckId = DEFAULT_DECK; // UI hiện chỉ hiển thị bộ Day 1; AI có thể tự mở rộng sang bộ khác qua tool
+// ---------- Câu hỏi về tài liệu học viên tự tải lên (chỉ cache trình duyệt, server không có file) ----------
+// Không có tool tìm kiếm/đọc toàn văn vì server không lưu file — chỉ dùng đúng phần text trang hiện tại +
+// lân cận mà trình duyệt đã tự trích xuất sẵn và gửi kèm request.
+function buildCustomSystemPrompt(label) {
+  return `Bạn là VLearn Tutor — trợ lý học tập theo ngữ cảnh. Học viên đang xem một tài liệu PDF họ tự tải lên trình duyệt (KHÔNG lưu trên server), tên "${label}". Bạn CHỈ được cung cấp nội dung trang hiện tại (và trang liền kề nếu có) do trình duyệt trích xuất sẵn — không có công cụ tìm kiếm/đọc toàn bộ tài liệu này.
+
+NHIỆM VỤ: giúp học viên hiểu hoặc tóm tắt đúng nội dung đoạn văn bản được cung cấp (hoặc đoạn học viên vừa bôi đen), luôn cho biết câu trả lời có căn cứ ở trang nào để học viên tự kiểm chứng.
+
+BẠN CÓ 2 TOOL:
+- cite_external_source({ topic, claim }): gọi TRƯỚC khi dùng source_type="external", để đăng ký nguồn kiến thức nền nhất quán.
+- final_answer(...): BẮT BUỘC dùng để kết thúc mọi lượt trả lời.
+
+QUY TẮC CỨNG — 4 lớp chỗ khó của dự án:
+① Nguồn sự thật — TUYỆT ĐỐI không bịa nội dung không có trong đoạn văn bản được cung cấp. Nếu không có trong đoạn đó nhưng là kiến thức AI/LLM phổ biến đáng tin, dùng source_type="external". Chỉ dùng "insufficient" khi vừa không có trong đoạn được cung cấp vừa không đủ tự tin.
+② Mơ hồ / thiếu thông tin — nếu câu hỏi/đoạn bôi đen chưa rõ đang hỏi về khái niệm nào, dùng source_type="insufficient" kèm clarifying_question.
+③ Ngoài phạm vi / thẩm quyền — chỉ áp dụng cho yêu cầu ngoài vai trò Tutor (làm hộ bài tập môn khác, xin thông tin cá nhân, đóng vai hệ thống khác...). Từ chối lịch sự, ngắn gọn bằng source_type="insufficient".
+④ Đặc thù domain — nếu không chắc chắn 100% về một chi tiết kỹ thuật AI/LLM, ưu tiên "insufficient" hoặc "external" có ghi chú rõ, không chém cho có vẻ tự tin.
+
+QUY TẮC NGUỒN:
+- source_type="slide": lấy trực tiếp từ đoạn văn bản trang hiện tại/lân cận đã cung cấp. Citations chỉ cần "page" (đúng số trang được cung cấp) và "quote" (trích ngắn dưới 25 từ) — ĐỪNG điền trường "deck" vì tài liệu này không thuộc bộ chính khoá d1/d2.
+- source_type="external": dùng cho kiến thức AI/LLM phổ biến hợp lý không có trong đoạn được cung cấp nhưng bạn đủ tự tin. PHẢI gọi cite_external_source trước, rồi điền external_source khớp kết quả tool.
+- source_type="insufficient": chỉ dùng khi mơ hồ (②), thật sự ngoài thẩm quyền (③), hoặc không đủ tự tin về kiến thức domain (④).
+- further_reading (tuỳ chọn, mọi source_type): với khái niệm phổ biến có trang Wikipedia, LUÔN điền link dạng "https://en.wikipedia.org/wiki/Ten_Khai_Niem" (nguồn ổn định, không cần chắc tuyệt đối). Với nguồn cụ thể khác chỉ điền "url" khi chắc chắn — không chắc thì vẫn điền "title" và để trống "url". Đừng chỉ nhắc tên nguồn trong "answer" rồi bỏ trống further_reading.
+
+QUY TẮC HÀNH VI (HAX/PAIR):
+- Luôn điền scope_note nói rõ bạn chỉ đọc được trang nào của tài liệu "${label}" (không có toàn văn).
+- Giải thích ngắn gọn vì sao câu trả lời đúng/kèm căn cứ, gắn hành động tiếp theo (vd: xem lại trang X, hỏi lại rõ hơn).
+- Văn phong tiếng Việt, ngắn gọn, thân thiện, không dùng thuật ngữ khó mà không giải thích, không khẳng định chắc hơn mức thực sự có căn cứ.`;
+}
+
+async function answerCustomDoc({ question, selection, history, customDoc }) {
+  const label = String(customDoc.label || "Tài liệu đã tải lên").slice(0, 200);
+  const pageNum = Number.isInteger(customDoc.page) && customDoc.page >= 1 ? customDoc.page : 1;
+  const pageText = String(customDoc.pageText || "").trim().slice(0, 6000) || "(không trích xuất được nội dung trang này — có thể là ảnh/scan không có lớp text)";
+  const neighborText = String(customDoc.neighborText || "").slice(0, 6000);
+
+  const contextParts = [
+    `Học viên đang xem Trang ${pageNum} của tài liệu tự tải lên "${label}".`,
+    `NỘI DUNG TRANG ${pageNum} (trình duyệt trích xuất):\n"""${pageText}"""`
+  ];
+  if (neighborText) contextParts.push(`NỘI DUNG TRANG LÂN CẬN:\n"""${neighborText}"""`);
+  if (selection && String(selection).trim()) {
+    contextParts.push(`Học viên vừa BÔI ĐEN đoạn sau trên Trang ${pageNum}:\n"""${String(selection).trim()}"""`);
+  }
+  contextParts.push(`Câu hỏi của học viên: ${question.trim()}`);
+
+  const messages = [
+    { role: "system", content: buildCustomSystemPrompt(label) },
+    ...sanitizeHistory(history),
+    { role: "user", content: contextParts.join("\n\n") }
+  ];
+
+  const trace = [];
+  let finalArgs = null;
+  let round = 0;
+  const MAX_ROUNDS_CUSTOM = 3;
+
+  while (round < MAX_ROUNDS_CUSTOM && !finalArgs) {
+    const forceFinal = round === MAX_ROUNDS_CUSTOM - 1;
+    const completion = await callOpenAI(messages, forceFinal, CUSTOM_TOOLS);
+    const msg = completion.choices?.[0]?.message;
+    if (!msg) throw new Error("OPENAI_NO_MESSAGE");
+
+    if (msg.tool_calls && msg.tool_calls.length > 0) {
+      messages.push(msg);
+      for (const call of msg.tool_calls) {
+        const name = call.function.name;
+        let args = {};
+        try {
+          args = JSON.parse(call.function.arguments || "{}");
+        } catch {
+          args = {};
+        }
+
+        if (name === "final_answer") {
+          if (!finalArgs) {
+            try {
+              finalArgs = JSON.parse(call.function.arguments || "{}");
+            } catch {
+              throw new Error("OPENAI_BAD_FINAL_ANSWER_JSON");
+            }
+            trace.push({ tool: "final_answer", args: finalArgs });
+          }
+          messages.push({ role: "tool", tool_call_id: call.id, content: "ok" });
+          continue;
+        }
+        if (name === "cite_external_source") {
+          const cited = citeExternalSource({ topic: args.topic, claim: args.claim });
+          trace.push({ tool: "cite_external_source", topic: args.topic, reused_citation: Boolean(cited.cached) });
+          messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(cited) });
+          continue;
+        }
+        messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify({ error: "tool không khả dụng cho tài liệu tự tải lên" }) });
+      }
+    } else if (msg.content) {
+      messages.push(msg);
+      messages.push({
+        role: "user",
+        content: "Hãy gọi tool final_answer để trả lời có cấu trúc — không trả lời bằng văn bản tự do."
+      });
+    } else {
+      break;
+    }
+    round++;
+  }
+
+  if (!finalArgs) {
+    finalArgs = {
+      source_type: "insufficient",
+      answer: "Mình chưa xác định chắc chắn được câu trả lời có căn cứ trong trang này sau vài lượt thử. Bạn hỏi cụ thể hơn giúp mình nhé.",
+      clarifying_question: "Bạn có thể nói rõ hơn đang hỏi về phần nào trong trang này không?",
+      scope_note: `Mình chỉ đọc được trang ${pageNum} (và lân cận) của tài liệu "${label}" do bạn tải lên.`
+    };
+  }
+
+  if (finalArgs.source_type === "external" && finalArgs.external_source?.name) {
+    const alreadyCited = trace.some((t) => t.tool === "cite_external_source" && normalizeTopic(t.topic) === normalizeTopic(finalArgs.external_source.name));
+    if (!alreadyCited) {
+      const cited = citeExternalSource({ topic: finalArgs.external_source.name, claim: finalArgs.external_source.note || finalArgs.answer });
+      finalArgs.external_source = { name: cited.name, note: cited.note };
+      trace.push({ tool: "cite_external_source", topic: cited.name, reused_citation: Boolean(cited.cached), auto: true });
+    }
+  }
+
+  return { result: finalArgs, page: pageNum, deck: "custom", deckLabel: label, trace };
+}
+
+async function answerQuestion({ question, page, selection, history, deck: requestedDeckId, customDoc }) {
+  if (customDoc && typeof customDoc.pageText === "string") {
+    return answerCustomDoc({ question, selection, history, customDoc });
+  }
+  const deckId = resolveDeckId(requestedDeckId, DEFAULT_DECK); // mặc định d1 nếu client không chỉ định / gửi id lạ
   const deck = await getDeck(deckId);
   const pageNum = Number.isInteger(page) && page >= 1 && page <= deck.pages.length ? page : 1;
   const currentPageText = deck.pages[pageNum - 1]?.text || "(không đọc được nội dung trang này)";
@@ -501,7 +648,7 @@ app.use("/vendor/pdfjs", express.static(path.join(__dirname, "node_modules/pdfjs
 app.use(express.static(path.join(__dirname, "public")));
 
 app.post("/api/chat", async (req, res) => {
-  const { question, page, selection, history } = req.body || {};
+  const { question, page, selection, history, deck, customDoc } = req.body || {};
   if (typeof question !== "string" || !question.trim()) {
     return res.status(400).json({ error: "Thiếu câu hỏi." });
   }
@@ -509,7 +656,7 @@ app.post("/api/chat", async (req, res) => {
     return res.status(500).json({ error: "Server chưa cấu hình OPENAI_API_KEY (.env)." });
   }
   try {
-    const data = await answerQuestion({ question, page, selection, history });
+    const data = await answerQuestion({ question, page, selection, history, deck, customDoc });
     res.json(data);
   } catch (err) {
     console.error("[/api/chat]", err);
