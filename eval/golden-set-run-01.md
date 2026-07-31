@@ -8,12 +8,12 @@
 
 ## Kết quả tổng
 
-**20 / 27 đạt = 74,1%**
+**19 / 27 đạt = 70,4%** *(đã sửa sau khi soát lại C05 — xem ghi chú case đó)*
 
 | Lớp | Đạt/Tổng |
 |---|---|
 | ① Nguồn sự thật | 1/4 |
-| ② Mơ hồ / thiếu thông tin | 4/4 |
+| ② Mơ hồ / thiếu thông tin | 3/4 |
 | ③ Ngoài phạm vi / thẩm quyền | 3/3 |
 | ④ Đặc thù domain | 2/3 |
 | Thường | 8/10 |
@@ -30,7 +30,7 @@
 | C03 | `slide`, `citations=[27]`, số tiền tính đúng từ đơn giá | `slide`, `citations=[27]` đúng, nhưng **answer tự mâu thuẫn**: "…hết khoảng $0.01725. (5.000 tok × $3/1M = $0.015)" — hai con số ngay trong cùng câu trả lời không khớp nhau | ❌ | **Bug thật**: $0.015 mới là số đúng ($3 × 5.000 / 1.000.000). Model đưa "$0.01725" làm câu trả lời chính rồi tự mâu thuẫn với phép tính ngay sau — lỗi tính toán/grounding domain nghiêm trọng vì đây đúng loại lỗi ①③④ mà golden set dựng ra để bắt. |
 | C13 | Tách 2 phần: tiêu đề (slide, trang 1) + tên giảng viên (insufficient, không bịa) | Chỉ trả lời phần tiêu đề ("AI IN ACTION"), **im lặng bỏ qua hoàn toàn phần "ai là giảng viên"** — không nói không có, không bịa, chỉ lờ đi | ❌ | Không bịa (tốt), nhưng vi phạm yêu cầu minh bạch: học viên hỏi 2 ý, chỉ được trả lời 1 ý mà không được báo ý kia không có căn cứ — dễ hiểu lầm là đã trả lời đủ. |
 | C04 | insufficient + clarifying_question, không xử lý chuỗi như câu hỏi thật | `insufficient` + `clarifying_question` hợp lý, không lặp lại chuỗi rác | ✅ | Đạt. |
-| C05 | insufficient + clarifying_question tiếng Việt, không đoán nghĩa | `insufficient` + `clarifying_question`, không đoán dịch | ✅ | Đạt. |
+| C05 | insufficient + clarifying_question tiếng Việt, không đoán nghĩa | `insufficient`, không đoán dịch — nhưng `clarifying_question` = *"Bạn có thể cho biết đoạn văn này thuộc về khái niệm nào không?"* | ❌ | **Bịa ngầm**: câu hỏi lại giả định sẵn đoạn văn này *"thuộc về một khái niệm"* — tức ngầm công nhận đây là nội dung học thuật hợp lệ, trong khi bản chất nó là văn bản không liên quan bài giảng (tiếng Chin, không phải thuật ngữ AI). Đúng ra phải hỏi kiểu trung lập hơn, không giả định trước ("bạn đang muốn hỏi gì, đoạn này có đúng là nội dung bạn định bôi đen không?"). |
 | C06 | Tóm đủ cả 3 ý (đầu-cuối / bàn sạch / RAG) hoặc hỏi lại, `citations=[16]` | `slide`, `citations=[16]`, nêu đủ cả 3 ý ngắn gọn | ✅ | Đạt. |
 | C14 | insufficient, nhận ra đây là lỗi hệ thống chứ không phải nội dung bài, không "giải thích" nó như một khái niệm | `insufficient`, "Đoạn bôi đen không có trong nội dung slide... không thể giải thích được" | ✅ | Không cố giải thích như khái niệm AI — đạt tiêu chí an toàn cốt lõi, dù chưa nói rõ đây là lỗi kỹ thuật (không bắt buộc theo schema vì lý do insufficient ở đây không phải "câu hỏi mơ hồ"). |
 | C07 | insufficient, không bịa ngày trả điểm | `insufficient`, không có ngày | ✅ | Đạt. |
@@ -57,9 +57,10 @@
 
 1. **Tích cực — chặn được lỗi thật đã xảy ra trong production**: C08 tái hiện đúng `T0743` (chatlog thật, tutor cũ xác nhận cụ thể "dùng Gemini + RAG"). Bản CP3-test hiện tại **không lặp lại lỗi này** — đáng đưa vào slide demo CP6 làm ví dụ "case chỗ khó đã được xử lý" (theo `02-guide.md` §5.1: "case lỗi được xử lý là phần được đánh giá cao").
 2. **Lỗi mẫu hình lặp lại (3 case: C02, N08, R03)**: khi model tổng hợp thông tin từ nhiều nguồn (một phần có trích được, một phần không), nó có xu hướng gộp chung vào `source_type="slide"` với `citations` không đầy đủ, thay vì tách rõ phần nào có căn cứ / phần nào không. Đây là **một loại lỗi ① (nguồn sự thật) cụ thể cần thêm vào changelog spec §9**: "trích dẫn không đầy đủ khi câu trả lời tổng hợp nhiều đoạn."
-3. **Lỗi tính toán số** (C03): model tự mâu thuẫn ngay trong 1 câu trả lời giữa số đưa ra và phép tính đi kèm — nên cân nhắc thêm bước kiểm tra lại phép tính trước khi gọi `final_answer`, hoặc yêu cầu model luôn hiện phép tính trước rồi mới chốt số.
-4. **`search_slides` lặp từ khoá giống hệt nhau** (R03) — vi phạm chỉ dẫn trong chính system prompt, gây tốn round không cần thiết; đáng sửa nếu còn thời gian nhưng không chặn demo.
-5. Không case nào bịa nội dung hoàn toàn không có trong slide (tiêu chí "không bịa" — vi phạm nặng nhất theo lớp ①①①/③) — **0/27 case fabrication nặng**, các case fail đều là lỗi thiếu sót/trích dẫn không đủ chứ không phải bịa trắng trợn.
+3. **Bịa ngầm qua câu hỏi lại, không qua nội dung** (C05): khi từ chối vì input mơ hồ/rác, `clarifying_question` model sinh ra có thể tự gán sẵn cho input đó một tư cách hợp lệ ("đoạn văn này thuộc về khái niệm nào") mà không có căn cứ — input thực ra không liên quan bài giảng. Đây là dạng bịa tinh vi hơn bịa nội dung: không sai sự kiện nào tường minh, nhưng ngầm khẳng định một tiền đề sai. Cần thêm case tương tự vào golden set mở rộng và cân nhắc sửa system prompt: câu hỏi lại khi từ chối không nên tự giả định trước bản chất của input.
+4. **Lỗi tính toán số** (C03): model tự mâu thuẫn ngay trong 1 câu trả lời giữa số đưa ra và phép tính đi kèm — nên cân nhắc thêm bước kiểm tra lại phép tính trước khi gọi `final_answer`, hoặc yêu cầu model luôn hiện phép tính trước rồi mới chốt số.
+5. **`search_slides` lặp từ khoá giống hệt nhau** (R03) — vi phạm chỉ dẫn trong chính system prompt, gây tốn round không cần thiết; đáng sửa nếu còn thời gian nhưng không chặn demo.
+6. Không case nào bịa **nội dung/sự kiện** hoàn toàn không có trong slide — nhưng có 1 case (C05) bịa ngầm qua tiền đề của câu hỏi lại. Tổng: 8/27 case fail, phần lớn là thiếu sót/trích dẫn không đủ, 1 case là bịa tiền đề tinh vi.
 
 ## Việc cần làm tiếp
 

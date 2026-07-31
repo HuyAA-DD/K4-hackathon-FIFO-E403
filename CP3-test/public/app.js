@@ -7,7 +7,7 @@ const BASE_SCALE = 1.2;
 
 const pdfStage = document.getElementById("pdf-stage");
 const pdfScroll = document.getElementById("pdf-scroll");
-const popover = document.getElementById("selection-popover");
+const applyHighlightBtn = document.getElementById("apply-highlight");
 const askSelectionBtn = document.getElementById("ask-selection");
 const pageIndicator = document.getElementById("page-indicator");
 const pageFooterLabel = document.getElementById("page-footer-label");
@@ -16,7 +16,6 @@ const toolCaption = document.getElementById("tool-caption");
 
 const readBtn = document.getElementById("tool-read");
 const penBtn = document.getElementById("tool-pen");
-const highlightBtn = document.getElementById("tool-highlight");
 const clearBtn = document.getElementById("clear-annotations");
 const zoomInBtn = document.getElementById("zoom-in");
 const zoomOutBtn = document.getElementById("zoom-out");
@@ -30,7 +29,7 @@ const messagesEl = document.getElementById("messages");
 const form = document.getElementById("chat-form");
 const input = document.getElementById("question-input");
 
-const toolButtons = { read: readBtn, pen: penBtn, highlight: highlightBtn };
+const toolButtons = { read: readBtn, pen: penBtn };
 
 let pdfDoc = null;
 let numPages = 1;
@@ -154,7 +153,6 @@ nextPageBtn.addEventListener("click", () => scrollToPage(Math.min(numPages, curr
 async function applyZoom(newScale) {
   if (isRendering) return;
   isRendering = true;
-  hidePopover();
   scale = newScale;
   const anchorPage = currentPage;
   await renderAllPages();
@@ -170,16 +168,10 @@ function setTool(tool) {
   Object.entries(toolButtons).forEach(([key, btn]) => btn.classList.toggle("active", key === tool));
   pdfScroll.classList.toggle("tool-pen", tool === "pen");
   toolCaption.textContent =
-    tool === "pen"
-      ? "Chế độ vẽ ghi chú tay"
-      : tool === "highlight"
-        ? "Bôi đen đoạn cần hỏi — sẽ lưu highlight trên trang"
-        : "Đang xem PDF · Day 1 Foundation";
-  hidePopover();
+    tool === "pen" ? "Chế độ vẽ ghi chú tay" : "Bôi đen đoạn slide, rồi bấm Highlight hoặc Hỏi AI trên toolbar";
 }
 readBtn.addEventListener("click", () => setTool("read"));
 penBtn.addEventListener("click", () => setTool("pen"));
-highlightBtn.addEventListener("click", () => setTool("highlight"));
 clearBtn.addEventListener("click", () => {
   annotationsByPage.delete(currentPage);
   redrawAnnotationsForPage(currentPage);
@@ -261,7 +253,7 @@ window.addEventListener("pointerup", () => {
   if (finishedPage) redrawAnnotationsForPage(finishedPage);
 });
 
-// ---------------- Highlight-to-ask ----------------
+// ---------------- Highlight & Hỏi AI (nút trên toolbar, tác động lên đoạn đang bôi đen) ----------------
 function getPageWrapFromNode(node) {
   const el = node && (node.nodeType === 1 ? node : node.parentNode);
   const wrapEl = el && el.closest && el.closest(".pdf-page-wrap");
@@ -276,52 +268,42 @@ function getPdfSpaceRects(range, wrapEl) {
     r.height / scale
   ]);
 }
-function hidePopover() {
-  popover.classList.add("is-hidden");
+function getActiveSelection() {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return null;
+  const text = sel.toString().trim();
+  if (!text) return null;
+  const entry = getPageWrapFromNode(sel.anchorNode);
+  if (!entry) return null;
+  return { sel, text, entry };
 }
-function showPopoverForSelection(sel) {
-  const range = sel.getRangeAt(0);
-  const rangeRect = range.getBoundingClientRect();
-  const stageRect = pdfStage.getBoundingClientRect();
-  popover.style.left = `${rangeRect.left - stageRect.left + rangeRect.width / 2}px`;
-  popover.style.top = `${rangeRect.top - stageRect.top}px`;
-  popover.classList.remove("is-hidden");
-}
-pdfScroll.addEventListener("pointerdown", (e) => {
-  if (e.target === askSelectionBtn) return;
-  hidePopover();
-});
-document.addEventListener("pointerup", (e) => {
-  if (currentTool === "pen" || e.target === askSelectionBtn) return;
+function flashCaption(message) {
+  const previous = toolCaption.textContent;
+  toolCaption.textContent = message;
   setTimeout(() => {
-    const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !sel.toString().trim()) {
-      hidePopover();
-      return;
-    }
-    const entry = getPageWrapFromNode(sel.anchorNode);
-    if (!entry) {
-      hidePopover();
-      return;
-    }
-    showPopoverForSelection(sel);
-  }, 0);
+    toolCaption.textContent = previous;
+  }, 1800);
+}
+applyHighlightBtn.addEventListener("click", () => {
+  const info = getActiveSelection();
+  if (!info) {
+    flashCaption("⚠ Hãy bôi đen một đoạn trên slide trước");
+    return;
+  }
+  const range = info.sel.getRangeAt(0);
+  getPageAnnotations(info.entry.page).highlights.push({ rects: getPdfSpaceRects(range, info.entry.wrapEl), text: info.text });
+  redrawAnnotationsForPage(info.entry.page);
+  info.sel.removeAllRanges();
 });
 askSelectionBtn.addEventListener("click", () => {
-  const sel = window.getSelection();
-  if (!sel || sel.isCollapsed) return;
-  const text = sel.toString().trim();
-  if (!text) return;
-  const entry = getPageWrapFromNode(sel.anchorNode);
-  const pageNum = entry ? entry.page : currentPage;
-  if (currentTool === "highlight" && entry) {
-    const range = sel.getRangeAt(0);
-    getPageAnnotations(pageNum).highlights.push({ rects: getPdfSpaceRects(range, entry.wrapEl), text });
-    redrawAnnotationsForPage(pageNum);
+  const info = getActiveSelection();
+  if (!info) {
+    flashCaption("⚠ Hãy bôi đen một đoạn trên slide trước");
+    return;
   }
-  sel.removeAllRanges();
-  hidePopover();
-  sendQuestion(`Giải thích đoạn mình vừa bôi đen trên trang ${pageNum}.`, text, pageNum);
+  const pageNum = info.entry.page;
+  info.sel.removeAllRanges();
+  sendQuestion(`Giải thích đoạn mình vừa bôi đen trên trang ${pageNum}.`, info.text, pageNum);
 });
 
 // ---------------- Chat ----------------

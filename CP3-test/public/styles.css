@@ -23,9 +23,11 @@ button, input { font:inherit; }
 .textLayer ::selection { background:rgba(20,99,167,.32); }
 .pdf-scroll.tool-pen .textLayer { pointer-events:none; }
 
-.selection-popover { position:absolute; z-index:5; transform:translate(-50%,-115%); }
+.selection-popover { position:absolute; z-index:5; transform:translate(-50%,-115%); display:flex; gap:6px; padding:4px; border-radius:18px; background:#fff; box-shadow:0 8px 22px #10305328; }
 .selection-popover.is-hidden { display:none; }
-.selection-popover button { border:0; border-radius:16px; padding:8px 13px; background:var(--navy); color:#fff; font-size:12px; font-weight:650; cursor:pointer; box-shadow:0 6px 16px #10305322; white-space:nowrap; }
+.selection-popover button { border:0; border-radius:14px; padding:8px 13px; font-size:12px; font-weight:650; cursor:pointer; white-space:nowrap; }
+.selection-popover #apply-highlight { background:#fdedb0; color:#7a5b00; }
+.selection-popover #ask-selection { background:var(--navy); color:#fff; }
 
 .pdf-caption { position:absolute; bottom:28px; left:31px; display:flex; align-items:center; gap:6px; padding:7px 11px; border-radius:20px; background:#102d55dd; color:#fff; font-size:11px; font-weight:600; pointer-events:none; }.pdf-dot { width:7px; height:7px; border-radius:50%; background:#4ee3ad; }
 .slide-footer { height:48px; display:flex; justify-content:center; align-items:center; gap:18px; color:#617592; font-size:12px; }.round-button { width:38px; height:38px; border:1px solid var(--line); border-radius:50%; background:#fff; font-size:22px; color:var(--navy); cursor:pointer; }

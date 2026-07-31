@@ -21,9 +21,8 @@
       <section class="workspace">
         <section class="slide-area" aria-label="Trình đọc slide">
           <div class="toolbar">
-            <button class="tool active" id="tool-read" data-tool="read" title="Đọc / bôi đen để hỏi Tutor">⌁ Đọc</button>
+            <button class="tool active" id="tool-read" data-tool="read" title="Đọc / bôi đen để hiện menu Highlight & Hỏi AI">⌁ Đọc</button>
             <button class="tool" id="tool-pen" data-tool="pen" title="Vẽ ghi chú tay lên slide">✎ Bút</button>
-            <button class="tool" id="tool-highlight" data-tool="highlight" title="Bôi đen đoạn cần hỏi và lưu highlight">⌁ Highlight</button>
             <button class="tool tool-ghost" id="clear-annotations" title="Xoá nét vẽ/highlight trên trang này">🗑</button>
             <span class="toolbar-divider"></span>
             <span class="page-pill">Tài liệu gốc</span>
@@ -34,7 +33,8 @@
             <div class="pdf-stage" id="pdf-stage">
               <div class="pdf-scroll" id="pdf-scroll"></div>
               <div id="selection-popover" class="selection-popover is-hidden">
-                <button id="ask-selection" type="button">💬 Hỏi Tutor về đoạn này</button>
+                <button id="apply-highlight" type="button" title="Đánh dấu highlight đoạn đã chọn">🖍 Highlight</button>
+                <button id="ask-selection" type="button" title="Hỏi AI về đoạn đã chọn">✨ Hỏi bằng AI</button>
               </div>
               <div class="pdf-caption"><span class="pdf-dot"></span> <span id="tool-caption">Đang xem PDF · Day 1 Foundation</span></div>
             </div>
