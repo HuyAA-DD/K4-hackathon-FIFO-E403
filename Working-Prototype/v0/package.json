@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "description": "Working v0 scaffold for a slide-grounded VLearn Tutor",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "index": "python scripts/build_slide_index.py",
+    "test": "node tests/run-tests.js",
+    "eval": "node scripts/run-golden-set-v0.mjs"
   }
 }

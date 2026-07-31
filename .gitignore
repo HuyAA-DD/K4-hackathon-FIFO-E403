@@ -2,3 +2,9 @@
 node_modules/
 *.env
 .vercel
+*.log
+.wrangler/
+dist/
+.next/
+Working-Prototype/v0/data/slide-index.json
+Working-Prototype/v0/data/generated/

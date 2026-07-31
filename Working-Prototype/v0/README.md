@@ -1,58 +1,54 @@
 # VLearn Tutor — Working Prototype v0
 
-Prototype dùng **GPT-5.4** cho cả trả lời dựa trên slide và phần mở rộng có tìm web.
+Đây là **bản chính** của repository. Tutor trả lời câu hỏi về slide Day 1, gắn citation theo trang ở backend và chỉ mở rộng ra web khi có URL citation xác minh được.
 
-## Chạy local
+## Cài đặt và chạy
 
-```bash
-cd /d/AIIA/K4-hackathon-FIFO-E403/Working-Prototype/v0
+Yêu cầu Node.js 18+ và Python 3.10+.
+
+```powershell
+cd Working-Prototype/v0
+Copy-Item .env.example .env
+# điền OPENAI_API_KEY vào .env
+python -m pip install pypdf
+npm run index
 npm start
 ```
 
-Mở `http://localhost:4180`. Nếu cổng đã được dùng: `PORT=4181 npm start`.
+Mở <http://localhost:4180>. Nếu cần cổng khác: `$env:PORT=4181; npm start`.
 
-## Cấu hình OpenAI
+`.env` và `data/slide-index.json` là file local đã Git ignore. Không để API key vào browser, commit, log hoặc ảnh demo. Sau khi thay file PDF Day 1, chạy lại `npm run index`.
 
-1. Tạo `.env` từ `.env.example`.
-2. Điền API key trả phí của bạn:
+## Các lệnh
 
-```env
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-5.4
+```powershell
+npm test       # policy/retrieval deterministic, không gọi OpenAI
+npm run index  # tạo page-level index từ PDF đã cấp
+npm run eval   # chạy 27 case golden set, cần OPENAI_API_KEY
+npm start      # chạy app tại port 4180
 ```
 
-3. Nếu chưa có index slide, chạy:
+## Hợp đồng hành vi
 
-```bash
-python -m pip install pypdf
-python scripts/build_slide_index.py
-```
-
-API key chỉ được đọc ở backend. Không commit `.env`; `slide-index.json` cũng bị gitignore vì chứa nội dung trích xuất từ data pack.
-
-## Hành vi chatbot
-
-- Câu hỏi có căn cứ trong slide: server chọn tối đa 3 trang phù hợp, gửi chúng làm ngữ cảnh cho GPT-5.4, rồi **server** gắn citation số trang từ page-index.
-- `slide 7`, `trang 7`, `page 7`: mở đúng trang được nêu; nếu trang không tồn tại, Tutor báo số trang hợp lệ.
-- “Làm rõ hơn”: dùng chủ đề trước đó để tìm lại slide và vẫn trích dẫn trang slide.
-- “Mở rộng hơn” hoặc khái niệm AI/LLM liên quan nhưng chưa có trong slide: gọi OpenAI Web Search. Chỉ hiển thị câu trả lời khi API trả về URL citation.
-- Câu hỏi mơ hồ: GPT-5.4 chỉ phân loại `slide` / `external` / `irrelevant` trước; các câu rõ ràng ngoài bài học vẫn bị từ chối ngay, không gọi model.
-
-## Test nhanh
-
-1. Hỏi `LLM là gì?` → phải có citation số trang slide.
-2. Hỏi tiếp `Mở rộng hơn về Transformer` → phải có các URL nguồn ngoài.
-3. Hỏi `Thời tiết hôm nay thế nào?` → phải bị từ chối là không liên quan.
+| Route | Khi nào | Kết quả |
+| --- | --- | --- |
+| `slide` | Câu hỏi có căn cứ trong index, nêu trang, chọn text hoặc “slide này” | Model chỉ nhận context slide đã chọn; server trả citation theo trang |
+| `external` | Người học chủ động yêu cầu mở rộng kiến thức liên quan | Gọi Web Search; chỉ trả lời khi có ít nhất một URL citation |
+| `insufficient` | Thiếu căn cứ, input nhạy cảm/không rõ, lỗi kỹ thuật hoặc web không có nguồn | Nêu giới hạn/hướng dẫn hỏi lại, không đoán |
+| `irrelevant` | Ngoài phạm vi bài học | Từ chối lịch sự để giữ mạch học |
+| `invalid-page` | Trang yêu cầu không tồn tại | Nêu phạm vi trang hợp lệ |
 
 ## Cấu trúc
 
 ```text
-v0/
-├── public/                  # UI
-├── src/retrieval.js         # keyword search trên page index cục bộ
-├── src/chat-policy.js       # route slide / web / từ chối
-├── src/providers/openai.js  # Responses API + Web Search adapter
-├── data/slide-index.json    # page → text → keywords (gitignored)
-├── server.js                # static server + PDF + chat API
-└── .env.example
+public/                 UI PDF viewer và Tutor panel
+src/retrieval.js        keyword retrieval trên page index
+src/chat-policy.js      routing/safety policy
+src/providers/openai.js OpenAI Responses API và Web Search adapter
+scripts/build_slide_index.py
+scripts/run-golden-set-v0.mjs
+tests/run-tests.js      kiểm thử deterministic
+server.js               static server, PDF và API
 ```
+
+Đánh giá và AI spec ở root repository: [`../../eval/`](../../eval/), [`../../spec.md`](../../spec.md). Bản `lumi-slide-tutor` là thử nghiệm phụ, không thay thế v0.
