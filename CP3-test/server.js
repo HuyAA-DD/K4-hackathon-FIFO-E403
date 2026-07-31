@@ -15,28 +15,109 @@ try {
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
-const DECK_PATH = path.join(ROOT, "data/vlearn-pack/slides/d1-slide-hackathon.pdf");
-const DECK_LABEL = "d1-slide-hackathon.pdf · Day 1 AI & LLM Foundation";
 
-// ---------- Slide deck: đọc text thật từ PDF một lần khi khởi động server ----------
-let pages = [];
-async function loadDeck() {
-  const data = new Uint8Array(fs.readFileSync(DECK_PATH));
+const DECKS = {
+  d1: {
+    id: "d1",
+    file: "d1-slide-hackathon.pdf",
+    label: "Day 1 · AI & LLM Foundation",
+    path: path.join(ROOT, "data/vlearn-pack/slides/d1-slide-hackathon.pdf")
+  },
+  d2: {
+    id: "d2",
+    file: "d2-slide-hackathon.pdf",
+    label: "Day 2 · Xác định bài toán cho AI",
+    path: path.join(ROOT, "data/vlearn-pack/slides/d2-slide-hackathon.pdf")
+  }
+};
+const DECK_IDS = Object.keys(DECKS);
+const DEFAULT_DECK = "d1"; // bộ đang hiển thị trong UI
+
+// ---------- Cache: mỗi bộ slide chỉ đọc + trích text từ PDF một lần (lười tải), dùng lại cho mọi request/tool-call sau ----------
+const deckCache = new Map(); // deckId -> Promise<{ id, label, pages: [{page,text}], numPages }>
+
+async function extractDeckPages(deck) {
+  const data = new Uint8Array(fs.readFileSync(deck.path));
   const doc = await pdfjsLib.getDocument({ data, useSystemFonts: true, isEvalSupported: false }).promise;
-  const out = [];
+  const pages = [];
   for (let p = 1; p <= doc.numPages; p++) {
     const page = await doc.getPage(p);
     const content = await page.getTextContent();
     const text = content.items.map((i) => i.str).join(" ").replace(/\s+/g, " ").trim();
-    out.push({ page: p, text });
+    pages.push({ page: p, text });
   }
-  return out;
+  return { id: deck.id, label: deck.label, pages, numPages: doc.numPages };
 }
 
-function searchSlides(query, deckPages) {
-  const words = String(query || "").toLowerCase().split(/\s+/).filter((w) => w.length >= 2);
+function getDeck(deckId) {
+  const deck = DECKS[deckId];
+  if (!deck) return Promise.reject(new Error(`UNKNOWN_DECK_${deckId}`));
+  if (!deckCache.has(deckId)) {
+    console.log(`[deck-cache] Đọc "${deck.label}" (${deck.file}) lần đầu...`);
+    deckCache.set(
+      deckId,
+      extractDeckPages(deck).then((loaded) => {
+        console.log(`[deck-cache] Đã cache ${loaded.numPages} trang cho "${deck.label}".`);
+        return loaded;
+      })
+    );
+  }
+  return deckCache.get(deckId);
+}
+
+function resolveDeckId(requested, fallback) {
+  return DECKS[requested] ? requested : fallback;
+}
+
+// ---------- Cache trích dẫn nguồn ngoài: cùng một chủ đề luôn được cite lại y hệt, không đổi lời mỗi lần hỏi ----------
+const externalCitationCache = new Map(); // normalizedTopic -> { name, note, cited_at, hits }
+
+function normalizeTopic(topic) {
+  return String(topic || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function citeExternalSource({ topic, claim }) {
+  const key = normalizeTopic(topic);
+  if (!key) return { error: "missing_topic" };
+  if (externalCitationCache.has(key)) {
+    const cached = externalCitationCache.get(key);
+    cached.hits += 1;
+    return { name: cached.name, note: cached.note, cached: true };
+  }
+  const entry = {
+    name: String(topic).trim(),
+    note: String(claim || "Kiến thức nền phổ biến về AI/LLM, không có trong slide.").trim(),
+    cited_at: new Date().toISOString(),
+    hits: 1
+  };
+  externalCitationCache.set(key, entry);
+  return { name: entry.name, note: entry.note, cached: false };
+}
+
+// "slide 5" / "trang 12" / "page 3" / bare "5" -> số trang tường minh, KHÔNG phải từ khoá text-search.
+// (Bug cũ: filter `word.length >= 2` âm thầm loại số 1 chữ số như "5"/"6", khiến "slide 5".."slide 9"
+// đều rơi về tìm-chữ-"slide"-suông và luôn ra cùng 1 trang bất kể số nào được hỏi.)
+function extractExplicitPageNumber(query) {
+  const m = String(query || "")
+    .trim()
+    .match(/^(?:slide|trang|page)?\s*#?\s*(\d{1,3})$/i);
+  return m ? Number(m[1]) : null;
+}
+
+function searchInPages(pages, query) {
+  const explicitPage = extractExplicitPageNumber(query);
+  if (explicitPage && explicitPage >= 1 && explicitPage <= pages.length) {
+    const p = pages[explicitPage - 1];
+    return [{ page: p.page, snippet: p.text.slice(0, 260).trim(), matched_keywords: 1, matched_as: "explicit_page_number" }];
+  }
+
+  const words = String(query || "")
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((w) => w.length >= 2 || /^\d+$/.test(w));
   if (words.length === 0) return [];
-  const scored = deckPages
+
+  const scored = pages
     .map((p) => {
       const textNorm = p.text.toLowerCase();
       let score = 0;
@@ -50,59 +131,115 @@ function searchSlides(query, deckPages) {
       }
       return { page: p.page, score, firstIdx };
     })
-    .filter((r) => r.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 5);
+    .filter((r) => r.score > 0);
 
-  return scored.map((r) => {
-    const full = deckPages[r.page - 1].text;
+  // Ưu tiên trang khớp ĐỦ mọi từ khoá (AND); chỉ rơi về khớp-một-phần nếu không có trang nào khớp đủ.
+  const fullMatches = scored.filter((r) => r.score === words.length);
+  const pool = (fullMatches.length > 0 ? fullMatches : scored).sort((a, b) => b.score - a.score).slice(0, 5);
+
+  return pool.map((r) => {
+    const full = pages[r.page - 1].text;
     const start = Math.max(0, r.firstIdx - 40);
     return { page: r.page, snippet: full.slice(start, start + 200).trim(), matched_keywords: r.score };
   });
 }
 
 // ---------- System prompt: quy tắc dự án (4 lớp chỗ khó + HAX/PAIR) ----------
-const SYSTEM_PROMPT = `Bạn là VLearn Tutor — trợ lý học tập theo ngữ cảnh trong buổi học "${DECK_LABEL}" của khoá AI Thực Chiến.
+const DECK_LIST_TEXT = Object.values(DECKS)
+  .map((d) => `"${d.id}" = ${d.label}`)
+  .join("; ");
 
-NHIỆM VỤ: giúp học viên hiểu hoặc tóm tắt đúng nội dung SLIDE đang xem (hoặc đoạn học viên vừa bôi đen), và luôn cho học viên biết câu trả lời có căn cứ ở đâu để họ tự kiểm chứng lại với bài giảng.
+const SYSTEM_PROMPT = `Bạn là VLearn Tutor — trợ lý học tập theo ngữ cảnh trong khoá AI Thực Chiến, có quyền đọc ${DECK_IDS.length} bộ slide bài giảng: ${DECK_LIST_TEXT}.
 
-BẠN CÓ 2 TOOL:
-- search_slides(query): tìm từ khoá trên toàn bộ 29 trang của bộ slide khi nội dung trang hiện tại (đã được cung cấp sẵn trong tin nhắn) không đủ để trả lời hoặc câu hỏi rõ ràng thuộc trang khác. Không gọi lại với cùng một từ khoá đã thử — nếu lượt trước đã ra đủ trang liên quan thì gọi final_answer ngay, đừng tìm thêm cho chắc.
-- final_answer(...): BẮT BUỘC dùng tool này để kết thúc mọi lượt trả lời. Không bao giờ trả lời bằng văn bản tự do ngoài tool call. Bạn chỉ có tối đa vài lượt gọi tool — ưu tiên kết luận sớm khi đã đủ căn cứ thay vì tìm kiếm thêm.
+NHIỆM VỤ: giúp học viên hiểu hoặc tóm tắt đúng nội dung SLIDE đang xem (hoặc đoạn học viên vừa bôi đen), và luôn cho học viên biết câu trả lời có căn cứ ở trang/bộ slide nào để họ tự kiểm chứng lại với bài giảng.
+
+BẠN CÓ 5 TOOL:
+- list_slide_decks(): xem danh sách bộ slide đang có + số trang mỗi bộ. Chỉ gọi khi thật sự cần biết có bộ nào khác ngoài bộ đang mở (ví dụ câu hỏi có vẻ thuộc buổi học khác với slide đang xem).
+- search_slides({ deck?, query }): tìm từ khoá/khái niệm trong một bộ slide (bỏ trống deck = tìm trong bộ đang mở). Dùng cho tìm khái niệm, KHÔNG dùng để tìm theo số trang — nếu đã biết rõ số trang/slide cần xem, gọi thẳng read_slide_page.
+- read_slide_page({ deck?, page }): đọc TOÀN VĂN một trang cụ thể (không bị cắt ngắn như search_slides). Nếu học viên hoặc câu hỏi nêu rõ một số trang/slide cụ thể (vd "slide 5", "trang 12"), gọi tool này NGAY với page = số đó — đừng đưa số trang vào search_slides làm từ khoá.
+- cite_external_source({ topic, claim }): gọi tool này TRƯỚC khi dùng source_type="external" trong final_answer, để đăng ký nguồn kiến thức nền một cách nhất quán — kết quả được cache theo chủ đề, hỏi lại đúng khái niệm đó sẽ luôn nhận lại cùng một trích dẫn thay vì mỗi lần diễn đạt khác nhau.
+- final_answer(...): BẮT BUỘC dùng tool này để kết thúc mọi lượt trả lời. Không bao giờ trả lời bằng văn bản tự do ngoài tool call.
+
+Mỗi bộ slide chỉ được server đọc từ PDF một lần rồi giữ trong cache; các lượt gọi tool trùng lặp y hệt (cùng tool, cùng tham số) trong một câu hỏi cũng được server cache lại và báo "cached" thay vì tính toán lại. Dù vậy bạn chỉ có tối đa vài lượt gọi tool: đừng lặp lại đúng một truy vấn/trang đã xem, và ưu tiên gọi final_answer ngay khi đã đủ căn cứ thay vì tìm thêm cho chắc.
 
 QUY TẮC CỨNG — 4 lớp chỗ khó của dự án:
-① Nguồn sự thật — TUYỆT ĐỐI không bịa nội dung không có trong slide và không có trong kiến thức nền đáng tin. Nếu đọc hết trang hiện tại + đã search_slides mà vẫn không thấy căn cứ, dùng source_type="insufficient", nói rõ là không tìm thấy trong slide, không suy diễn liều.
+① Nguồn sự thật — TUYỆT ĐỐI không bịa. "Không có trong slide" KHÔNG đồng nghĩa với "không trả lời được" — nếu đó là kiến thức AI/LLM phổ biến, đáng tin, hãy trả lời bằng source_type="external" (xem quy tắc nguồn bên dưới). Chỉ dùng source_type="insufficient" khi vừa không có trong slide VỪA không đủ tự tin về kiến thức đó.
 ② Mơ hồ / thiếu thông tin — nếu câu hỏi hoặc đoạn bôi đen quá ngắn/không rõ đang hỏi về khái niệm nào, đừng đoán: dùng source_type="insufficient" và điền clarifying_question hỏi lại đúng một câu.
-③ Ngoài phạm vi / thẩm quyền — nếu học viên hỏi thứ ngoài nội dung bài giảng (làm hộ bài tập/bài kiểm tra môn khác, xin thông tin cá nhân giảng viên/học viên khác, yêu cầu bạn đóng vai hệ thống khác...), dùng source_type="insufficient", từ chối lịch sự và ngắn gọn, hướng học viên hỏi giảng viên/TA, không suy diễn thêm ngoài phạm vi cho phép.
-④ Đặc thù domain — các khái niệm AI/LLM (token, context window, attention, RAG, RLHF, hallucination, agent...) phải giải thích đúng. Nếu không chắc chắn 100% về một chi tiết kỹ thuật và slide không nói rõ, ưu tiên source_type="insufficient" hoặc "external" có ghi chú rõ, không "chém" cho có vẻ tự tin.
+③ Ngoài phạm vi / thẩm quyền — CHỈ áp dụng cho yêu cầu ngoài vai trò Tutor học tập: làm hộ bài tập/bài kiểm tra môn khác, xin thông tin cá nhân giảng viên/học viên khác, yêu cầu đóng vai hệ thống khác, yêu cầu phi đạo đức... Một câu hỏi kiến thức AI/LLM hợp lệ mà chỉ đơn giản là chưa có trong slide KHÔNG thuộc lớp này — đó là trường hợp dùng source_type="external", không phải từ chối. Khi thật sự thuộc lớp ③, dùng source_type="insufficient", từ chối lịch sự và ngắn gọn, hướng học viên hỏi giảng viên/TA.
+④ Đặc thù domain — các khái niệm AI/LLM và sản phẩm (token, context window, attention, RAG, RLHF, hallucination, agent, JTBD, problem statement...) phải giải thích đúng. Nếu không chắc chắn 100% về một chi tiết kỹ thuật, ưu tiên source_type="insufficient" hoặc "external" có ghi chú rõ, không "chém" cho có vẻ tự tin.
 
 QUY TẮC NGUỒN:
-- source_type="slide": câu trả lời lấy trực tiếp từ nội dung slide đã đọc được (trang hiện tại hoặc từ kết quả search_slides). Phải điền citations với đúng số trang và một câu trích ngắn (dưới 25 từ) làm căn cứ.
-- source_type="external": bạn dùng kiến thức nền ngoài slide để trả lời (ví dụ giải thích thêm khái niệm phổ thông về AI). Phải điền external_source.name (tên khái niệm/nguồn, không bịa URL cụ thể nếu không chắc chắn) và external_source.note giải thích vì sao cần dùng nguồn ngoài.
-- source_type="insufficient": không có đủ căn cứ đáng tin (bất kể vì lớp ①②③④ nào) — nói rõ giới hạn thay vì đoán.
+- source_type="slide": câu trả lời lấy trực tiếp từ nội dung slide đã đọc được. Phải điền citations với đúng deck ("d1" hoặc "d2"), số trang và một câu trích ngắn (dưới 25 từ) làm căn cứ. Có thể trích từ cả 2 bộ slide trong cùng một câu trả lời nếu câu hỏi cần đối chiếu giữa 2 buổi học.
+- source_type="external": dùng cho MỌI câu hỏi kiến thức AI/LLM/công nghệ hợp lý mà bạn đủ tự tin trả lời đúng nhưng nội dung không có trong 2 bộ slide (định nghĩa thuật ngữ, công thức, tên bài báo/mô hình phổ biến...). Đây là nhánh trả lời bình thường, không phải từ chối — hãy chủ động dùng khi phù hợp thay vì mặc định né sang "insufficient". PHẢI gọi cite_external_source trước, rồi điền external_source.name/note khớp với kết quả tool trả về (không bịa URL nếu không chắc).
+- source_type="insufficient": chỉ dùng khi mơ hồ (②), thật sự ngoài thẩm quyền (③ đúng nghĩa), hoặc không đủ tự tin về kiến thức domain (④) — không dùng chỉ vì "không có trong slide" khi bạn thực ra biết câu trả lời.
 
 QUY TẮC HÀNH VI (HAX/PAIR):
-- Luôn điền scope_note một câu ngắn nói rõ phạm vi bạn trả lời được đến đâu (ví dụ: "Mình trả lời dựa trên nội dung slide Day 1 đang mở.").
+- Luôn điền scope_note một câu ngắn nói rõ phạm vi bạn trả lời được đến đâu, nêu rõ đã dùng bộ slide nào.
 - Giải thích ngắn gọn vì sao câu trả lời đúng/kèm căn cứ, gắn với hành động tiếp theo học viên có thể làm (vd: xem lại trang X, hỏi lại rõ hơn).
-- Văn phong: tiếng Việt, ngắn gọn, đúng cỡ câu hỏi (không viết dài hơn cần thiết), giọng thân thiện phù hợp học viên khoá AI Thực Chiến, không dùng thuật ngữ khó mà không giải thích.
+- Văn phong: tiếng Việt, ngắn gọn, đúng cỡ câu hỏi, giọng thân thiện phù hợp học viên khoá AI Thực Chiến, không dùng thuật ngữ khó mà không giải thích.
 - Không bao giờ khẳng định chắc chắn hơn mức bạn thực sự có căn cứ.`;
 
 const tools = [
   {
     type: "function",
     function: {
+      name: "list_slide_decks",
+      description: "Liệt kê các bộ slide bài giảng hiện có (id, tên, số trang) để biết còn bộ nào khác ngoài bộ đang mở.",
+      parameters: { type: "object", properties: {} }
+    }
+  },
+  {
+    type: "function",
+    function: {
       name: "search_slides",
       description:
-        "Tìm từ khoá trong toàn bộ 29 trang của bộ slide Day 1 AI & LLM Foundation, dùng khi nội dung trang đang xem không đủ để trả lời câu hỏi.",
+        "Tìm từ khoá trong một bộ slide, dùng khi nội dung trang đang xem (đã cung cấp sẵn trong tin nhắn) không đủ để trả lời.",
       parameters: {
         type: "object",
         properties: {
-          query: {
-            type: "string",
-            description: "Từ khoá hoặc cụm từ cần tìm, ví dụ 'self-attention', 'RLHF', 'context window'."
-          }
+          deck: { type: "string", enum: DECK_IDS, description: "id bộ slide cần tìm. Bỏ trống = bộ học viên đang mở." },
+          query: { type: "string", description: "Từ khoá hoặc cụm từ cần tìm, ví dụ 'self-attention', 'JTBD', 'problem statement'." }
         },
         required: ["query"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "read_slide_page",
+      description:
+        "Đọc toàn văn (không cắt ngắn) một trang cụ thể của một bộ slide — dùng khi cần đối chiếu/so sánh kỹ nội dung nhiều trang hoặc nhiều bộ slide với nhau.",
+      parameters: {
+        type: "object",
+        properties: {
+          deck: { type: "string", enum: DECK_IDS, description: "id bộ slide cần đọc. Bỏ trống = bộ học viên đang mở." },
+          page: { type: "integer", description: "Số trang cần đọc toàn văn." }
+        },
+        required: ["page"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "cite_external_source",
+      description:
+        "Đăng ký một trích dẫn nguồn ngoài slide TRƯỚC khi trả lời với source_type='external'. Kết quả được cache theo chủ đề nên hỏi lại cùng khái niệm sẽ luôn ra cùng một trích dẫn.",
+      parameters: {
+        type: "object",
+        properties: {
+          topic: {
+            type: "string",
+            description:
+              "Tên khái niệm/nguồn kiến thức nền, ví dụ 'Kiến trúc Transformer (Vaswani et al. 2017)' hoặc 'Kiến thức phổ thông về gradient descent'. Không bịa URL cụ thể nếu không chắc."
+          },
+          claim: {
+            type: "string",
+            description: "Câu trả lời/khẳng định bạn định dùng nguồn này để hỗ trợ."
+          }
+        },
+        required: ["topic"]
       }
     }
   },
@@ -124,11 +261,12 @@ const tools = [
           answer: { type: "string", description: "Câu trả lời tiếng Việt, ngắn gọn, đúng cỡ câu hỏi." },
           citations: {
             type: "array",
-            description: "Bắt buộc có ≥1 phần tử khi source_type = 'slide'.",
+            description: "Bắt buộc có ≥1 phần tử khi source_type = 'slide'. Có thể trộn cả deck 'd1' và 'd2'.",
             items: {
               type: "object",
               properties: {
-                page: { type: "integer", description: "Số trang trong d1-slide-hackathon.pdf (1-29)." },
+                deck: { type: "string", enum: DECK_IDS, description: "Bộ slide chứa căn cứ. Bỏ trống = bộ đang mở." },
+                page: { type: "integer", description: "Số trang trong bộ slide đó." },
                 quote: { type: "string", description: "Trích ngắn nguyên văn làm căn cứ (dưới 25 từ)." }
               },
               required: ["page", "quote"]
@@ -148,7 +286,7 @@ const tools = [
           },
           scope_note: {
             type: "string",
-            description: "Một câu ngắn nói rõ phạm vi trả lời được đến đâu."
+            description: "Một câu ngắn nói rõ phạm vi trả lời được đến đâu, và đã dùng bộ slide nào."
           }
         },
         required: ["source_type", "answer"]
@@ -191,25 +329,35 @@ function sanitizeHistory(history) {
     .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }));
 }
 
-const MAX_TOOL_ROUNDS = 5;
+// Key ổn định cho một lời gọi tool (tên + tham số) — dùng để cache lại kết quả trong CÙNG một câu hỏi,
+// tránh gọi lại y hệt (VD: đọc trang 22 hai lần) tốn thêm lượt round-trip với model.
+function canonicalToolKey(name, args) {
+  const entries = Object.entries(args || {})
+    .filter(([, v]) => v !== undefined && v !== null && v !== "")
+    .map(([k, v]) => [k, String(v).toLowerCase().trim()])
+    .sort(([a], [b]) => a.localeCompare(b));
+  return `${name}::${JSON.stringify(entries)}`;
+}
+
+const MAX_TOOL_ROUNDS = 6;
 
 async function answerQuestion({ question, page, selection, history }) {
-  const pageNum = Number.isInteger(page) && page >= 1 && page <= pages.length ? page : 1;
-  const currentPageText = pages[pageNum - 1]?.text || "(không đọc được nội dung trang này)";
-  const neighborPages = [pageNum - 1, pageNum + 1].filter((p) => p >= 1 && p <= pages.length);
-  const neighborText = neighborPages
-    .map((p) => `[Trang ${p}] ${pages[p - 1].text}`)
-    .join("\n\n");
+  const deckId = DEFAULT_DECK; // UI hiện chỉ hiển thị bộ Day 1; AI có thể tự mở rộng sang bộ khác qua tool
+  const deck = await getDeck(deckId);
+  const pageNum = Number.isInteger(page) && page >= 1 && page <= deck.pages.length ? page : 1;
+  const currentPageText = deck.pages[pageNum - 1]?.text || "(không đọc được nội dung trang này)";
+  const neighborPages = [pageNum - 1, pageNum + 1].filter((p) => p >= 1 && p <= deck.pages.length);
+  const neighborText = neighborPages.map((p) => `[Trang ${p}] ${deck.pages[p - 1].text}`).join("\n\n");
 
   const contextParts = [
-    `Học viên đang xem Trang ${pageNum}/${pages.length} của ${DECK_LABEL}.`,
+    `Học viên đang xem Trang ${pageNum}/${deck.pages.length} của bộ slide "${deck.label}" (deck id = "${deck.id}").`,
     `NỘI DUNG TRANG ${pageNum} (đọc trực tiếp từ PDF):\n"""${currentPageText}"""`
   ];
   if (neighborText) {
-    contextParts.push(`NỘI DUNG TRANG LÂN CẬN (tham khảo thêm nếu câu hỏi có thể thuộc trang này):\n"""${neighborText}"""`);
+    contextParts.push(`NỘI DUNG TRANG LÂN CẬN CÙNG BỘ (tham khảo thêm nếu câu hỏi có thể thuộc trang này):\n"""${neighborText}"""`);
   }
   if (selection && String(selection).trim()) {
-    contextParts.push(`Học viên vừa BÔI ĐEN đoạn sau trên Trang ${pageNum}:\n"""${String(selection).trim()}"""`);
+    contextParts.push(`Học viên vừa BÔI ĐEN đoạn sau trên Trang ${pageNum} (deck "${deck.id}"):\n"""${String(selection).trim()}"""`);
   }
   contextParts.push(`Câu hỏi của học viên: ${question.trim()}`);
 
@@ -220,6 +368,7 @@ async function answerQuestion({ question, page, selection, history }) {
   ];
 
   const trace = [];
+  const toolCallCache = new Map(); // key(tool+args) -> { traceEntry, content } — cache trong phạm vi 1 câu hỏi
   let finalArgs = null;
   let round = 0;
 
@@ -232,17 +381,15 @@ async function answerQuestion({ question, page, selection, history }) {
     if (msg.tool_calls && msg.tool_calls.length > 0) {
       messages.push(msg);
       for (const call of msg.tool_calls) {
-        if (call.function.name === "search_slides") {
-          let args = {};
-          try {
-            args = JSON.parse(call.function.arguments || "{}");
-          } catch {
-            args = {};
-          }
-          const results = searchSlides(args.query, pages);
-          trace.push({ tool: "search_slides", query: args.query, result_pages: results.map((r) => r.page) });
-          messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify({ results }) });
-        } else if (call.function.name === "final_answer") {
+        const name = call.function.name;
+        let args = {};
+        try {
+          args = JSON.parse(call.function.arguments || "{}");
+        } catch {
+          args = {};
+        }
+
+        if (name === "final_answer") {
           if (!finalArgs) {
             try {
               finalArgs = JSON.parse(call.function.arguments || "{}");
@@ -252,9 +399,56 @@ async function answerQuestion({ question, page, selection, history }) {
             trace.push({ tool: "final_answer", args: finalArgs });
           }
           messages.push({ role: "tool", tool_call_id: call.id, content: "ok" });
-        } else {
-          messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify({ error: "unknown tool" }) });
+          continue;
         }
+
+        const cacheKey = canonicalToolKey(name, args);
+        const cachedCall = toolCallCache.get(cacheKey);
+        if (cachedCall) {
+          trace.push({ ...cachedCall.traceEntry, cached: true });
+          messages.push({
+            role: "tool",
+            tool_call_id: call.id,
+            content: JSON.stringify({ ...JSON.parse(cachedCall.content), note: "Kết quả giống hệt lượt gọi trước — không có thông tin mới." })
+          });
+          continue;
+        }
+
+        let traceEntry;
+        let content;
+
+        if (name === "list_slide_decks") {
+          const decksLoaded = await Promise.all(DECK_IDS.map((id) => getDeck(id)));
+          const listing = decksLoaded.map((d) => ({ deck: d.id, label: d.label, num_pages: d.numPages }));
+          traceEntry = { tool: "list_slide_decks" };
+          content = JSON.stringify({ decks: listing });
+        } else if (name === "search_slides") {
+          const targetDeckId = resolveDeckId(args.deck, deckId);
+          const targetDeck = await getDeck(targetDeckId);
+          const results = searchInPages(targetDeck.pages, args.query);
+          traceEntry = { tool: "search_slides", deck: targetDeckId, query: args.query, result_pages: results.map((r) => r.page) };
+          content = JSON.stringify({ deck: targetDeckId, results });
+        } else if (name === "read_slide_page") {
+          const targetDeckId = resolveDeckId(args.deck, deckId);
+          const targetDeck = await getDeck(targetDeckId);
+          const p = Number.isInteger(args.page) ? args.page : null;
+          const found = p && p >= 1 && p <= targetDeck.pages.length ? targetDeck.pages[p - 1] : null;
+          traceEntry = { tool: "read_slide_page", deck: targetDeckId, page: p, found: Boolean(found) };
+          content = found
+            ? JSON.stringify({ deck: targetDeckId, page: found.page, text: found.text })
+            : JSON.stringify({ error: `page_not_found (bộ "${targetDeckId}" có ${targetDeck.pages.length} trang)` });
+        } else if (name === "cite_external_source") {
+          const cited = citeExternalSource({ topic: args.topic, claim: args.claim });
+          traceEntry = { tool: "cite_external_source", topic: args.topic, reused_citation: Boolean(cited.cached) };
+          content = JSON.stringify(cited);
+        } else {
+          traceEntry = { tool: name, unknown: true };
+          content = JSON.stringify({ error: "unknown tool" });
+        }
+
+        toolCallCache.set(cacheKey, { traceEntry, content });
+        trace.push(traceEntry);
+        messages.push({ role: "tool", tool_call_id: call.id, content });
       }
     } else if (msg.content) {
       messages.push(msg);
@@ -273,22 +467,35 @@ async function answerQuestion({ question, page, selection, history }) {
       source_type: "insufficient",
       answer: "Mình chưa xác định chắc chắn được câu trả lời có căn cứ trong slide sau vài lượt thử. Bạn hỏi cụ thể hơn giúp mình nhé.",
       clarifying_question: "Bạn có thể nói rõ hơn bạn đang hỏi về phần nào trong slide không?",
-      scope_note: `Mình trả lời dựa trên slide Day 1 (${pages.length} trang) đang mở.`
+      scope_note: `Mình trả lời dựa trên bộ slide "${deck.label}" (${deck.pages.length} trang) đang mở.`
     };
   }
 
-  return { result: finalArgs, page: pageNum, trace };
+  // An toàn phòng model quên gọi cite_external_source dù prompt yêu cầu: server tự đăng ký/chuẩn hoá
+  // citation ngoài slide vào cache, đảm bảo tính nhất quán không phụ thuộc việc model có tuân thủ hay không.
+  if (finalArgs.source_type === "external" && finalArgs.external_source?.name) {
+    const alreadyCited = trace.some((t) => t.tool === "cite_external_source" && normalizeTopic(t.topic) === normalizeTopic(finalArgs.external_source.name));
+    if (!alreadyCited) {
+      const cited = citeExternalSource({ topic: finalArgs.external_source.name, claim: finalArgs.external_source.note || finalArgs.answer });
+      finalArgs.external_source = { name: cited.name, note: cited.note };
+      trace.push({ tool: "cite_external_source", topic: cited.name, reused_citation: Boolean(cited.cached), auto: true });
+    }
+  }
+
+  return { result: finalArgs, page: pageNum, deck: deckId, trace };
 }
 
 // ---------------------- HTTP server ----------------------
 const app = express();
 app.use(express.json({ limit: "200kb" }));
 
-app.get("/slides/d1-slide-hackathon.pdf", (req, res) => {
-  res.sendFile(DECK_PATH, { headers: { "Content-Type": "application/pdf" } }, (err) => {
-    if (err) res.status(404).send("Không tìm thấy tài liệu.");
+for (const deck of Object.values(DECKS)) {
+  app.get(`/slides/${deck.file}`, (req, res) => {
+    res.sendFile(deck.path, { headers: { "Content-Type": "application/pdf" } }, (err) => {
+      if (err) res.status(404).send("Không tìm thấy tài liệu.");
+    });
   });
-});
+}
 
 app.use("/vendor/pdfjs", express.static(path.join(__dirname, "node_modules/pdfjs-dist/build")));
 app.use(express.static(path.join(__dirname, "public")));
@@ -312,18 +519,18 @@ app.post("/api/chat", async (req, res) => {
 
 const port = Number(process.env.PORT || 4176);
 
-loadDeck()
-  .then((loaded) => {
-    pages = loaded;
+getDeck(DEFAULT_DECK)
+  .then((deck) => {
     app.listen(port, () => {
       console.log(`CP3-test: http://localhost:${port}`);
-      console.log(`Đã đọc ${pages.length} trang slide từ ${DECK_LABEL}.`);
+      console.log(`Đã đọc & cache ${deck.pages.length} trang từ "${deck.label}" (mặc định).`);
+      console.log(`Các bộ khác (${DECK_IDS.filter((id) => id !== DEFAULT_DECK).join(", ")}) sẽ được đọc + cache khi AI cần tới qua tool.`);
       if (!OPENAI_API_KEY) {
         console.warn("[env] Thiếu OPENAI_API_KEY — /api/chat sẽ trả lỗi cho tới khi có key trong .env ở root repo.");
       }
     });
   })
   .catch((err) => {
-    console.error("Không đọc được bộ slide Day 1:", err);
+    console.error(`Không đọc được bộ slide mặc định (${DEFAULT_DECK}):`, err);
     process.exit(1);
   });
