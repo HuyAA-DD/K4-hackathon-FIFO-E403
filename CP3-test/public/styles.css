@@ -86,8 +86,6 @@ button, input { font:inherit; }
 .trace-details summary { cursor:pointer; }
 .trace-details ul { margin:4px 0 0; padding-left:16px; }
 
-.suggestions { display:flex; gap:7px; flex-wrap:wrap; }.suggestions button { border:1px solid #b8d2ec; border-radius:17px; padding:7px 10px; background:#f8fbff; color:#276497; font-size:11px; cursor:pointer; }
-
 .composer { display:flex; gap:8px; padding:13px 16px; border-top:1px solid var(--line); background:#fff; }.composer input { flex:1; min-width:0; height:43px; border:1.5px solid #1c73b9; border-radius:20px; padding:0 15px; outline:none; }.composer button { width:43px; border:0; border-radius:50%; background:#a9c7e4; color:white; cursor:pointer; font-size:18px; }
 .composer.is-disabled input, .composer.is-disabled button { opacity:.55; pointer-events:none; }
 

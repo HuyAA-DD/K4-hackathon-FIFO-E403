@@ -794,10 +794,6 @@ form.addEventListener("submit", (e) => {
   input.value = "";
   sendQuestion(question, null);
 });
-document.querySelectorAll("[data-question]").forEach((btn) => {
-  btn.addEventListener("click", () => sendQuestion(btn.dataset.question, null));
-});
-
 // ---------------- Sidebar: danh sách slide + chuyển bộ đang xem ----------------
 function renderDocList() {
   docListEl.replaceChildren();
