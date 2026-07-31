@@ -2,6 +2,8 @@
 
 Đây là **bản chính** của repository. Tutor trả lời câu hỏi về slide Day 1, gắn citation theo trang ở backend và chỉ mở rộng ra web khi có URL citation xác minh được.
 
+**Demo trực tuyến:** [https://k4-hackathon-fifo-e403.vercel.app/](https://k4-hackathon-fifo-e403.vercel.app/)
+
 ## Cài đặt và chạy
 
 Yêu cầu Node.js 18+ và Python 3.10+.

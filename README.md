@@ -4,6 +4,12 @@ VLearn Tutor giúp học viên hỏi và hiểu nội dung của slide đang h�
 
 > Bản chính để chạy, demo và chấm: [`Working-Prototype/v0`](Working-Prototype/v0/). Thư mục [`lumi-slide-tutor`](lumi-slide-tutor/) là bản phụ thử nghiệm trải nghiệm đọc từng slide PDF; không phải bản dùng để đánh giá golden set hoặc triển khai chính.
 
+## Demo trực tuyến
+
+Mở bản triển khai chính tại **[k4-hackathon-fifo-e403.vercel.app](https://k4-hackathon-fifo-e403.vercel.app/)**.
+
+Deployment này dùng cấu hình `vercel.json` ở root và trỏ tới `Working-Prototype/v0/server.js`.
+
 ## Thành viên và phân công
 
 | Thành viên | Phần phụ trách |
