@@ -619,19 +619,25 @@ function appendTutorMessage(result, trace, activeMeta) {
     `<details class="citation-dropdown slide-dd"><summary>📄 Trích dẫn từ slide${slideCitations.length ? ` (${slideCitations.length})` : ""}</summary><div class="dd-body">${slideBody}</div></details>`
   );
 
-  // Dropdown 2: tham khảo thêm — link ngoài (further_reading) hoặc tên nguồn ngoài (external_source) nếu có.
+  // Dropdown 2: tham khảo thêm — ưu tiên URL thật từ web search (external_source.urls) khi source_type="external",
+  // sau đó mới tới link AI tự gợi ý (further_reading, áp dụng cho mọi source_type).
   const fr = result.further_reading;
+  const extUrls = Array.isArray(result.external_source?.urls) ? result.external_source.urls : [];
   let refBody;
-  if (fr?.url) {
+  if (result.source_type === "external" && result.external_source?.name) {
+    const nameLine = `<p class="citation-quote"><strong>${escapeHtml(result.external_source.name)}</strong></p>`;
+    const noteLine = result.external_source.note ? `<p class="citation-quote">${escapeHtml(result.external_source.note)}</p>` : "";
+    const linkLines = extUrls
+      .map((u) => `<p class="citation-quote"><a href="${escapeHtml(u.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(u.title || u.url)}</a></p>`)
+      .join("");
+    const disclaimer = extUrls.length ? `<span class="dd-disclaimer">Nguồn tìm qua web search — tự kiểm tra trước khi dùng.</span>` : "";
+    refBody = nameLine + noteLine + linkLines + disclaimer;
+  } else if (fr?.url) {
     const linkLabel = escapeHtml(fr.title || fr.url);
     refBody =
       `<p class="citation-quote"><a href="${escapeHtml(fr.url)}" target="_blank" rel="noopener noreferrer">${linkLabel}</a></p>` +
       (fr.note ? `<p class="citation-quote">${escapeHtml(fr.note)}</p>` : "") +
       `<span class="dd-disclaimer">Đường link do AI gợi ý — tự kiểm tra trước khi dùng.</span>`;
-  } else if (result.source_type === "external" && result.external_source?.name) {
-    refBody =
-      `<p class="citation-quote"><strong>${escapeHtml(result.external_source.name)}</strong></p>` +
-      (result.external_source.note ? `<p class="citation-quote">${escapeHtml(result.external_source.note)}</p>` : "");
   } else {
     refBody = `<p class="dd-empty">Không có nguồn ngoài được đề xuất cho câu trả lời này.</p>`;
   }

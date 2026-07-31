@@ -70,28 +70,102 @@ function resolveDeckId(requested, fallback) {
 }
 
 // ---------- Cache trích dẫn nguồn ngoài: cùng một chủ đề luôn được cite lại y hệt, không đổi lời mỗi lần hỏi ----------
-const externalCitationCache = new Map(); // normalizedTopic -> { name, note, cited_at, hits }
+const externalCitationCache = new Map(); // normalizedTopic -> { name, note, urls, cited_at, hits }
+const WEB_SEARCH_MODEL = process.env.OPENAI_WEB_SEARCH_MODEL || "gpt-5.4"; // model dùng cho Responses API + tool web_search
 
 function normalizeTopic(topic) {
   return String(topic || "").trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-function citeExternalSource({ topic, claim }) {
+function safeHostname(url) {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
+// Dọn text trả về từ Responses API: model có thể vẫn chèn Markdown/marker trích dẫn nội bộ dù đã dặn không dùng.
+function toPlainText(value) {
+  return String(value || "")
+    .replace(/\[([^\]]+)\]\(https?:\/\/[^)]+\)/g, "$1")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s{0,3}(?:[-*+•]|\d+[.)])\s+/gm, "")
+    .replace(/`{1,3}/g, "")
+    .replace(/\*{1,3}|_{1,3}/g, "")
+    .replace(/cite[^]+/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function extractResponsesOutput(payload) {
+  const messageBlocks = (payload.output || [])
+    .filter((item) => item.type === "message")
+    .flatMap((item) => item.content || [])
+    .filter((item) => item.type === "output_text");
+  const text = messageBlocks.map((b) => b.text || "").join("\n").trim() || String(payload.output_text || "").trim();
+  const annotations = messageBlocks.flatMap((b) => b.annotations || []);
+  return { text, annotations };
+}
+
+function extractWebCitations(annotations) {
+  const seen = new Set();
+  return annotations
+    .filter((item) => item.type === "url_citation" && item.url)
+    .map((item) => ({ title: item.title || safeHostname(item.url), url: item.url }))
+    .filter((item) => !seen.has(item.url) && seen.add(item.url))
+    .slice(0, 3);
+}
+
+// Tìm web thật (OpenAI Responses API + tool web_search) để có URL thật thay vì chỉ ghi tên nguồn suông.
+// Lỗi/không tìm được -> trả về null, caller rơi về ghi chú không kèm URL (không chặn câu trả lời chính).
+async function webSearchCite(topic, claim) {
+  if (!OPENAI_API_KEY) return null;
+  try {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: WEB_SEARCH_MODEL,
+        input: `Tìm 1-3 nguồn đáng tin cậy (ưu tiên tài liệu chính thức/học thuật) cho khái niệm/khẳng định sau, phục vụ trích dẫn trong một Tutor học tập AI/LLM.\nChủ đề: ${topic}\nKhẳng định liên quan: ${claim || "(không có)"}\n\nChỉ trả lời ĐÚNG MỘT câu tiếng Việt (dưới 30 từ) tóm tắt nguồn tìm được là gì — không liệt kê danh sách, không dùng Markdown, không tự chèn URL hay ngoặc trích dẫn trong câu (URL sẽ được hệ thống lấy riêng từ kết quả tìm kiếm).`,
+        tools: [{ type: "web_search", search_context_size: "low" }],
+        tool_choice: "required",
+        text: { verbosity: "low" }
+      })
+    });
+    if (!response.ok) {
+      console.warn("[web-search] HTTP", response.status, (await response.text()).slice(0, 300));
+      return null;
+    }
+    const payload = await response.json();
+    const { text, annotations } = extractResponsesOutput(payload);
+    const urls = extractWebCitations(annotations);
+    if (!urls.length) return null;
+    return { summary: text, urls };
+  } catch (err) {
+    console.warn("[web-search] lỗi:", err.message);
+    return null;
+  }
+}
+
+async function citeExternalSource({ topic, claim }) {
   const key = normalizeTopic(topic);
   if (!key) return { error: "missing_topic" };
   if (externalCitationCache.has(key)) {
     const cached = externalCitationCache.get(key);
     cached.hits += 1;
-    return { name: cached.name, note: cached.note, cached: true };
+    return { name: cached.name, note: cached.note, urls: cached.urls, cached: true };
   }
+  const webResult = await webSearchCite(topic, claim);
   const entry = {
     name: String(topic).trim(),
-    note: String(claim || "Kiến thức nền phổ biến về AI/LLM, không có trong slide.").trim(),
+    note: webResult?.summary || String(claim || "Kiến thức nền phổ biến về AI/LLM, không có trong slide.").trim(),
+    urls: webResult?.urls || [],
     cited_at: new Date().toISOString(),
     hits: 1
   };
   externalCitationCache.set(key, entry);
-  return { name: entry.name, note: entry.note, cached: false };
+  return { name: entry.name, note: entry.note, urls: entry.urls, cached: false };
 }
 
 // "slide 5" / "trang 12" / "page 3" / bare "5" -> số trang tường minh, KHÔNG phải từ khoá text-search.
@@ -157,7 +231,7 @@ BẠN CÓ 5 TOOL:
 - list_slide_decks(): xem danh sách bộ slide đang có + số trang mỗi bộ. Chỉ gọi khi thật sự cần biết có bộ nào khác ngoài bộ đang mở (ví dụ câu hỏi có vẻ thuộc buổi học khác với slide đang xem).
 - search_slides({ deck?, query }): tìm từ khoá/khái niệm trong một bộ slide (bỏ trống deck = tìm trong bộ đang mở). Dùng cho tìm khái niệm, KHÔNG dùng để tìm theo số trang — nếu đã biết rõ số trang/slide cần xem, gọi thẳng read_slide_page.
 - read_slide_page({ deck?, page }): đọc TOÀN VĂN một trang cụ thể (không bị cắt ngắn như search_slides). Nếu học viên hoặc câu hỏi nêu rõ một số trang/slide cụ thể (vd "slide 5", "trang 12"), gọi tool này NGAY với page = số đó — đừng đưa số trang vào search_slides làm từ khoá.
-- cite_external_source({ topic, claim }): gọi tool này TRƯỚC khi dùng source_type="external" trong final_answer, để đăng ký nguồn kiến thức nền một cách nhất quán — kết quả được cache theo chủ đề, hỏi lại đúng khái niệm đó sẽ luôn nhận lại cùng một trích dẫn thay vì mỗi lần diễn đạt khác nhau.
+- cite_external_source({ topic, claim }): gọi tool này TRƯỚC khi dùng source_type="external" trong final_answer. Server sẽ TỰ TÌM KIẾM WEB THẬT (không phải bạn bịa) để lấy URL nguồn đáng tin — kết quả được cache theo chủ đề, hỏi lại đúng khái niệm đó sẽ luôn nhận lại cùng một trích dẫn thay vì mỗi lần diễn đạt khác nhau.
 - final_answer(...): BẮT BUỘC dùng tool này để kết thúc mọi lượt trả lời. Không bao giờ trả lời bằng văn bản tự do ngoài tool call.
 
 Mỗi bộ slide chỉ được server đọc từ PDF một lần rồi giữ trong cache; các lượt gọi tool trùng lặp y hệt (cùng tool, cùng tham số) trong một câu hỏi cũng được server cache lại và báo "cached" thay vì tính toán lại. Dù vậy bạn chỉ có tối đa vài lượt gọi tool: đừng lặp lại đúng một truy vấn/trang đã xem, và ưu tiên gọi final_answer ngay khi đã đủ căn cứ thay vì tìm thêm cho chắc.
@@ -170,7 +244,7 @@ QUY TẮC CỨNG — 4 lớp chỗ khó của dự án:
 
 QUY TẮC NGUỒN:
 - source_type="slide": câu trả lời lấy trực tiếp từ nội dung slide đã đọc được. Phải điền citations với đúng deck ("d1" hoặc "d2"), số trang và một câu trích ngắn (dưới 25 từ) làm căn cứ. Có thể trích từ cả 2 bộ slide trong cùng một câu trả lời nếu câu hỏi cần đối chiếu giữa 2 buổi học.
-- source_type="external": dùng cho MỌI câu hỏi kiến thức AI/LLM/công nghệ hợp lý mà bạn đủ tự tin trả lời đúng nhưng nội dung không có trong 2 bộ slide (định nghĩa thuật ngữ, công thức, tên bài báo/mô hình phổ biến...). Đây là nhánh trả lời bình thường, không phải từ chối — hãy chủ động dùng khi phù hợp thay vì mặc định né sang "insufficient". PHẢI gọi cite_external_source trước, rồi điền external_source.name/note khớp với kết quả tool trả về (không bịa URL nếu không chắc).
+- source_type="external": dùng cho MỌI câu hỏi kiến thức AI/LLM/công nghệ hợp lý mà bạn đủ tự tin trả lời đúng nhưng nội dung không có trong 2 bộ slide (định nghĩa thuật ngữ, công thức, tên bài báo/mô hình phổ biến...). Đây là nhánh trả lời bình thường, không phải từ chối — hãy chủ động dùng khi phù hợp thay vì mặc định né sang "insufficient". PHẢI gọi cite_external_source trước, rồi điền external_source.name/note khớp với kết quả tool trả về — server tự gắn URL thật từ kết quả tìm kiếm web, bạn không cần tự điền hay bịa URL.
 - source_type="insufficient": chỉ dùng khi mơ hồ (②), thật sự ngoài thẩm quyền (③ đúng nghĩa), hoặc không đủ tự tin về kiến thức domain (④) — không dùng chỉ vì "không có trong slide" khi bạn thực ra biết câu trả lời.
 
 QUY TẮC "THAM KHẢO THÊM" (further_reading — tuỳ chọn, độc lập với source_type, hiển thị ở dropdown riêng cho học viên):
@@ -230,7 +304,7 @@ const tools = [
     function: {
       name: "cite_external_source",
       description:
-        "Đăng ký một trích dẫn nguồn ngoài slide TRƯỚC khi trả lời với source_type='external'. Kết quả được cache theo chủ đề nên hỏi lại cùng khái niệm sẽ luôn ra cùng một trích dẫn.",
+        "Đăng ký một trích dẫn nguồn ngoài slide TRƯỚC khi trả lời với source_type='external'. Server sẽ tự tìm kiếm web thật (không phải bạn bịa URL) để lấy 1-3 nguồn đáng tin cậy kèm URL thật cho chủ đề này. Kết quả được cache theo chủ đề nên hỏi lại cùng khái niệm sẽ luôn ra cùng một trích dẫn.",
       parameters: {
         type: "object",
         properties: {
@@ -279,9 +353,10 @@ const tools = [
           },
           external_source: {
             type: "object",
-            description: "Bắt buộc điền khi source_type = 'external'.",
+            description:
+              "Bắt buộc điền khi source_type = 'external'. Chỉ cần 'name' và 'note' — server tự gắn URL thật (từ web search qua cite_external_source) vào citation hiển thị cho học viên, bạn không cần tự điền URL ở đây.",
             properties: {
-              name: { type: "string", description: "Tên nguồn/khái niệm kiến thức nền, không bịa URL nếu không chắc." },
+              name: { type: "string", description: "Tên nguồn/khái niệm kiến thức nền, khớp với 'topic' đã dùng khi gọi cite_external_source." },
               note: { type: "string", description: "Vì sao cần dùng nguồn ngoài slide." }
             }
           },
@@ -367,7 +442,7 @@ function buildCustomSystemPrompt(label) {
 NHIỆM VỤ: giúp học viên hiểu hoặc tóm tắt đúng nội dung đoạn văn bản được cung cấp (hoặc đoạn học viên vừa bôi đen), luôn cho biết câu trả lời có căn cứ ở trang nào để học viên tự kiểm chứng.
 
 BẠN CÓ 2 TOOL:
-- cite_external_source({ topic, claim }): gọi TRƯỚC khi dùng source_type="external", để đăng ký nguồn kiến thức nền nhất quán.
+- cite_external_source({ topic, claim }): gọi TRƯỚC khi dùng source_type="external". Server tự tìm kiếm web thật để lấy URL nguồn đáng tin, không cần bạn tự bịa.
 - final_answer(...): BẮT BUỘC dùng để kết thúc mọi lượt trả lời.
 
 QUY TẮC CỨNG — 4 lớp chỗ khó của dự án:
@@ -445,7 +520,7 @@ async function answerCustomDoc({ question, selection, history, customDoc }) {
           continue;
         }
         if (name === "cite_external_source") {
-          const cited = citeExternalSource({ topic: args.topic, claim: args.claim });
+          const cited = await citeExternalSource({ topic: args.topic, claim: args.claim });
           trace.push({ tool: "cite_external_source", topic: args.topic, reused_citation: Boolean(cited.cached) });
           messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(cited) });
           continue;
@@ -474,10 +549,12 @@ async function answerCustomDoc({ question, selection, history, customDoc }) {
   }
 
   if (finalArgs.source_type === "external" && finalArgs.external_source?.name) {
+    // Luôn lấy lại entry chuẩn từ cache (kể cả khi model đã tự gọi cite_external_source trong lượt tool-call ở trên) —
+    // final_answer của model không có chỗ để echo lại "urls" thật, nên phải server tự gán lại để không mất URL.
     const alreadyCited = trace.some((t) => t.tool === "cite_external_source" && normalizeTopic(t.topic) === normalizeTopic(finalArgs.external_source.name));
+    const cited = await citeExternalSource({ topic: finalArgs.external_source.name, claim: finalArgs.external_source.note || finalArgs.answer });
+    finalArgs.external_source = { name: cited.name, note: cited.note, urls: cited.urls };
     if (!alreadyCited) {
-      const cited = citeExternalSource({ topic: finalArgs.external_source.name, claim: finalArgs.external_source.note || finalArgs.answer });
-      finalArgs.external_source = { name: cited.name, note: cited.note };
       trace.push({ tool: "cite_external_source", topic: cited.name, reused_citation: Boolean(cited.cached), auto: true });
     }
   }
@@ -585,7 +662,7 @@ async function answerQuestion({ question, page, selection, history, deck: reques
             ? JSON.stringify({ deck: targetDeckId, page: found.page, text: found.text })
             : JSON.stringify({ error: `page_not_found (bộ "${targetDeckId}" có ${targetDeck.pages.length} trang)` });
         } else if (name === "cite_external_source") {
-          const cited = citeExternalSource({ topic: args.topic, claim: args.claim });
+          const cited = await citeExternalSource({ topic: args.topic, claim: args.claim });
           traceEntry = { tool: "cite_external_source", topic: args.topic, reused_citation: Boolean(cited.cached) };
           content = JSON.stringify(cited);
         } else {
@@ -621,10 +698,12 @@ async function answerQuestion({ question, page, selection, history, deck: reques
   // An toàn phòng model quên gọi cite_external_source dù prompt yêu cầu: server tự đăng ký/chuẩn hoá
   // citation ngoài slide vào cache, đảm bảo tính nhất quán không phụ thuộc việc model có tuân thủ hay không.
   if (finalArgs.source_type === "external" && finalArgs.external_source?.name) {
+    // Luôn lấy lại entry chuẩn từ cache (kể cả khi model đã tự gọi cite_external_source trong lượt tool-call ở trên) —
+    // final_answer của model không có chỗ để echo lại "urls" thật, nên phải server tự gán lại để không mất URL.
     const alreadyCited = trace.some((t) => t.tool === "cite_external_source" && normalizeTopic(t.topic) === normalizeTopic(finalArgs.external_source.name));
+    const cited = await citeExternalSource({ topic: finalArgs.external_source.name, claim: finalArgs.external_source.note || finalArgs.answer });
+    finalArgs.external_source = { name: cited.name, note: cited.note, urls: cited.urls };
     if (!alreadyCited) {
-      const cited = citeExternalSource({ topic: finalArgs.external_source.name, claim: finalArgs.external_source.note || finalArgs.answer });
-      finalArgs.external_source = { name: cited.name, note: cited.note };
       trace.push({ tool: "cite_external_source", topic: cited.name, reused_citation: Boolean(cited.cached), auto: true });
     }
   }
