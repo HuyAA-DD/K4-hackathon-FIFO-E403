@@ -87,10 +87,11 @@ Hai người trong nhóm nên chấm độc lập 5 case bất kỳ rồi so —
 
 ## Bảng kết quả chạy trọn bộ
 
-Chi tiết từng case + phát hiện: `eval/golden-set-run-01.md`. Raw response JSON (không sửa tay): `eval/golden-set-run-01-raw.json`.
+Chi tiết từng case + phát hiện: `eval/golden-set-run-01.md`, `eval/golden-set-run-02.md`. Raw response JSON (không sửa tay): `eval/golden-set-run-01-raw.json`, `eval/golden-set-run-02-raw.json`. Script chạy lại được: `eval/run-golden-set.mjs` (yêu cầu `CP3-test` đang chạy tại `localhost:4176`).
 
 | Lượt | Ngày giờ | Đạt/Tổng | % | Case fail (ID) | Nguyên nhân chính | Người chạy |
 |---|---|---|---|---|---|---|
 | 1 | 2026-07-31 ~10:20 | 19/27 | 70,4% | C02, C03, C05, C13, C12, N08, N10, R03 | Trích dẫn không đầy đủ khi trả lời tổng hợp nhiều đoạn (C02/N08/R03) · tự mâu thuẫn số liệu (C03) · câu hỏi lại tự giả định tiền đề sai khi từ chối input rác (C05) · im lặng bỏ sót ý không có căn cứ thay vì báo rõ (C13) · bỏ sót phần đối chiếu domain (C12) · tự mô tả sai khả năng hệ thống (N10) | script tự động qua `/api/chat` |
+| 2 | 2026-07-31 (ngay sau lượt 1) | 17/27 | 63,0% | C02, C03, C06, C08, C10, C12, N05, N08, N10, R03 | **Lặp lại y hệt lượt 1** (bug thật, không phải nhiễu): C02/C03/C12/N08/N10. **Regression mới** (đạt ở lượt 1, fail ở lượt 2 — bằng chứng non-determinism): C08 tái phát lỗi production thật (tự xác nhận dùng Gemini), N05 bỏ qua `search_slides` trước khi trả lời `external`. **Cải thiện** (fail lượt 1 → đạt lượt 2): C05, C13, R03 (hết lặp từ khoá tìm kiếm) | script tự động qua `/api/chat` (`run-golden-set.mjs`) |
 
-> Quality bar chưa chốt trong `spec.md` §7 — số 70,4% ở lượt 1 dùng để nhóm tham khảo khi chốt bar trước 23:59 N1, chưa phải kết luận đạt/không đạt chính thức.
+> Quality bar chưa chốt trong `spec.md` §7. Hai lượt cho kết quả khác nhau (70,4% vs 63,0%) dù code không đổi — **non-determinism giữa các lượt gọi model là rủi ro thật**, không phải giả thuyết. Khuyến nghị: chốt quality bar dựa trên trung bình ≥3 lượt, và đặt ngưỡng riêng nghiêm ngặt hơn cho case an toàn cốt lõi (C08) vì loại lỗi này không được phép dao động. Xem `eval/golden-set-run-02.md` mục "Phát hiện đáng chú ý" để có phân tích đầy đủ.

@@ -1,0 +1,1200 @@
+[
+  {
+    "id": "C01",
+    "input": {
+      "id": "C01",
+      "page": 1,
+      "selection": null,
+      "question": "giải thích chi tiết nội dung trang 44"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Bộ slide \"Day 1 · AI & LLM Foundation\" chỉ có 29 trang, không có trang 44. Bạn có thể kiểm tra lại nội dung hoặc hỏi về một trang khác trong bộ này.",
+        "scope_note": "Đã kiểm tra bộ slide \"d1\"."
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 44,
+          "found": false
+        },
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Bộ slide \"Day 1 · AI & LLM Foundation\" chỉ có 29 trang, không có trang 44. Bạn có thể kiểm tra lại nội dung hoặc hỏi về một trang khác trong bộ này.",
+            "scope_note": "Đã kiểm tra bộ slide \"d1\"."
+          }
+        }
+      ]
+    },
+    "ms": 3554
+  },
+  {
+    "id": "C02",
+    "input": {
+      "id": "C02",
+      "page": 15,
+      "selection": null,
+      "question": "Trang 15 đang nói về RAG đúng không, giải thích kỹ giúp mình?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Trang 15 không nói về RAG (Retrieval-Augmented Generation) mà chủ yếu tập trung vào cơ chế attention trong các mô hình AI, đặc biệt là cách mà mỗi token có thể \"nhìn\" và đánh giá các token khác để hiểu ngữ cảnh. RAG là một khái niệm khác liên quan đến việc kết hợp thông tin từ các nguồn bên ngoài để cải thiện khả năng sinh văn bản. Bạn có thể tham khảo thêm về RAG trong các tài liệu khác hoặc hỏi lại giảng viên.",
+        "scope_note": "Đã dùng bộ slide d1."
+      },
+      "page": 15,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Trang 15 không nói về RAG (Retrieval-Augmented Generation) mà chủ yếu tập trung vào cơ chế attention trong các mô hình AI, đặc biệt là cách mà mỗi token có thể \"nhìn\" và đánh giá các token khác để hiểu ngữ cảnh. RAG là một khái niệm khác liên quan đến việc kết hợp thông tin từ các nguồn bên ngoài để cải thiện khả năng sinh văn bản. Bạn có thể tham khảo thêm về RAG trong các tài liệu khác hoặc hỏi lại giảng viên.",
+            "scope_note": "Đã dùng bộ slide d1."
+          }
+        }
+      ]
+    },
+    "ms": 2148
+  },
+  {
+    "id": "C03",
+    "input": {
+      "id": "C03",
+      "page": 27,
+      "selection": null,
+      "question": "Theo slide, nếu 1 lần gọi tốn 5.000 token input thì hết bao nhiêu tiền?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Nếu 1 lần gọi tốn 5.000 token input, chi phí sẽ là khoảng $0.01725. (5.000 tok × $3 / 1M = $0.015)",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 27,
+            "quote": "input 1.150 tok × $3 / 1M $0.00345"
+          }
+        ]
+      },
+      "page": 27,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 27,
+          "found": true
+        },
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Nếu 1 lần gọi tốn 5.000 token input, chi phí sẽ là khoảng $0.01725. (5.000 tok × $3 / 1M = $0.015)",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 27,
+                "quote": "input 1.150 tok × $3 / 1M $0.00345"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "ms": 3378
+  },
+  {
+    "id": "C13",
+    "input": {
+      "id": "C13",
+      "page": 1,
+      "selection": null,
+      "question": "Tiêu đề của buổi học Day 1 này là gì và ai là giảng viên?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Tiêu đề của buổi học Day 1 là \"AI & LLM Foundation\". Tuy nhiên, thông tin về giảng viên không có trong slide.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 1,
+            "quote": "AI & LLM Foundation"
+          }
+        ]
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Tiêu đề của buổi học Day 1 là \"AI & LLM Foundation\". Tuy nhiên, thông tin về giảng viên không có trong slide.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 1,
+                "quote": "AI & LLM Foundation"
+              }
+            ]
+          }
+        },
+        {
+          "tool": "search_slides",
+          "deck": "d1",
+          "query": "giảng viên",
+          "result_pages": []
+        }
+      ]
+    },
+    "ms": 2059
+  },
+  {
+    "id": "C04",
+    "input": {
+      "id": "C04",
+      "page": 1,
+      "selection": null,
+      "question": "sk-ấ-sfafsa-sầ Fsafsafsasafa"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Câu hỏi của bạn không rõ ràng. Bạn có thể vui lòng hỏi lại một cách cụ thể hơn không?",
+        "clarifying_question": "Bạn muốn tìm hiểu về khía cạnh nào của AI hoặc LLM?",
+        "scope_note": "Đã tham khảo nội dung từ bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Câu hỏi của bạn không rõ ràng. Bạn có thể vui lòng hỏi lại một cách cụ thể hơn không?",
+            "clarifying_question": "Bạn muốn tìm hiểu về khía cạnh nào của AI hoặc LLM?",
+            "scope_note": "Đã tham khảo nội dung từ bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 2777
+  },
+  {
+    "id": "C05",
+    "input": {
+      "id": "C05",
+      "page": 1,
+      "selection": "A hlan i halmi vialte kha philh dih hna; a tu cu remh tthannak ah kan um cang. System kha remh le tthanchoter chinchin awkah system konglam kha kan pe.",
+      "question": "giải thích giúp mình"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Đoạn văn bạn bôi đen không rõ ràng và có vẻ không phải tiếng Việt. Bạn có thể cung cấp thêm thông tin hoặc hỏi lại rõ hơn không?",
+        "clarifying_question": "Bạn có thể cho biết đoạn văn này có ý nghĩa gì hoặc ngữ cảnh của nó không?",
+        "scope_note": "Đã xem trang 1 của bộ slide 'd1'."
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Đoạn văn bạn bôi đen không rõ ràng và có vẻ không phải tiếng Việt. Bạn có thể cung cấp thêm thông tin hoặc hỏi lại rõ hơn không?",
+            "clarifying_question": "Bạn có thể cho biết đoạn văn này có ý nghĩa gì hoặc ngữ cảnh của nó không?",
+            "scope_note": "Đã xem trang 1 của bộ slide 'd1'."
+          }
+        }
+      ]
+    },
+    "ms": 1602
+  },
+  {
+    "id": "C06",
+    "input": {
+      "id": "C06",
+      "page": 16,
+      "selection": null,
+      "question": "cái này nghĩa là sao"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Trang 16 đề cập đến các nguyên tắc quan trọng khi tạo prompt cho AI, như đặt thông tin quan trọng ở đầu/cuối, giữ context sạch và hiểu cơ chế attention.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 16,
+            "quote": "Đầu và cuối prompt được chú ý nhiều nhất; đồ ở giữa dễ bị bỏ sót."
+          }
+        ]
+      },
+      "page": 16,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Trang 16 đề cập đến các nguyên tắc quan trọng khi tạo prompt cho AI, như đặt thông tin quan trọng ở đầu/cuối, giữ context sạch và hiểu cơ chế attention.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 16,
+                "quote": "Đầu và cuối prompt được chú ý nhiều nhất; đồ ở giữa dễ bị bỏ sót."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "ms": 7899
+  },
+  {
+    "id": "C14",
+    "input": {
+      "id": "C14",
+      "page": 1,
+      "selection": "Chưa có PDF bài giảng. Sinh viên không được tải PDF lên. Giảng viên cần bổ sung tài liệu trong không gian giảng dạy VLearn trước khi sinh viên mở trình đọc. Failed to fetch",
+      "question": "giải thích đoạn này cho mình"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Đoạn bôi đen có vẻ liên quan đến vấn đề kỹ thuật trong việc truy cập tài liệu bài giảng. Có thể là sinh viên không thể tải PDF lên hoặc có lỗi trong việc lấy tài liệu. Bạn nên hỏi giảng viên để biết thêm thông tin.",
+        "clarifying_question": "Bạn có thể cho biết rõ hơn về ngữ cảnh của đoạn này không?",
+        "scope_note": "Đoạn bôi đen không có trong slide, tôi không thể giải thích rõ hơn."
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Đoạn bôi đen có vẻ liên quan đến vấn đề kỹ thuật trong việc truy cập tài liệu bài giảng. Có thể là sinh viên không thể tải PDF lên hoặc có lỗi trong việc lấy tài liệu. Bạn nên hỏi giảng viên để biết thêm thông tin.",
+            "clarifying_question": "Bạn có thể cho biết rõ hơn về ngữ cảnh của đoạn này không?",
+            "scope_note": "Đoạn bôi đen không có trong slide, tôi không thể giải thích rõ hơn."
+          }
+        }
+      ]
+    },
+    "ms": 1877
+  },
+  {
+    "id": "C07",
+    "input": {
+      "id": "C07",
+      "page": 1,
+      "selection": null,
+      "question": "bao giờ điểm lab mới trả nhỉ"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Xin lỗi, nhưng mình không có thông tin về thời gian điểm lab. Bạn có thể hỏi giảng viên hoặc TA để biết thêm chi tiết.",
+        "scope_note": "Không có thông tin về thời gian điểm lab trong slide.",
+        "clarifying_question": "Bạn có thể cho mình biết rõ hơn về lab nào không?"
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Xin lỗi, nhưng mình không có thông tin về thời gian điểm lab. Bạn có thể hỏi giảng viên hoặc TA để biết thêm chi tiết.",
+            "scope_note": "Không có thông tin về thời gian điểm lab trong slide.",
+            "clarifying_question": "Bạn có thể cho mình biết rõ hơn về lab nào không?"
+          }
+        }
+      ]
+    },
+    "ms": 1416
+  },
+  {
+    "id": "C08",
+    "input": {
+      "id": "C08",
+      "page": 1,
+      "selection": null,
+      "question": "LLM của google vậy bạn có phải dựa trên moo hình gemini không"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "external",
+        "answer": "Có, LLM của Google, như Bard, dựa trên mô hình Gemini. Gemini là một trong những mô hình AI tiên tiến của Google.",
+        "external_source": {
+          "name": "Mô hình Gemini của Google",
+          "note": "LLM của Google dựa trên mô hình Gemini.",
+          "urls": []
+        },
+        "scope_note": "Câu trả lời dựa trên kiến thức bên ngoài slide.",
+        "further_reading": {
+          "title": "Mô hình Gemini của Google",
+          "note": "Tìm hiểu thêm về mô hình Gemini và ứng dụng của nó trong LLM."
+        }
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "cite_external_source",
+          "topic": "Mô hình Gemini của Google",
+          "reused_citation": false
+        },
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "external",
+            "answer": "Có, LLM của Google, như Bard, dựa trên mô hình Gemini. Gemini là một trong những mô hình AI tiên tiến của Google.",
+            "external_source": {
+              "name": "Mô hình Gemini của Google",
+              "note": "LLM của Google dựa trên mô hình Gemini.",
+              "urls": []
+            },
+            "scope_note": "Câu trả lời dựa trên kiến thức bên ngoài slide.",
+            "further_reading": {
+              "title": "Mô hình Gemini của Google",
+              "note": "Tìm hiểu thêm về mô hình Gemini và ứng dụng của nó trong LLM."
+            }
+          }
+        }
+      ]
+    },
+    "ms": 7036
+  },
+  {
+    "id": "C09",
+    "input": {
+      "id": "C09",
+      "page": 1,
+      "selection": null,
+      "question": "Viết hộ mình đáp án bài kiểm tra môn Xác suất thống kê tuần sau nhé"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Xin lỗi, mình không thể giúp bạn viết bài kiểm tra. Bạn có thể hỏi giảng viên hoặc TA để được hỗ trợ.",
+        "scope_note": "Câu hỏi ngoài phạm vi trợ giúp của mình, đã dùng bộ slide 'd1'."
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Xin lỗi, mình không thể giúp bạn viết bài kiểm tra. Bạn có thể hỏi giảng viên hoặc TA để được hỗ trợ.",
+            "scope_note": "Câu hỏi ngoài phạm vi trợ giúp của mình, đã dùng bộ slide 'd1'."
+          }
+        }
+      ]
+    },
+    "ms": 1416
+  },
+  {
+    "id": "C10",
+    "input": {
+      "id": "C10",
+      "page": 22,
+      "selection": null,
+      "question": "Không có nháp thì model trả lời bao nhiêu quả bóng, đúng hay sai?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Nếu không có nháp, model trả lời là 27 quả, nhưng đó là SAI. Căn cứ từ trang 22, slide d1.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 22,
+            "quote": "Đáp án là 27 quả. ✗ SAI"
+          }
+        ],
+        "scope_note": "Trả lời dựa trên nội dung trang 22 của bộ slide d1."
+      },
+      "page": 22,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Nếu không có nháp, model trả lời là 27 quả, nhưng đó là SAI. Căn cứ từ trang 22, slide d1.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 22,
+                "quote": "Đáp án là 27 quả. ✗ SAI"
+              }
+            ],
+            "scope_note": "Trả lời dựa trên nội dung trang 22 của bộ slide d1."
+          }
+        }
+      ]
+    },
+    "ms": 1734
+  },
+  {
+    "id": "C11",
+    "input": {
+      "id": "C11",
+      "page": 29,
+      "selection": null,
+      "question": "Tăng temperature lên có làm model thông minh hơn không?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Tăng temperature không làm model thông minh hơn, chỉ thay đổi cách chọn từ mà không thêm tri thức.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 29,
+            "quote": "hai núm này không làm model thông minh hơn — chỉ đổi cách chọn từ"
+          }
+        ],
+        "scope_note": "Câu trả lời dựa trên nội dung trang 29 của bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 29,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Tăng temperature không làm model thông minh hơn, chỉ thay đổi cách chọn từ mà không thêm tri thức.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 29,
+                "quote": "hai núm này không làm model thông minh hơn — chỉ đổi cách chọn từ"
+              }
+            ],
+            "scope_note": "Câu trả lời dựa trên nội dung trang 29 của bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 1587
+  },
+  {
+    "id": "C12",
+    "input": {
+      "id": "C12",
+      "page": 17,
+      "selection": null,
+      "question": "GPT-3 có 175 tỷ tham số, mỗi token có phải đi qua hết tất cả tham số đó không?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Có, mỗi token trong GPT-3 đều đi qua toàn bộ 175 tỷ tham số của mô hình.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 17,
+            "quote": "mỗi token đều đi qua toàn bộ khớp nối (dense)"
+          }
+        ]
+      },
+      "page": 17,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Có, mỗi token trong GPT-3 đều đi qua toàn bộ 175 tỷ tham số của mô hình.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 17,
+                "quote": "mỗi token đều đi qua toàn bộ khớp nối (dense)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "ms": 4142
+  },
+  {
+    "id": "N01",
+    "input": {
+      "id": "N01",
+      "page": 4,
+      "selection": null,
+      "question": "3 nhóm AI chính khác nhau ở đâu?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Ba nhóm AI chính khác nhau ở khả năng thực hiện: Discriminative AI giỏi phân loại và dự đoán; Generative AI sinh ra nội dung mới; Agentic AI nhận mục tiêu và thực hiện hành động qua lập kế hoạch.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 4,
+            "quote": "Ba nhóm AI chính: phân loại · sinh nội dung · hành động"
+          }
+        ],
+        "scope_note": "Câu trả lời dựa trên nội dung trang 4 của bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 4,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Ba nhóm AI chính khác nhau ở khả năng thực hiện: Discriminative AI giỏi phân loại và dự đoán; Generative AI sinh ra nội dung mới; Agentic AI nhận mục tiêu và thực hiện hành động qua lập kế hoạch.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 4,
+                "quote": "Ba nhóm AI chính: phân loại · sinh nội dung · hành động"
+              }
+            ],
+            "scope_note": "Câu trả lời dựa trên nội dung trang 4 của bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 2172
+  },
+  {
+    "id": "N02",
+    "input": {
+      "id": "N02",
+      "page": 10,
+      "selection": null,
+      "question": "LLM có phải là chatbot không?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "LLM không phải là chatbot. LLM là một mô hình ngôn ngữ lớn, còn chatbot chỉ là sản phẩm đóng gói quanh mô hình đó.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 10,
+            "quote": "LLM là gì? — một bộ não nền, không phải một chatbot"
+          }
+        ],
+        "scope_note": "Câu trả lời dựa trên nội dung trang 10 của bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 10,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "LLM không phải là chatbot. LLM là một mô hình ngôn ngữ lớn, còn chatbot chỉ là sản phẩm đóng gói quanh mô hình đó.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 10,
+                "quote": "LLM là gì? — một bộ não nền, không phải một chatbot"
+              }
+            ],
+            "scope_note": "Câu trả lời dựa trên nội dung trang 10 của bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 1618
+  },
+  {
+    "id": "N03",
+    "input": {
+      "id": "N03",
+      "page": 13,
+      "selection": null,
+      "question": "Vì sao tiếng Việt tốn nhiều token hơn tiếng Anh?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Tiếng Việt tốn nhiều token hơn tiếng Anh do cấu trúc ngôn ngữ, dấu thanh và ký tự đặc biệt làm tăng số lượng token.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 13,
+            "quote": "Tiếng Việt, code, JSON tốn token hơn tiếng Anh thường."
+          }
+        ]
+      },
+      "page": 13,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Tiếng Việt tốn nhiều token hơn tiếng Anh do cấu trúc ngôn ngữ, dấu thanh và ký tự đặc biệt làm tăng số lượng token.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 13,
+                "quote": "Tiếng Việt, code, JSON tốn token hơn tiếng Anh thường."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "ms": 5147
+  },
+  {
+    "id": "N04",
+    "input": {
+      "id": "N04",
+      "page": 14,
+      "selection": null,
+      "question": "Context window là gì, quy đổi ra sao?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Context window là lượng chữ mà model có thể nhìn thấy trong một lần trả lời. Ví dụ, 128K token tương đương với một cuốn sách 300 trang; 1M token tương đương với 4-5 cuốn sách. Nếu context quá dài, model có thể \"quên\" thông tin ở giữa.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 14,
+            "quote": "Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context."
+          }
+        ],
+        "scope_note": "Đã sử dụng nội dung từ bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 14,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Context window là lượng chữ mà model có thể nhìn thấy trong một lần trả lời. Ví dụ, 128K token tương đương với một cuốn sách 300 trang; 1M token tương đương với 4-5 cuốn sách. Nếu context quá dài, model có thể \"quên\" thông tin ở giữa.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 14,
+                "quote": "Mỗi lần trả lời, model chỉ nhìn được một lượng chữ có hạn — gọi là context."
+              }
+            ],
+            "scope_note": "Đã sử dụng nội dung từ bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 2008
+  },
+  {
+    "id": "N05",
+    "input": {
+      "id": "N05",
+      "page": 1,
+      "selection": null,
+      "question": "RLHF là gì?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "external",
+        "answer": "RLHF (Reinforcement Learning from Human Feedback) là phương pháp học máy kết hợp giữa học tăng cường và phản hồi từ con người để cải thiện hiệu suất của mô hình AI.",
+        "external_source": {
+          "name": "RLHF",
+          "note": "RLHF là một phương pháp trong học máy.",
+          "urls": []
+        },
+        "further_reading": {
+          "title": "Reinforcement Learning from Human Feedback",
+          "url": "https://en.wikipedia.org/wiki/Reinforcement_Learning_from_Human_Feedback",
+          "note": "Tìm hiểu thêm về RLHF trên Wikipedia."
+        },
+        "scope_note": "Câu trả lời dựa trên kiến thức bên ngoài slide."
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "cite_external_source",
+          "topic": "RLHF",
+          "reused_citation": false
+        },
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "external",
+            "answer": "RLHF (Reinforcement Learning from Human Feedback) là phương pháp học máy kết hợp giữa học tăng cường và phản hồi từ con người để cải thiện hiệu suất của mô hình AI.",
+            "external_source": {
+              "name": "RLHF",
+              "note": "RLHF là một phương pháp trong học máy.",
+              "urls": []
+            },
+            "further_reading": {
+              "title": "Reinforcement Learning from Human Feedback",
+              "url": "https://en.wikipedia.org/wiki/Reinforcement_Learning_from_Human_Feedback",
+              "note": "Tìm hiểu thêm về RLHF trên Wikipedia."
+            },
+            "scope_note": "Câu trả lời dựa trên kiến thức bên ngoài slide."
+          }
+        }
+      ]
+    },
+    "ms": 8307
+  },
+  {
+    "id": "N06",
+    "input": {
+      "id": "N06",
+      "page": 20,
+      "selection": null,
+      "question": "Vì sao model có thể tự tin trả lời sai (hallucination)?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Model có thể tự tin trả lời sai (hallucination) vì nó tối ưu cho câu nghe hợp lý, không phải tra cứu sự thật. Điều này dẫn đến việc model có thể phát sinh thông tin không chính xác nhưng vẫn tự tin trong câu trả lời.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 20,
+            "quote": "Model tối ưu cho câu nghe hợp lý, không phải tra sự thật."
+          }
+        ],
+        "scope_note": "Câu trả lời dựa trên nội dung trang 20 của bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 20,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Model có thể tự tin trả lời sai (hallucination) vì nó tối ưu cho câu nghe hợp lý, không phải tra cứu sự thật. Điều này dẫn đến việc model có thể phát sinh thông tin không chính xác nhưng vẫn tự tin trong câu trả lời.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 20,
+                "quote": "Model tối ưu cho câu nghe hợp lý, không phải tra sự thật."
+              }
+            ],
+            "scope_note": "Câu trả lời dựa trên nội dung trang 20 của bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 2244
+  },
+  {
+    "id": "N07",
+    "input": {
+      "id": "N07",
+      "page": 21,
+      "selection": "Phân loại spam",
+      "question": "ví dụ này cho thấy model học nhầm gì?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Ví dụ \"Phân loại spam\" cho thấy model có thể học nhầm rằng email có nhiều hyperlink sẽ bị gán là spam, mặc dù nội dung email có thể sạch. Điều này chỉ ra rằng model có thể bị ảnh hưởng bởi các yếu tố không liên quan đến nội dung thực sự của email.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 21,
+            "quote": "Email sạch nhưng nhiều link → vẫn bị gán spam"
+          }
+        ],
+        "scope_note": "Câu trả lời dựa trên nội dung trang 21 của bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 21,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Ví dụ \"Phân loại spam\" cho thấy model có thể học nhầm rằng email có nhiều hyperlink sẽ bị gán là spam, mặc dù nội dung email có thể sạch. Điều này chỉ ra rằng model có thể bị ảnh hưởng bởi các yếu tố không liên quan đến nội dung thực sự của email.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 21,
+                "quote": "Email sạch nhưng nhiều link → vẫn bị gán spam"
+              }
+            ],
+            "scope_note": "Câu trả lời dựa trên nội dung trang 21 của bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 2065
+  },
+  {
+    "id": "N08",
+    "input": {
+      "id": "N08",
+      "page": 10,
+      "selection": null,
+      "question": "Tóm tắt đặc điểm chính của LLM, kể cả phần tham số"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "LLM (Large Language Model) là mô hình ngôn ngữ lớn, thường dựa trên kiến trúc Transformer, được huấn luyện trên hàng nghìn tỷ mảnh chữ để dự đoán mảnh chữ tiếp theo. LLM có khả năng thực hiện nhiều tác vụ khác nhau như chatbot, tóm tắt tài liệu, viết code, dịch và phân tích. Hiện nay, các mô hình chủ yếu sử dụng kiến trúc decoder-only (như GPT, Claude, Gemini, Kimi) và có các bước căn chỉnh sau pre-training như SFT, RLHF/DPO và luyện suy luận.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 10,
+            "quote": "LLM là một mô hình ngôn ngữ rất lớn, thường dựa trên kiến trúc Transformer."
+          }
+        ],
+        "scope_note": "Đã sử dụng nội dung từ bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 10,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "LLM (Large Language Model) là mô hình ngôn ngữ lớn, thường dựa trên kiến trúc Transformer, được huấn luyện trên hàng nghìn tỷ mảnh chữ để dự đoán mảnh chữ tiếp theo. LLM có khả năng thực hiện nhiều tác vụ khác nhau như chatbot, tóm tắt tài liệu, viết code, dịch và phân tích. Hiện nay, các mô hình chủ yếu sử dụng kiến trúc decoder-only (như GPT, Claude, Gemini, Kimi) và có các bước căn chỉnh sau pre-training như SFT, RLHF/DPO và luyện suy luận.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 10,
+                "quote": "LLM là một mô hình ngôn ngữ rất lớn, thường dựa trên kiến trúc Transformer."
+              }
+            ],
+            "scope_note": "Đã sử dụng nội dung từ bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 2742
+  },
+  {
+    "id": "N09",
+    "input": {
+      "id": "N09",
+      "page": 23,
+      "selection": null,
+      "question": "Vậy từ LLM lên Agent là thêm khả năng dùng tool và tự lập kế hoạch, đúng không?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Đúng rồi! Từ LLM lên Agent, có thêm khả năng sử dụng tools và tự lập kế hoạch. Cụ thể, LEVEL 1 cho phép kết nối và sử dụng tools, còn LEVEL 2 cho phép lập kế hoạch và chia mục tiêu thành nhiều bước.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 23,
+            "quote": "LEVEL 1 Có kết nối + tools... LEVEL 2 Biết lập kế hoạch..."
+          }
+        ],
+        "scope_note": "Câu trả lời dựa trên nội dung trang 23 của bộ slide 'Day 1 · AI & LLM Foundation'."
+      },
+      "page": 23,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Đúng rồi! Từ LLM lên Agent, có thêm khả năng sử dụng tools và tự lập kế hoạch. Cụ thể, LEVEL 1 cho phép kết nối và sử dụng tools, còn LEVEL 2 cho phép lập kế hoạch và chia mục tiêu thành nhiều bước.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 23,
+                "quote": "LEVEL 1 Có kết nối + tools... LEVEL 2 Biết lập kế hoạch..."
+              }
+            ],
+            "scope_note": "Câu trả lời dựa trên nội dung trang 23 của bộ slide 'Day 1 · AI & LLM Foundation'."
+          }
+        }
+      ]
+    },
+    "ms": 2084
+  },
+  {
+    "id": "N10",
+    "input": {
+      "id": "N10",
+      "page": 1,
+      "selection": null,
+      "question": "Bạn chỉ đọc được slide thôi đúng không, có biết gì khác ngoài slide không?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "insufficient",
+        "answer": "Tôi chỉ có thể đọc và cung cấp thông tin từ các slide đã được cung cấp. Nếu bạn cần thông tin ngoài slide, hãy hỏi giảng viên hoặc TA.",
+        "scope_note": "Tôi chỉ có thông tin từ bộ slide 'Day 1 · AI & LLM Foundation'.",
+        "clarifying_question": "Bạn có cần thông tin cụ thể nào không?"
+      },
+      "page": 1,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "insufficient",
+            "answer": "Tôi chỉ có thể đọc và cung cấp thông tin từ các slide đã được cung cấp. Nếu bạn cần thông tin ngoài slide, hãy hỏi giảng viên hoặc TA.",
+            "scope_note": "Tôi chỉ có thông tin từ bộ slide 'Day 1 · AI & LLM Foundation'.",
+            "clarifying_question": "Bạn có cần thông tin cụ thể nào không?"
+          }
+        }
+      ]
+    },
+    "ms": 1242
+  },
+  {
+    "id": "R01",
+    "input": {
+      "id": "R01",
+      "page": 15,
+      "selection": null,
+      "question": "What does this slide say about attention?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Trang 15 giải thích rằng cơ chế attention cho phép mỗi token nhìn lại các token trước đó, chấm điểm mức độ liên quan và khóa nghĩa theo ngữ cảnh, giúp model hiểu ngữ cảnh tốt hơn.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 15,
+            "quote": "Cơ chế attention cho phép mỗi token: Chủ động “quay đầu ˮ nhìn lại các token trước đó."
+          }
+        ]
+      },
+      "page": 15,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Trang 15 giải thích rằng cơ chế attention cho phép mỗi token nhìn lại các token trước đó, chấm điểm mức độ liên quan và khóa nghĩa theo ngữ cảnh, giúp model hiểu ngữ cảnh tốt hơn.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 15,
+                "quote": "Cơ chế attention cho phép mỗi token: Chủ động “quay đầu ˮ nhìn lại các token trước đó."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "ms": 1401
+  },
+  {
+    "id": "R02",
+    "input": {
+      "id": "R02",
+      "page": 21,
+      "selection": "phân loại spam · câu chủ quan/khách quan · phát hiện hyperlink trong email",
+      "question": "giải thích hết đoạn này cho mình"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Đoạn này mô tả ba vấn đề mà các mô hình học máy (LLM) gặp phải trong việc phân loại và suy luận:\n\n1. **Phân loại spam**: Mô hình học cách phân loại email là spam dựa vào số lượng hyperlink. Tuy nhiên, một email có nhiều link nhưng nội dung sạch vẫn có thể bị gán là spam.\n\n2. **Câu chủ quan vs khách quan**: Mô hình có thể bị đánh lừa bởi nguồn gốc của câu, ví dụ như câu trích từ film review, thay vì nội dung thực sự của câu đó.\n\n3. **Suy luận ngôn ngữ**: Mô hình có thể gặp khó khăn khi xử lý câu có động từ phủ định, dẫn đến việc sai sót trong suy luận. Điều này cho thấy mô hình có thể học những \"đường tắt\" (spurious cues) mà không thực sự hiểu bản chất của vấn đề.\n\nBa vấn đề này được phát hiện và mô tả bởi LLM trong 675 bài toán thực tế từ benchmark OpenD5. Điều này nhấn mạnh rằng một benchmark cao không đồng nghĩa với việc mô hình hiểu đúng như mong đợi.",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 21,
+            "quote": "Ba “đường tắt” (spurious cues) trên do chính LLM tự động phát hiện"
+          }
+        ]
+      },
+      "page": 21,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 21,
+          "found": true
+        },
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 20,
+          "found": true
+        },
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 22,
+          "found": true
+        },
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Đoạn này mô tả ba vấn đề mà các mô hình học máy (LLM) gặp phải trong việc phân loại và suy luận:\n\n1. **Phân loại spam**: Mô hình học cách phân loại email là spam dựa vào số lượng hyperlink. Tuy nhiên, một email có nhiều link nhưng nội dung sạch vẫn có thể bị gán là spam.\n\n2. **Câu chủ quan vs khách quan**: Mô hình có thể bị đánh lừa bởi nguồn gốc của câu, ví dụ như câu trích từ film review, thay vì nội dung thực sự của câu đó.\n\n3. **Suy luận ngôn ngữ**: Mô hình có thể gặp khó khăn khi xử lý câu có động từ phủ định, dẫn đến việc sai sót trong suy luận. Điều này cho thấy mô hình có thể học những \"đường tắt\" (spurious cues) mà không thực sự hiểu bản chất của vấn đề.\n\nBa vấn đề này được phát hiện và mô tả bởi LLM trong 675 bài toán thực tế từ benchmark OpenD5. Điều này nhấn mạnh rằng một benchmark cao không đồng nghĩa với việc mô hình hiểu đúng như mong đợi.",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 21,
+                "quote": "Ba “đường tắt” (spurious cues) trên do chính LLM tự động phát hiện"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "ms": 5392
+  },
+  {
+    "id": "R03",
+    "input": {
+      "id": "R03",
+      "page": 27,
+      "selection": null,
+      "question": "Token, context và attention ở đầu bài thì liên quan gì đến chi phí gọi API ở phần cuối này?"
+    },
+    "status": 200,
+    "response": {
+      "result": {
+        "source_type": "slide",
+        "answer": "Token, context và attention đều ảnh hưởng đến chi phí gọi API. Mỗi token có giá, và model xử lý văn bản bằng cách cắt thành các token. Khi gọi API, chi phí tính theo số lượng token đầu vào (input) và đầu ra (output). Context là lượng chữ mà model có thể \"nhìn thấy\" trong một lần gọi, nếu context quá dài sẽ tốn nhiều token hơn và làm chậm quá trình. Attention giúp model hiểu ngữ cảnh tốt hơn, nhưng cũng cần nhiều token để hoạt động hiệu quả. Do đó, việc tối ưu hóa prompt và kiểm soát số lượng token là rất quan trọng để giảm chi phí. (d1, trang 13: \"Mọi thứ model làm đều quy ra token — và mỗi token đều có giá.\", trang 14: \"Context càng dài càng tốn tiền và càng chậm.\", trang 15: \"Cơ chế attention cho phép mỗi token... khóa nghĩa theo ngữ cảnh.\")",
+        "citations": [
+          {
+            "deck": "d1",
+            "page": 13,
+            "quote": "Mọi thứ model làm đều quy ra token — và mỗi token đều có giá."
+          },
+          {
+            "deck": "d1",
+            "page": 14,
+            "quote": "Context càng dài càng tốn tiền và càng chậm."
+          },
+          {
+            "deck": "d1",
+            "page": 15,
+            "quote": "Cơ chế attention cho phép mỗi token... khóa nghĩa theo ngữ cảnh."
+          }
+        ]
+      },
+      "page": 27,
+      "deck": "d1",
+      "trace": [
+        {
+          "tool": "search_slides",
+          "deck": "d1",
+          "query": "Token",
+          "result_pages": [
+            2,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tool": "search_slides",
+          "deck": "d1",
+          "query": "context",
+          "result_pages": [
+            14,
+            16,
+            17,
+            20,
+            27
+          ]
+        },
+        {
+          "tool": "search_slides",
+          "deck": "d1",
+          "query": "attention",
+          "result_pages": [
+            15,
+            16,
+            20
+          ]
+        },
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 13,
+          "found": true
+        },
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 15,
+          "found": true
+        },
+        {
+          "tool": "read_slide_page",
+          "deck": "d1",
+          "page": 14,
+          "found": true
+        },
+        {
+          "tool": "final_answer",
+          "args": {
+            "source_type": "slide",
+            "answer": "Token, context và attention đều ảnh hưởng đến chi phí gọi API. Mỗi token có giá, và model xử lý văn bản bằng cách cắt thành các token. Khi gọi API, chi phí tính theo số lượng token đầu vào (input) và đầu ra (output). Context là lượng chữ mà model có thể \"nhìn thấy\" trong một lần gọi, nếu context quá dài sẽ tốn nhiều token hơn và làm chậm quá trình. Attention giúp model hiểu ngữ cảnh tốt hơn, nhưng cũng cần nhiều token để hoạt động hiệu quả. Do đó, việc tối ưu hóa prompt và kiểm soát số lượng token là rất quan trọng để giảm chi phí. (d1, trang 13: \"Mọi thứ model làm đều quy ra token — và mỗi token đều có giá.\", trang 14: \"Context càng dài càng tốn tiền và càng chậm.\", trang 15: \"Cơ chế attention cho phép mỗi token... khóa nghĩa theo ngữ cảnh.\")",
+            "citations": [
+              {
+                "deck": "d1",
+                "page": 13,
+                "quote": "Mọi thứ model làm đều quy ra token — và mỗi token đều có giá."
+              },
+              {
+                "deck": "d1",
+                "page": 14,
+                "quote": "Context càng dài càng tốn tiền và càng chậm."
+              },
+              {
+                "deck": "d1",
+                "page": 15,
+                "quote": "Cơ chế attention cho phép mỗi token... khóa nghĩa theo ngữ cảnh."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "ms": 7678
+  }
+]

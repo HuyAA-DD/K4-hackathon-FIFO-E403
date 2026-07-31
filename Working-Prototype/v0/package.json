@@ -1,0 +1,9 @@
+{
+  "name": "vlearn-tutor-working-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Working v0 scaffold for a slide-grounded VLearn Tutor",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

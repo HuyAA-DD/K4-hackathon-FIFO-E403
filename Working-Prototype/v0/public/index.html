@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLearn Tutor — Working v0</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .pdf-stage::before { display: none; }
+      .slide-area { gap: 6px; padding: 8px 20px 2px; }
+      .toolbar { min-height: 44px; padding: 4px 10px; }
+      .slide-card-header { height: 34px; flex-basis: 34px; }
+      .slide-footer { height: 34px; }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <button class="icon-button" type="button" aria-label="Quay lại">‹</button>
+        <div class="brand"><span class="brand-mark">◆</span><strong>V<span>Learn</span></strong></div>
+        <span class="divider"></span>
+        <div class="file-meta">
+          <strong>d1-slide-hackathon.pdf</strong>
+          <small>AI Thực Chiến · Day 1 Foundation</small>
+        </div>
+        <span class="topbar-spacer"></span>
+        <span class="working-badge">Working Prototype v0</span>
+      </header>
+
+      <section class="workspace">
+        <aside id="doc-sidebar" class="doc-sidebar" aria-label="Danh sách slide">
+          <div class="doc-sidebar-header">
+            <span class="doc-sidebar-icon">▤</span>
+            <div><strong>Học liệu</strong><small>Chọn slide đang xem</small></div>
+          </div>
+          <div id="doc-list" class="doc-list"></div>
+          <p class="doc-sidebar-hint">Tutor sẽ nhận biết trang bạn đang xem để trả lời theo đúng ngữ cảnh.</p>
+        </aside>
+        <button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-label="Ẩn hoặc hiện danh sách slide" aria-expanded="true">‹</button>
+
+        <section class="slide-area" aria-label="Trình đọc slide">
+          <div class="toolbar">
+            <button class="tool active" type="button">⌁ Đọc</button>
+            <button class="tool" type="button" disabled title="Chức năng minh hoạ">🖍 Highlight</button>
+            <button class="tool" type="button" disabled title="Chức năng minh hoạ">✎ Bút</button>
+            <span class="toolbar-divider"></span>
+            <span class="page-pill" id="toolbar-page">Trang 1 / 29</span>
+            <span class="zoom-label">100%</span>
+          </div>
+
+          <div class="slide-card">
+            <div class="slide-card-header"><span id="page-indicator">Trang 1 · Tài liệu bài giảng</span><span>d1-slide-hackathon.pdf</span></div>
+            <div class="pdf-stage" id="pdf-stage">
+              <iframe id="pdf-frame" title="Nội dung slide hiện tại" src="/slides/d1-slide-hackathon.pdf#page=1&view=FitH" style="width:100%;height:100%;min-height:0;border:0;background:#282828;"></iframe>
+              <div class="pdf-caption"><span class="pdf-dot"></span><span>Đang xem PDF · Day 1 Foundation</span></div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <button class="round-button" id="prev-page" type="button" aria-label="Slide trước">‹</button>
+            <span id="page-footer-label">Slide 1 / 29 · từ data pack</span>
+            <button class="round-button" id="next-page" type="button" aria-label="Slide sau">›</button>
+          </div>
+        </section>
+
+        <button id="tutor-toggle" class="panel-toggle" type="button" aria-label="Ẩn hoặc hiện VLearn Tutor" aria-expanded="true">›</button>
+
+        <aside id="tutor-panel" class="tutor-panel" aria-label="VLearn Tutor">
+          <header class="tutor-header">
+            <span class="bot-icon">♙</span>
+            <div><strong>VLearn Tutor</strong><small><i></i> Trợ lý học theo ngữ cảnh</small></div>
+            <button id="close-tutor" class="icon-button" type="button" aria-label="Ẩn Tutor">×</button>
+          </header>
+          <div id="messages" class="messages" aria-live="polite">
+            <p class="context" id="tutor-context">Ngữ cảnh: Slide trang 1 · d1-slide-hackathon.pdf</p>
+            <article class="message assistant-message"><p>Chào bạn! Mình ưu tiên trả lời từ slide và hiển thị số trang nguồn. Khi bạn yêu cầu mở rộng, mình sẽ tìm nguồn ngoài có URL trích dẫn rõ ràng.</p></article>
+            <div class="suggestions">
+              <button type="button" data-question="Tóm tắt nội dung slide này">Tóm tắt slide này</button>
+              <button type="button" data-question="LLM là gì?">LLM là gì?</button>
+              <button type="button" data-question="Mở rộng hơn về Transformer">Mở rộng về Transformer</button>
+            </div>
+          </div>
+          <form id="chat-form" class="composer">
+            <input id="question" autocomplete="off" placeholder="Nhập câu hỏi hoặc bôi đen tài liệu..." />
+            <button type="submit" aria-label="Gửi câu hỏi">➤</button>
+          </form>
+        </aside>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
